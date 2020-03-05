@@ -1,0 +1,105 @@
+{
+ "version": "application/octet-stream",
+ "allow_edit": true,
+ "plugins": [],
+ "panes": [
+  {
+   "width": 1,
+   "row": {
+    "3": 1
+   },
+   "col": {
+    "3": -10
+   },
+   "col_width": "3",
+   "widgets": [
+    {
+     "type": "text_widget",
+     "settings": {
+      "title": "\"/experiment/uRTU/testPublish\"",
+      "size": "regular",
+      "value": "datasources[\"ds\"][\"/experiment/uRTU/testPublish\"]",
+      "animate": true
+     }
+    },
+    {
+     "type": "Button",
+     "settings": {
+      "caption": "Send",
+      "text": "Send \"gearname/uRTU/testSubscribe\" Hello",
+      "color": "blue",
+      "onClick": "microgear[\"ds\"].chat(\"uRTU/testSubscribe\", \"Hello\")"
+     }
+    },
+    {
+     "type": "text_widget",
+     "settings": {
+      "title": "\"/experiment/uRTU/json\"",
+      "size": "regular",
+      "value": "var rtu = datasources[\"ds\"][\"/experiment/uRTU/json\"]\nreturn rtu",
+      "animate": true,
+      "units": ""
+     }
+    },
+    {
+     "type": "text_widget",
+     "settings": {
+      "title": "\"/experiment/uRTU/json\".array",
+      "size": "regular",
+      "value": "var sts = datasources[\"ds\"][\"/experiment/uRTU/json\"];\nvar rtu = JSON.parse(sts);\n\n/**\n * Extract url into json\n */\nvar extract_url = function (url) {\n  var objs = {};\n  properties = url.split(\"&\");\n  for (var i=0; i < properties.length; i++) {\n    item = properties[i].split(\"=\");\n    objs[item[0]] = item[1];\n  }\n  return objs;\n}\n\n//var objs = extract_url(url);\n//return objs;\n\nreturn rtu.array",
+      "animate": true
+     }
+    },
+    {
+     "type": "text_widget",
+     "settings": {
+      "title": "\"/experiment/uRTU/number\"",
+      "size": "regular",
+      "value": "datasources[\"ds\"][\"/experiment/uRTU/number\"]",
+      "animate": true
+     }
+    },
+    {
+     "type": "sparkline",
+     "settings": {
+      "title": "Sparkline: \"/experiment/uRTU/number\"",
+      "value": [
+       "datasources[\"ds\"][\"/experiment/uRTU/number\"]"
+      ],
+      "include_legend": false,
+      "legend": ""
+     }
+    }
+   ]
+  }
+ ],
+ "datasources": [
+  {
+   "name": "ds",
+   "type": "netpie_microgear",
+   "settings": {
+    "name": "ds",
+    "appid": "experiment",
+    "key": "zHc9nluGBETqavH",
+    "secret": "p71DmJy2a4Cboi5mCyoGfwkaF",
+    "topics": "/#"
+   }
+  },
+  {
+   "name": "fv",
+   "type": "netpie_feed",
+   "settings": {
+    "name": "fv",
+    "feedid": "experiment",
+    "apikey": "r0b4vdaKMxHDHVeuUbDkUM8O8HDuqXD9",
+    "granularity_value": "5",
+    "granularity_unit": "seconds",
+    "since_value": "3",
+    "since_unit": "minutes",
+    "interval": "10"
+   }
+  }
+ ],
+ "columns": 3,
+ "theme": "default"
+}

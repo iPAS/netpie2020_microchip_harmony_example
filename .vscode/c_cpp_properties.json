@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "pic32mz",
+            "includePath": [
+                "${workspaceFolder}/firmware/src/**",
+                "${workspaceFolder}/../../framework/**",
+                "${workspaceFolder}/../../third_party/rtos/**",
+                "${workspaceFolder}/../../third_party/tcpip/**"
+            ],
+            "defines": [],
+            "compilerPath": "/opt/microchip/xc32/v2.30/bin/xc32-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x86"
+        }
+    ],
+    "version": 4
+}
