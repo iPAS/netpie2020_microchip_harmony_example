@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app3_mqttc.h
+    app_mqtt_client.h
 
   Summary:
     This header file provides prototypes and definitions for the application.
@@ -43,8 +43,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _APP3_MQTTC_H
-#define _APP3_MQTTC_H
+
+#ifndef _APP_MQTT_CLIENT_H
+#define _APP_MQTT_CLIENT_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -59,9 +60,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_config.h"
 #include "system_definitions.h"
 
-#include "aux/parson.h"
-
 #include <wolfmqtt/mqtt_client.h>
+#include "aux/parson.h"  // JSON parser
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -182,7 +182,7 @@ typedef struct
 
 /*******************************************************************************
   Function:
-    void APP3_MQTTC_Initialize ( void )
+    void APP_MQTT_CLIENT_Initialize ( void )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -204,19 +204,19 @@ typedef struct
 
   Example:
     <code>
-    APP3_MQTTC_Initialize();
+    APP_MQTT_CLIENT_Initialize();
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
 
-void APP3_MQTTC_Initialize ( void );
+void APP_MQTT_CLIENT_Initialize ( void );
 
 
 /*******************************************************************************
   Function:
-    void APP3_MQTTC_Tasks ( void )
+    void APP_MQTT_CLIENT_Tasks ( void )
 
   Summary:
     MPLAB Harmony Demo application tasks function
@@ -237,16 +237,16 @@ void APP3_MQTTC_Initialize ( void );
 
   Example:
     <code>
-    APP3_MQTTC_Tasks();
+    APP_MQTT_CLIENT_Tasks();
     </code>
 
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
 
-void APP3_MQTTC_Tasks( void );
+void APP_MQTT_CLIENT_Tasks( void );
 
-#endif /* _APP3_MQTTC_H */
+#endif /* _APP_MQTT_CLIENT_H */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

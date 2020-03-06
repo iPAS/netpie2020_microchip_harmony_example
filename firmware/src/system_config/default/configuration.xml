@@ -985,9 +985,10 @@
         <Checksum>4594F9EB4F0F2E90348F3003A5DAE228</Checksum>
       </Template>
       <Template>
-        <Name>app1_tcp_server.h</Name>
-        <Path>Header Files/app</Path>
-        <Checksum>F73E20A121CF97322BE2D385548F8C5A</Checksum>
+        <Name>app_mqtt_client.c</Name>
+        <Path>Source Files/app</Path>
+        <Checksum>37F26BBB4F00108B30D1FCCD0175BB50</Checksum>
+        <ProjectFileChecksum>558606CE90A8DA8B5B0FA58C5BDB0EFC</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>app0_uart.c</Name>
@@ -999,17 +1000,6 @@
         <Name>net_pres_enc_glue.h</Name>
         <Path>Header Files/app/system_config/default/framework/net/pres</Path>
         <Checksum>E9CAC33A51432E13895C3950315DC5F5</Checksum>
-      </Template>
-      <Template>
-        <Name>app2_tcp_client.c</Name>
-        <Path>Source Files/app</Path>
-        <Checksum>7A459616ED7CA28A854348A265F3CAE5</Checksum>
-      </Template>
-      <Template>
-        <Name>app3_mqttc.c</Name>
-        <Path>Source Files/app</Path>
-        <Checksum>F642F95519DF5DAB6E0A187B50A6312B</Checksum>
-        <ProjectFileChecksum>34770B9241FB5BC1741CD6FDDB284641</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>drv_usart_mapping.c</Name>
@@ -1039,22 +1029,13 @@
       <Template>
         <Name>system_interrupt.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>8D5DE9B9EA66DDE8E8622F09182D761D</Checksum>
+        <Checksum>395914D04DB32F5E93D56DAC4A663999</Checksum>
+        <ProjectFileChecksum>805A204535CDE87913432C207E2DB4F0</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>sys_clk_static.c</Name>
         <Path>Source Files/app/system_config/default/framework/system/clk/src</Path>
         <Checksum>6C07E4984368F52244D6790084A8ED66</Checksum>
-      </Template>
-      <Template>
-        <Name>app2_tcp_client.h</Name>
-        <Path>Header Files/app</Path>
-        <Checksum>E495097894373269E5E5D825A3800282</Checksum>
-      </Template>
-      <Template>
-        <Name>app1_tcp_server.c</Name>
-        <Path>Source Files/app</Path>
-        <Checksum>56DC1B321C201EE644AAEA135E0BFD6E</Checksum>
       </Template>
       <Template>
         <Name>drv_usart_static.c</Name>
@@ -1064,7 +1045,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>BC5A4DDC6BD22B7047DA7377724B5373</Checksum>
+        <Checksum>C6473138FCAA3CCE4C56C88FFFA55CAE</Checksum>
         <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
@@ -1078,15 +1059,16 @@
         <Checksum>ED931FDA1689E9DB908AEAD2EE14A045</Checksum>
       </Template>
       <Template>
-        <Name>app3_mqttc.h</Name>
+        <Name>app_mqtt_client.h</Name>
         <Path>Header Files/app</Path>
-        <Checksum>50051C589DE7D43AA4A8700BF0E74F57</Checksum>
-        <ProjectFileChecksum>54115A0708C8A68D85B054E0F64FFC27</ProjectFileChecksum>
+        <Checksum>29F8C8F56F7A3C75B75E970A2F7E79FB</Checksum>
+        <ProjectFileChecksum>AED2CE48FD10C3836DA3BBA8FE1F6B50</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>6393DC2ADE3223242546FC2D5F60F08E</Checksum>
+        <Checksum>7C2C9A9D7D712EEEB689F4381B80A0E9</Checksum>
+        <ProjectFileChecksum>EB777456F274342AD2D2FF9934475655</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
@@ -1107,12 +1089,13 @@
       <Template>
         <Name>system_tasks.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>0C45E3F946BC7CEC993A4D9A76D83EE9</Checksum>
+        <Checksum>84BAB27EAE2377A6BA72A57A77154FEC</Checksum>
+        <ProjectFileChecksum>C79FF03BCDCFFAEE89F42B0CDAF4E950</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>FF08C19B5883D4CDAB14585C4B453B11</Checksum>
+        <Checksum>8302F2B1D94CF81E5632F4B93072ADF3</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>

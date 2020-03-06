@@ -498,9 +498,7 @@ void SYS_Initialize ( void* data )
 
     /* Initialize the Application */
     APP0_UART_Initialize();
-    APP1_TCP_SERVER_Initialize();
-    APP2_TCP_CLIENT_Initialize();
-    APP3_MQTTC_Initialize();
+    APP_MQTT_CLIENT_Initialize();
 }
 
 

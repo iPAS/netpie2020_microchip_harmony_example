@@ -55,9 +55,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_config.h"
 #include "system_definitions.h"
 #include "app0_uart.h"
-#include "app1_tcp_server.h"
-#include "app2_tcp_client.h"
-#include "app3_mqttc.h"
+#include "app_mqtt_client.h"
 
 
 // *****************************************************************************
@@ -70,9 +68,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  
 static void _SYS_Tasks ( void );
 static void _APP0_UART_Tasks(void);
-static void _APP1_TCP_SERVER_Tasks(void);
-static void _APP2_TCP_CLIENT_Tasks(void);
-static void _APP3_MQTTC_Tasks(void);
+static void _APP_MQTT_CLIENT_Tasks(void);
 
 
 // *****************************************************************************
@@ -101,19 +97,9 @@ void SYS_Tasks ( void )
                 "APP0_UART Tasks",
                 1024, NULL, 1, NULL);
 
-    /* Create OS Thread for APP1_TCP_SERVER Tasks. */
-    xTaskCreate((TaskFunction_t) _APP1_TCP_SERVER_Tasks,
-                "APP1_TCP_SERVER Tasks",
-                1024, NULL, 1, NULL);
-
-    /* Create OS Thread for APP2_TCP_CLIENT Tasks. */
-    xTaskCreate((TaskFunction_t) _APP2_TCP_CLIENT_Tasks,
-                "APP2_TCP_CLIENT Tasks",
-                1024, NULL, 1, NULL);
-
-    /* Create OS Thread for APP3_MQTTC Tasks. */
-    xTaskCreate((TaskFunction_t) _APP3_MQTTC_Tasks,
-                "APP3_MQTTC Tasks",
+    /* Create OS Thread for APP_MQTT_CLIENT Tasks. */
+    xTaskCreate((TaskFunction_t) _APP_MQTT_CLIENT_Tasks,
+                "APP_MQTT_CLIENT Tasks",
                 1024, NULL, 1, NULL);
 
     /**************
@@ -171,51 +157,17 @@ static void _APP0_UART_Tasks(void)
 
 /*******************************************************************************
   Function:
-    void _APP1_TCP_SERVER_Tasks ( void )
+    void _APP_MQTT_CLIENT_Tasks ( void )
 
   Summary:
-    Maintains state machine of APP1_TCP_SERVER.
+    Maintains state machine of APP_MQTT_CLIENT.
 */
 
-static void _APP1_TCP_SERVER_Tasks(void)
+static void _APP_MQTT_CLIENT_Tasks(void)
 {
     while(1)
     {
-        APP1_TCP_SERVER_Tasks();
-    }
-}
-
-
-/*******************************************************************************
-  Function:
-    void _APP2_TCP_CLIENT_Tasks ( void )
-
-  Summary:
-    Maintains state machine of APP2_TCP_CLIENT.
-*/
-
-static void _APP2_TCP_CLIENT_Tasks(void)
-{
-    while(1)
-    {
-        APP2_TCP_CLIENT_Tasks();
-    }
-}
-
-
-/*******************************************************************************
-  Function:
-    void _APP3_MQTTC_Tasks ( void )
-
-  Summary:
-    Maintains state machine of APP3_MQTTC.
-*/
-
-static void _APP3_MQTTC_Tasks(void)
-{
-    while(1)
-    {
-        APP3_MQTTC_Tasks();
+        APP_MQTT_CLIENT_Tasks();
     }
 }
 

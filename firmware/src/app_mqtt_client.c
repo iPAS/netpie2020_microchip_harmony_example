@@ -5,7 +5,7 @@
     Microchip Technology Inc.
   
   File Name:
-    app3_mqttc.c
+    app_mqtt_client.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -53,7 +53,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app3_mqttc.h"
+#include "app_mqtt_client.h"
 #include "app0_uart.h"
 
 // *****************************************************************************
@@ -529,13 +529,13 @@ int mqttclient_publish_shadow(uint16_t pkg_id)
 
 /*******************************************************************************
   Function:
-    void APP3_MQTTC_Initialize ( void )
+    void APP_MQTT_CLIENT_Initialize ( void )
 
   Remarks:
-    See prototype in app3_mqttc.h.
+    See prototype in app_mqtt_client.h.
  */
 
-void APP3_MQTTC_Initialize ( void )
+void APP_MQTT_CLIENT_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
     appData.state = APP_STATE_INIT;
@@ -558,13 +558,13 @@ void APP3_MQTTC_Initialize ( void )
 
 /******************************************************************************
   Function:
-    void APP3_MQTTC_Tasks ( void )
+    void APP_MQTT_CLIENT_Tasks ( void )
 
   Remarks:
-    See prototype in app3_mqttc.h.
+    See prototype in app_mqtt_client.h.
  */
 
-void APP3_MQTTC_Tasks ( void )
+void APP_MQTT_CLIENT_Tasks ( void )
 {
 
     /* Check the application's current state. */
@@ -574,7 +574,7 @@ void APP3_MQTTC_Tasks ( void )
         case APP_STATE_INIT:
         {
             vTaskDelay(3000 / portTICK_PERIOD_MS);
-            uart0_send_tx_queue("--- APP3 init ---\n\r");  // DEBUG: iPAS
+            uart0_send_tx_queue("--- APP MQTT Client Init ---\n\r");  // DEBUG: iPAS
 
             appData.state = APP_STATE_TCPIP_WAIT_INIT;
             break;

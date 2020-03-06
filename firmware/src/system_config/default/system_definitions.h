@@ -74,9 +74,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "net/pres/net_pres_transportapi.h"
 #include "net/pres/net_pres_socketapi.h"
 #include "app0_uart.h"
-#include "app1_tcp_server.h"
-#include "app2_tcp_client.h"
-#include "app3_mqttc.h"
+#include "app_mqtt_client.h"
 
 
 // DOM-IGNORE-BEGIN
