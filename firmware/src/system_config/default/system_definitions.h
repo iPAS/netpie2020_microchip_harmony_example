@@ -73,7 +73,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "net/pres/net_pres_encryptionproviderapi.h"
 #include "net/pres/net_pres_transportapi.h"
 #include "net/pres/net_pres_socketapi.h"
-#include "app0_uart.h"
+#include "app_uart_term.h"
 #include "app_mqtt_client.h"
 
 

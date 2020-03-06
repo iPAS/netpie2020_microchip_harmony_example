@@ -991,12 +991,6 @@
         <ProjectFileChecksum>558606CE90A8DA8B5B0FA58C5BDB0EFC</ProjectFileChecksum>
       </Template>
       <Template>
-        <Name>app0_uart.c</Name>
-        <Path>Source Files/app</Path>
-        <Checksum>6BA8BE64885D065579572289EFB4EA50</Checksum>
-        <ProjectFileChecksum>08AB9002B4C12BC46574912DE3CCA696</ProjectFileChecksum>
-      </Template>
-      <Template>
         <Name>net_pres_enc_glue.h</Name>
         <Path>Header Files/app/system_config/default/framework/net/pres</Path>
         <Checksum>E9CAC33A51432E13895C3950315DC5F5</Checksum>
@@ -1029,13 +1023,17 @@
       <Template>
         <Name>system_interrupt.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>395914D04DB32F5E93D56DAC4A663999</Checksum>
-        <ProjectFileChecksum>805A204535CDE87913432C207E2DB4F0</ProjectFileChecksum>
+        <Checksum>DA69DD3A2642FC62F2ACF98D14FE169A</Checksum>
       </Template>
       <Template>
         <Name>sys_clk_static.c</Name>
         <Path>Source Files/app/system_config/default/framework/system/clk/src</Path>
         <Checksum>6C07E4984368F52244D6790084A8ED66</Checksum>
+      </Template>
+      <Template>
+        <Name>app_uart_term.c</Name>
+        <Path>Source Files/app</Path>
+        <Checksum>3D62EAF2A87D053DCFF4647AFD477A62</Checksum>
       </Template>
       <Template>
         <Name>drv_usart_static.c</Name>
@@ -1045,13 +1043,18 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>C6473138FCAA3CCE4C56C88FFFA55CAE</Checksum>
+        <Checksum>CAB024DC837EA403DF1AF96A74549195</Checksum>
         <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>main.c</Name>
         <Path>Source Files/app</Path>
         <Checksum>81A51474D8A80D41AD749DEAE4C1A7A3</Checksum>
+      </Template>
+      <Template>
+        <Name>app_uart_term.h</Name>
+        <Path>Header Files/app</Path>
+        <Checksum>31B8FB100B170EA1AE1F2DD9B639C370</Checksum>
       </Template>
       <Template>
         <Name>config.h</Name>
@@ -1067,19 +1070,12 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>7C2C9A9D7D712EEEB689F4381B80A0E9</Checksum>
-        <ProjectFileChecksum>EB777456F274342AD2D2FF9934475655</ProjectFileChecksum>
+        <Checksum>423798117FC1D8954A06A28AAF624C0E</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
         <Path>Source Files/app/system_config/default</Path>
         <Checksum>C111969CA43D6CEA1E9E33A6164E7AE0</Checksum>
-      </Template>
-      <Template>
-        <Name>app0_uart.h</Name>
-        <Path>Header Files/app</Path>
-        <Checksum>673D3011C38DB8AEF3298919D3543AA5</Checksum>
-        <ProjectFileChecksum>5155638C2D80AFE518E1AACBA49238C0</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>drv_usart_static.h</Name>
@@ -1089,13 +1085,12 @@
       <Template>
         <Name>system_tasks.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>84BAB27EAE2377A6BA72A57A77154FEC</Checksum>
-        <ProjectFileChecksum>C79FF03BCDCFFAEE89F42B0CDAF4E950</ProjectFileChecksum>
+        <Checksum>D91081F6228A6E32364A63F2D8188D79</Checksum>
       </Template>
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>8302F2B1D94CF81E5632F4B93072ADF3</Checksum>
+        <Checksum>A2234E8298656CD723D19C6784767109</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>

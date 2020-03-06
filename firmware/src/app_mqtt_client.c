@@ -54,7 +54,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "app_mqtt_client.h"
-#include "app0_uart.h"
+#include "app_uart_term.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -178,7 +178,7 @@ const char mqtt_topic_json[]        = "@msg/json";
 
 int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeout_ms)
 {
-    uart0_send_tx_queue("[%s] APP_tcpipConnect_cb() get started\n\r", basename(__FILE__));  // DEBUG: iPAS
+    uart_send_tx_queue("[%s] APP_tcpipConnect_cb() get started\n\r", basename(__FILE__));  // DEBUG: iPAS
 
     uint32_t timeout;
     timeout = SYS_TMR_TickCountGet();
@@ -188,7 +188,7 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
     TCPIP_DNS_RESULT dnsResult = TCPIP_DNS_Resolve((const char *)appData.host, TCPIP_DNS_TYPE_A);
     if(dnsResult < 0)
     {
-        uart0_send_tx_queue("[%s] TCPIP_DNS_Resolve() fail\n\r", basename(__FILE__));  // DEBUG: iPAS
+        uart_send_tx_queue("[%s] TCPIP_DNS_Resolve() fail\n\r", basename(__FILE__));  // DEBUG: iPAS
         return APP_CODE_ERROR_FAILED_TO_BEGIN_DNS_RESOLUTION;  // DNS resolving problem
     }
 
@@ -197,13 +197,13 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
     {
         if(APP_TIMER_Expired_ms(&timeout, timeout_ms))
         {
-            uart0_send_tx_queue("[%s] TCPIP_DNS_IsResolve() timeout\n\r", basename(__FILE__));  // DEBUG: iPAS
+            uart_send_tx_queue("[%s] TCPIP_DNS_IsResolve() timeout\n\r", basename(__FILE__));  // DEBUG: iPAS
             return APP_CODE_ERROR_CMD_TIMEOUT;
         }
     }
     if(dnsResult != (TCPIP_DNS_RES_OK))
     {
-        uart0_send_tx_queue("[%s] TCPIP_DNS_IsResolve() fail\n\r", basename(__FILE__));  // DEBUG: iPAS
+        uart_send_tx_queue("[%s] TCPIP_DNS_IsResolve() fail\n\r", basename(__FILE__));  // DEBUG: iPAS
         return APP_CODE_ERROR_DNS_FAILED;
     }
 
@@ -215,7 +215,7 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
 
     if (appData.socket == INVALID_SOCKET)
     {
-        uart0_send_tx_queue("[%s] NET_PRES_SocketOpen() socket invalid\n\r", basename(__FILE__));  // DEBUG: iPAS
+        uart_send_tx_queue("[%s] NET_PRES_SocketOpen() socket invalid\n\r", basename(__FILE__));  // DEBUG: iPAS
 
         NET_PRES_SocketClose(appData.socket);
         return APP_CODE_ERROR_INVALID_SOCKET;
@@ -225,7 +225,7 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
     {
         if (APP_TIMER_Expired_ms(&timeout, timeout_ms))
         {
-            uart0_send_tx_queue("[%s] NET_PRES_SKT_IsConnected() timeout\n\r", basename(__FILE__));  // DEBUG: iPAS
+            uart_send_tx_queue("[%s] NET_PRES_SKT_IsConnected() timeout\n\r", basename(__FILE__));  // DEBUG: iPAS
             return APP_CODE_ERROR_CMD_TIMEOUT;
         }
     }
@@ -234,14 +234,14 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
     {
         if (APP_TIMER_Expired_ms(&timeout, timeout_ms))
         {
-            uart0_send_tx_queue("[%s] NET_PRES_SKT_IsNegotiatingEncryption() timeout\n\r", basename(__FILE__));  // DEBUG: iPAS
+            uart_send_tx_queue("[%s] NET_PRES_SKT_IsNegotiatingEncryption() timeout\n\r", basename(__FILE__));  // DEBUG: iPAS
             return APP_CODE_ERROR_CMD_TIMEOUT;
         }
     }
 
     // if (!NET_PRES_SKT_IsSecure(appData.socket))
     // {
-    //     uart0_send_tx_queue("[%s] NET_PRES_SKT_IsSecure() fail\n\r", basename(__FILE__));  // DEBUG: iPAS
+    //     uart_send_tx_queue("[%s] NET_PRES_SKT_IsSecure() fail\n\r", basename(__FILE__));  // DEBUG: iPAS
     //     NET_PRES_SocketClose(appData.socket);
     //     return APP_CODE_ERROR_FAILED_SSL_NEGOTIATION;
     // }
@@ -324,7 +324,7 @@ int mqttclient_message_cb(MqttClient *client, MqttMessage *msg, byte msg_new, by
     topic[msg->topic_name_len] = '\0';
 
 
-    uart0_send_tx_queue("--- received #%d from topic:%s msg:%s\n\r", msg->packet_id, topic, message);  // DEBUG: iPAS
+    uart_send_tx_queue("--- received #%d from topic:%s msg:%s\n\r", msg->packet_id, topic, message);  // DEBUG: iPAS
     free(buf);
 
 
@@ -391,10 +391,10 @@ int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id)
     publish.buffer      = (byte *)buf;
     publish.total_len   = strlen(buf);
 
-    char uart_buf[UART0_QUEUE_ITEM_SIZE];
-    snprintf(uart_buf, UART0_QUEUE_ITEM_SIZE,
+    char uart_buf[UART_QUEUE_ITEM_SIZE];
+    snprintf(uart_buf, UART_QUEUE_ITEM_SIZE,
              "[#%d] publish topic:'%s' msg:'%s'\n\r", pkg_id, topic, buf);
-    uart0_send_tx_queue(uart_buf);  // DEBUG: iPAS
+    uart_send_tx_queue(uart_buf);  // DEBUG: iPAS
 
     return MqttClient_Publish(&appData.mqttClient, &publish);
 }
@@ -574,7 +574,7 @@ void APP_MQTT_CLIENT_Tasks ( void )
         case APP_STATE_INIT:
         {
             vTaskDelay(3000 / portTICK_PERIOD_MS);
-            uart0_send_tx_queue("--- APP MQTT Client Init ---\n\r");  // DEBUG: iPAS
+            uart_send_tx_queue("--- APP MQTT Client Init ---\n\r");  // DEBUG: iPAS
 
             appData.state = APP_STATE_TCPIP_WAIT_INIT;
             break;
@@ -612,7 +612,7 @@ void APP_MQTT_CLIENT_Tasks ( void )
                 APP_TIMER_Set(&appData.genericUseTimer);
                 appData.state = APP_STATE_TCPIP_WAIT_FOR_IP;
 
-                uart0_send_tx_queue("[%s] MAC: %s\n\r", basename(__FILE__), appData.macAddress);  // DEBUG: iPAS
+                uart_send_tx_queue("[%s] MAC: %s\n\r", basename(__FILE__), appData.macAddress);  // DEBUG: iPAS
             }
             break;
         }
@@ -641,7 +641,7 @@ void APP_MQTT_CLIENT_Tasks ( void )
                         appData.board_ipAddr.v4Add.Val = ipAddr.Val;
                         appData.state = APP_STATE_MQTT_INIT;
 
-                        uart0_send_tx_queue("[%s] IP: %d.%d.%d.%d\n\r",
+                        uart_send_tx_queue("[%s] IP: %d.%d.%d.%d\n\r",
                             basename(__FILE__),
                             appData.board_ipAddr.v4Add.v[0],
                             appData.board_ipAddr.v4Add.v[1],
@@ -669,7 +669,7 @@ void APP_MQTT_CLIENT_Tasks ( void )
             APP_TIMER_Set(&appData.genericUseTimer);
             appData.state = APP_STATE_MQTT_NET_CONNECT;
 
-            uart0_send_tx_queue("[%s] MQTT init ready\n\r", basename(__FILE__));  // DEBUG: iPAS
+            uart_send_tx_queue("[%s] MQTT init ready\n\r", basename(__FILE__));  // DEBUG: iPAS
             break;
         }
 
@@ -693,12 +693,12 @@ void APP_MQTT_CLIENT_Tasks ( void )
                 while (!APP_TIMER_Expired(&appData.genericUseTimer, 5));  // Delay 5 seconds before trying next
                 APP_TIMER_Set(&appData.genericUseTimer);
 
-                uart0_send_tx_queue("[%s] MQTT connect network %s fail (rc=%d)\n\r", basename(__FILE__), appData.host, rc);  // DEBUG: iPAS
+                uart_send_tx_queue("[%s] MQTT connect network %s fail (rc=%d)\n\r", basename(__FILE__), appData.host, rc);  // DEBUG: iPAS
                 break;
             }
             appData.state = APP_STATE_MQTT_PROTOCOL_CONNECT;
 
-            uart0_send_tx_queue("[%s] MQTT network ready\n\r", basename(__FILE__));  // DEBUG: iPAS
+            uart_send_tx_queue("[%s] MQTT network ready\n\r", basename(__FILE__));  // DEBUG: iPAS
             break;
         }
 
@@ -728,14 +728,14 @@ void APP_MQTT_CLIENT_Tasks ( void )
 
                 appData.state = APP_TCPIP_ERROR;
 
-                uart0_send_tx_queue("[%s] MQTT protocol negotiation fail (rc=%d)\n\r", basename(__FILE__), rc);  // DEBUG: iPAS
+                uart_send_tx_queue("[%s] MQTT protocol negotiation fail (rc=%d)\n\r", basename(__FILE__), rc);  // DEBUG: iPAS
                 break;
             }
             appData.mqtt_connected = true;
             APP_TIMER_Set(&appData.mqttKeepAlive);
             appData.state = APP_STATE_MQTT_SUBSCRIBE;
 
-            uart0_send_tx_queue("[%s] MQTT protocol negotiation success\n\r", basename(__FILE__));  // DEBUG: iPAS
+            uart_send_tx_queue("[%s] MQTT protocol negotiation success\n\r", basename(__FILE__));  // DEBUG: iPAS
             break;
         }
 
@@ -764,13 +764,13 @@ void APP_MQTT_CLIENT_Tasks ( void )
 
                 appData.state = APP_TCPIP_ERROR;
 
-                uart0_send_tx_queue("[%s] MQTT subscription fail (rc=%d)\n\r", basename(__FILE__), rc);  // DEBUG: iPAS
+                uart_send_tx_queue("[%s] MQTT subscription fail (rc=%d)\n\r", basename(__FILE__), rc);  // DEBUG: iPAS
                 break;
             }
 
             appData.state = APP_STATE_MQTT_LOOP;
 
-            uart0_send_tx_queue("[%s] MQTT subscribe '%s'\n\r", basename(__FILE__), topics[0].topic_filter);  // DEBUG: iPAS
+            uart_send_tx_queue("[%s] MQTT subscribe '%s'\n\r", basename(__FILE__), topics[0].topic_filter);  // DEBUG: iPAS
             break;
         }
 
@@ -812,7 +812,7 @@ void APP_MQTT_CLIENT_Tasks ( void )
             else
             if (rc == APP_CODE_ERROR_CMD_TIMEOUT)  // No any message within DEFAULT_CMD_TIMEOUT_MS, then speak!
             {
-                uart0_send_tx_queue("[%s] No any message within %d ms, then speak! (APP_CODE_ERROR_CMD_TIMEOUT)\n\r", basename(__FILE__), MQTT_DEFAULT_CMD_TIMEOUT_MS);  // DEBUG: iPAS
+                uart_send_tx_queue("[%s] No any message within %d ms, then speak! (APP_CODE_ERROR_CMD_TIMEOUT)\n\r", basename(__FILE__), MQTT_DEFAULT_CMD_TIMEOUT_MS);  // DEBUG: iPAS
 
                 rc = mqttclient_publish(mqtt_topic_published, "No one can hear me??", packet_id++);
                 if (rc != MQTT_CODE_SUCCESS)
@@ -877,14 +877,14 @@ void APP_MQTT_CLIENT_Tasks ( void )
             NET_PRES_SocketClose(appData.socket);
             appData.state = APP_STATE_MQTT_NET_CONNECT;
 
-            uart0_send_tx_queue("[%s] APP_TCPIP_ERROR, going to APP_STATE_MQTT_NET_CONNECT\n\r", basename(__FILE__));  // DEBUG: iPAS
+            uart_send_tx_queue("[%s] APP_TCPIP_ERROR, going to APP_STATE_MQTT_NET_CONNECT\n\r", basename(__FILE__));  // DEBUG: iPAS
             break;
         }
 
         /* This error requires system reset or hardware debugging */
         case APP_FATAL_ERROR:
         {
-            uart0_send_tx_queue("[%s] APP_FATAL_ERROR\n\r", basename(__FILE__));  // DEBUG: iPAS
+            uart_send_tx_queue("[%s] APP_FATAL_ERROR\n\r", basename(__FILE__));  // DEBUG: iPAS
             break;
         }
 

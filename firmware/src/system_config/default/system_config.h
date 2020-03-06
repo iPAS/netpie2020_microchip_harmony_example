@@ -422,7 +422,7 @@ extern "C" {
 // *****************************************************************************
 
 /*** Application Instance 0 Configuration ***/
-#define APP0_UART_DRV_USART                     0
+#define APP_UART_TERM_DRV_USART                     0
 
 /*** Application Instance 1 Configuration ***/
 

@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app_mqtt_client.h
+    app0_uart.h
 
   Summary:
     This header file provides prototypes and definitions for the application.
@@ -44,8 +44,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 //DOM-IGNORE-END
 
 
-#ifndef _APP_MQTT_CLIENT_H
-#define _APP_MQTT_CLIENT_H
+#ifndef _APP_UART_TERM_H
+#define _APP_UART_TERM_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -60,37 +60,19 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_config.h"
 #include "system_definitions.h"
 
-#include <wolfmqtt/mqtt_client.h>
-#include "aux/parson.h"  // JSON parser
-
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
 
 extern "C" {
 
 #endif
-// DOM-IGNORE-END
+// DOM-IGNORE-END 
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Type Definitions
 // *****************************************************************************
 // *****************************************************************************
-
-// *****************************************************************************
-/* Application Codes */
-enum AppCodes {
-    APP_CODE_ERROR_BAD_ARG = -255,
-    APP_CODE_ERROR_OUT_OF_BUFFER,
-    APP_CODE_ERROR_SSL_FATAL,
-    APP_CODE_ERROR_INVALID_SOCKET,
-    APP_CODE_ERROR_FAILED_TO_BEGIN_DNS_RESOLUTION,
-    APP_CODE_ERROR_DNS_FAILED,
-    APP_CODE_ERROR_FAILED_SSL_NEGOTIATION,
-    APP_CODE_ERROR_TIMEOUT,
-    APP_CODE_ERROR_CMD_TIMEOUT,
-    APP_CODE_SUCCESS = 0,
-};
 
 // *****************************************************************************
 /* Application states
@@ -105,22 +87,9 @@ enum AppCodes {
 
 typedef enum
 {
-	/* Application's state machine's initial state. */
-    APP_STATE_INIT = 0,
-
-    APP_STATE_TCPIP_WAIT_INIT,
-    APP_STATE_TCPIP_WAIT_FOR_IP,
-
-    APP_STATE_MQTT_INIT,
-    APP_STATE_MQTT_NET_CONNECT,
-    APP_STATE_MQTT_PROTOCOL_CONNECT,
-    APP_STATE_MQTT_SUBSCRIBE,
-    APP_STATE_MQTT_LOOP,
-
-    APP_TCPIP_ERROR,
-    APP_FATAL_ERROR,
-
-} APP_STATES;
+	APP_UART_TERM_STATE_INIT=0,
+	APP_UART_TERM_STATE_SERVICE_TASKS,
+} APP_UART_TERM_STATES;
 
 
 // *****************************************************************************
@@ -139,31 +108,33 @@ typedef enum
 typedef struct
 {
     /* The application's current state */
-    APP_STATES state;
+    APP_UART_TERM_STATES state;
 
-    // Timers
-    uint32_t genericUseTimer;
-    uint32_t mqttKeepAlive;
+    /* TODO: Define any additional data used by the application. */
+    DRV_HANDLE handleUSART;
 
-    /* TCPIP & MQTT */
-    char macAddress[12 + 1];
-    //__attribute__ ((aligned(4))) 
-    char host[30];  // The endpoint to access the broker.
-    IP_MULTI_ADDRESS host_ipv4;  // The endpoint IP address location.
-    TCP_PORT         port;
+    /* RTOS Queues */
+    QueueHandle_t q_tx;
+    QueueHandle_t q_rx;
+    
+} APP_UART_TERM_DATA;
 
-    NET_PRES_SKT_HANDLE_T socket;
-    NET_PRES_SKT_ERROR_T  error;
 
-    MqttClient mqttClient;
-    MqttNet    mqttNet;
+// *****************************************************************************
+/* Queue Management
+ */
+#define UART_QUEUE_SIZE 10
+#define UART_QUEUE_ITEM_SIZE 200
+typedef struct
+{
+    uint8_t buffer[UART_QUEUE_ITEM_SIZE];
+    uint8_t length;
+} uart_queue_item_t;
 
-    /* Debug Variables */
-    bool socket_connected;
-    bool mqtt_connected;
-    IP_MULTI_ADDRESS board_ipAddr;
-
-} APP_DATA;
+/**
+ * Enqueue a message to UART Tx
+ */
+BaseType_t uart_send_tx_queue(const char *fmt, ... );
 
 
 // *****************************************************************************
@@ -182,7 +153,7 @@ typedef struct
 
 /*******************************************************************************
   Function:
-    void APP_MQTT_CLIENT_Initialize ( void )
+    void APP_UART_TERM_Initialize ( void )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -204,19 +175,19 @@ typedef struct
 
   Example:
     <code>
-    APP_MQTT_CLIENT_Initialize();
+    APP_UART_TERM_Initialize();
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
 
-void APP_MQTT_CLIENT_Initialize ( void );
+void APP_UART_TERM_Initialize ( void );
 
 
 /*******************************************************************************
   Function:
-    void APP_MQTT_CLIENT_Tasks ( void )
+    void APP_UART_TERM_Tasks ( void )
 
   Summary:
     MPLAB Harmony Demo application tasks function
@@ -237,17 +208,17 @@ void APP_MQTT_CLIENT_Initialize ( void );
 
   Example:
     <code>
-    APP_MQTT_CLIENT_Tasks();
+    APP_UART_TERM_Tasks();
     </code>
 
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
 
-void APP_MQTT_CLIENT_Tasks( void );
+void APP_UART_TERM_Tasks( void );
 
 
-#endif /* _APP_MQTT_CLIENT_H */
+#endif /* _APP_UART_TERM_H */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

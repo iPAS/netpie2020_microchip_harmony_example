@@ -54,7 +54,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include "system_config.h"
 #include "system_definitions.h"
-#include "app0_uart.h"
+#include "app_uart_term.h"
 #include "app_mqtt_client.h"
 
 
@@ -67,7 +67,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
  
 static void _SYS_Tasks ( void );
-static void _APP0_UART_Tasks(void);
+static void _APP_UART_TERM_Tasks(void);
 static void _APP_MQTT_CLIENT_Tasks(void);
 
 
@@ -92,9 +92,9 @@ void SYS_Tasks ( void )
                 "Sys Tasks",
                 4096, NULL, 2, NULL);
 
-    /* Create OS Thread for APP0_UART Tasks. */
-    xTaskCreate((TaskFunction_t) _APP0_UART_Tasks,
-                "APP0_UART Tasks",
+    /* Create OS Thread for APP_UART_TERM Tasks. */
+    xTaskCreate((TaskFunction_t) _APP_UART_TERM_Tasks,
+                "APP_UART_TERM Tasks",
                 1024, NULL, 1, NULL);
 
     /* Create OS Thread for APP_MQTT_CLIENT Tasks. */
@@ -140,17 +140,17 @@ static void _SYS_Tasks ( void)
 
 /*******************************************************************************
   Function:
-    void _APP0_UART_Tasks ( void )
+    void _APP_UART_TERM_Tasks ( void )
 
   Summary:
-    Maintains state machine of APP0_UART.
+    Maintains state machine of APP_UART_TERM.
 */
 
-static void _APP0_UART_Tasks(void)
+static void _APP_UART_TERM_Tasks(void)
 {
     while(1)
     {
-        APP0_UART_Tasks();
+        APP_UART_TERM_Tasks();
     }
 }
 
