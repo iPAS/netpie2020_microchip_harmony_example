@@ -61,7 +61,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_definitions.h"
 
 #include <wolfmqtt/mqtt_client.h>
-#include "aux/parson.h"  // JSON parser
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -71,6 +70,7 @@ extern "C" {
 #endif
 // DOM-IGNORE-END
 
+    
 // *****************************************************************************
 // *****************************************************************************
 // Section: Type Definitions
@@ -91,6 +91,7 @@ enum AppCodes {
     APP_CODE_ERROR_CMD_TIMEOUT,
     APP_CODE_SUCCESS = 0,
 };
+
 
 // *****************************************************************************
 /* Application states
@@ -173,7 +174,8 @@ typedef struct
 // *****************************************************************************
 /* These routines are called by drivers when certain events occur.
 */
-	
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Initialization and State Machine Functions
@@ -245,6 +247,16 @@ void APP_MQTT_CLIENT_Initialize ( void );
  */
 
 void APP_MQTT_CLIENT_Tasks( void );
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Global Functions for other module
+// *****************************************************************************
+// *****************************************************************************
+
+int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id);
+int mqttclient_publish_register(uint32_t address, const char *message);
 
 
 #endif /* _APP_MQTT_CLIENT_H */
