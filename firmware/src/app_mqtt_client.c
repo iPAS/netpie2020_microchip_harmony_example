@@ -117,9 +117,9 @@ const char mqtt_password[]  = NETPIE_SECRET;
 
 // -- MQTT topics for MODBUS --
 #define MQTT_TOPIC_FILTER "@msg/" NETPIE_DEVICE_NAME "/#"
-const char mqtt_topic_status[]   = "@msg/" NETPIE_DEVICE_NAME "/status";    // Publish the device status
-const char mqtt_topic_update[]   = "@msg/" NETPIE_DEVICE_NAME "/update";    // Get request for updating the register %d
-const char mqtt_topic_register[] = "@msg/" NETPIE_DEVICE_NAME "/register";  // Publish an update for register %d
+const char mqtt_topic_status[]   = "@msg/" NETPIE_DEVICE_NAME "/status";  // Publish the device status
+const char mqtt_topic_update[]   = "@msg/" NETPIE_DEVICE_NAME "/update";  // Get request for updating the register %d
+const char mqtt_topic_register[] = "@msg/" NETPIE_DEVICE_NAME "/register";  // Publish an update for register/%d
 
 
 // *****************************************************************************
@@ -144,6 +144,30 @@ bool APP_timerSet(uint32_t * timer)
 {
     *timer = SYS_TMR_TickCountGet();
     return true;
+}
+
+
+int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id)
+{
+    MqttPublish publish;
+    XMEMSET(&publish, 0, sizeof(MqttPublish));
+    publish.retain      = 0;
+    publish.qos         = 0;
+    publish.duplicate   = 0;
+    publish.topic_name  = topic;
+    publish.packet_id   = pkg_id;
+    publish.buffer      = (byte *)buf;
+    publish.total_len   = strlen(buf);
+
+    TRACE_LOG("[%d] #%d publish topic:'%s' msg:'%s'\n\r", __LINE__, pkg_id, topic, buf);
+    
+    return MqttClient_Publish(&appData.mqttClient, &publish);
+}
+
+
+int mqttclient_publish_status(void)
+{
+    return mqttclient_publish(mqtt_topic_status, NETPIE_DEVICE_NAME, packet_id++);
 }
 
 
@@ -334,37 +358,19 @@ int APP_mqttMessage_cb(MqttClient *client, MqttMessage *msg, byte msg_new, byte 
 // *****************************************************************************
 // *****************************************************************************
 
-int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id)
-{
-    MqttPublish publish;
-    XMEMSET(&publish, 0, sizeof(MqttPublish));
-    publish.retain      = 0;
-    publish.qos         = 0;
-    publish.duplicate   = 0;
-    publish.topic_name  = topic;
-    publish.packet_id   = pkg_id;
-    publish.buffer      = (byte *)buf;
-    publish.total_len   = strlen(buf);
-
-    TRACE_LOG("[%d] #%d publish topic:'%s' msg:'%s'\n\r", __LINE__, pkg_id, topic, buf);
-    
-    return MqttClient_Publish(&appData.mqttClient, &publish);
-}
-
-
 int mqttclient_publish_register(uint32_t address, const char *message)
 {
-    // TODO: publish the message to the address 
     int rc;
     
-    rc = mqttclient_publish(mqtt_topic_status, "> " NETPIE_DEVICE_NAME , packet_id++);
+    char topic[sizeof(mqtt_topic_register)+10];
+    sprintf(topic, "%s/%d", mqtt_topic_register, address);
+
+    rc = mqttclient_publish(topic, message, packet_id++);
     if (rc != MQTT_CODE_SUCCESS)
     {
         appData.state = APP_TCPIP_ERROR;
     }
-
-    
-//    return mqttclient_publish(, buf, packet_id++);
+    return rc;
 }
 
 
@@ -659,7 +665,7 @@ void APP_MQTT_CLIENT_Tasks ( void )
             {
                 TRACE_LOG("[%d] No any message within %d ms (APP_CODE_ERROR_CMD_TIMEOUT)\n\r", __LINE__, MQTT_DEFAULT_CMD_TIMEOUT_MS);  // DEBUG: iPAS
 
-                rc = mqttclient_publish(mqtt_topic_status, "> " NETPIE_DEVICE_NAME , packet_id++);
+                rc = mqttclient_publish_status();
                 if (rc != MQTT_CODE_SUCCESS)
                 {
                     appData.state = APP_TCPIP_ERROR;
