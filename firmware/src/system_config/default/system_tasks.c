@@ -56,6 +56,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_definitions.h"
 #include "app_uart_term.h"
 #include "app_mqtt_client.h"
+#include "app_tester.h"
 
 
 // *****************************************************************************
@@ -69,6 +70,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 static void _SYS_Tasks ( void );
 static void _APP_UART_TERM_Tasks(void);
 static void _APP_MQTT_CLIENT_Tasks(void);
+static void _APP_TESTER_Tasks(void);
 
 
 // *****************************************************************************
@@ -100,6 +102,11 @@ void SYS_Tasks ( void )
     /* Create OS Thread for APP_MQTT_CLIENT Tasks. */
     xTaskCreate((TaskFunction_t) _APP_MQTT_CLIENT_Tasks,
                 "APP_MQTT_CLIENT Tasks",
+                1024, NULL, 1, NULL);
+
+    /* Create OS Thread for APP_TESTER Tasks. */
+    xTaskCreate((TaskFunction_t) _APP_TESTER_Tasks,
+                "APP_TESTER Tasks",
                 1024, NULL, 1, NULL);
 
     /**************
@@ -168,6 +175,23 @@ static void _APP_MQTT_CLIENT_Tasks(void)
     while(1)
     {
         APP_MQTT_CLIENT_Tasks();
+    }
+}
+
+
+/*******************************************************************************
+  Function:
+    void _APP_TESTER_Tasks ( void )
+
+  Summary:
+    Maintains state machine of APP_TESTER.
+*/
+
+static void _APP_TESTER_Tasks(void)
+{
+    while(1)
+    {
+        APP_TESTER_Tasks();
     }
 }
 

@@ -1023,7 +1023,7 @@
       <Template>
         <Name>system_interrupt.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>DA69DD3A2642FC62F2ACF98D14FE169A</Checksum>
+        <Checksum>D755FC5FA677DF0BB8CAD92D3348EF3D</Checksum>
       </Template>
       <Template>
         <Name>sys_clk_static.c</Name>
@@ -1034,6 +1034,12 @@
         <Name>app_uart_term.c</Name>
         <Path>Source Files/app</Path>
         <Checksum>3D62EAF2A87D053DCFF4647AFD477A62</Checksum>
+        <ProjectFileChecksum>CD30EE12F9B85E4B70BB7D22113AA28E</ProjectFileChecksum>
+      </Template>
+      <Template>
+        <Name>app_tester.h</Name>
+        <Path>Header Files/app</Path>
+        <Checksum>7255362B865F14F5C8196C8EF48EC2B1</Checksum>
       </Template>
       <Template>
         <Name>drv_usart_static.c</Name>
@@ -1043,7 +1049,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>CAB024DC837EA403DF1AF96A74549195</Checksum>
+        <Checksum>1171C00C322B20ECB5B835F4355B1B52</Checksum>
         <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
@@ -1055,6 +1061,7 @@
         <Name>app_uart_term.h</Name>
         <Path>Header Files/app</Path>
         <Checksum>31B8FB100B170EA1AE1F2DD9B639C370</Checksum>
+        <ProjectFileChecksum>7F120E5572567979253085345BAD1A64</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>config.h</Name>
@@ -1070,12 +1077,18 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>423798117FC1D8954A06A28AAF624C0E</Checksum>
+        <Checksum>7A7F59266ED7D790643CC275DEF01565</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
         <Path>Source Files/app/system_config/default</Path>
         <Checksum>C111969CA43D6CEA1E9E33A6164E7AE0</Checksum>
+      </Template>
+      <Template>
+        <Name>app_tester.c</Name>
+        <Path>Source Files/app</Path>
+        <Checksum>D6EF9AE1A25D56C60BEA116993D6EA89</Checksum>
+        <ProjectFileChecksum>65AF1E758F995BF8CCC315270EFEA70B</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>drv_usart_static.h</Name>
@@ -1085,12 +1098,12 @@
       <Template>
         <Name>system_tasks.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>D91081F6228A6E32364A63F2D8188D79</Checksum>
+        <Checksum>785333C9468B8409D3EB2819A74601A8</Checksum>
       </Template>
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>A2234E8298656CD723D19C6784767109</Checksum>
+        <Checksum>FB3710E22AC88BD5813C051BBFFA4446</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>

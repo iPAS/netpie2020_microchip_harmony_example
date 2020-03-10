@@ -54,9 +54,10 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "app_mqtt_client.h"
-#include "app_uart_term.h"
+
 #define DO_TRACE
 #ifdef DO_TRACE
+#include "app_uart_term.h"
 #define TRACE_LOG(...) uart_send_tx_queue(__VA_ARGS__)
 #else
 #define TRACE_LOG(...)

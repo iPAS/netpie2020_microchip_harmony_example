@@ -5,7 +5,7 @@
     Microchip Technology Inc.
   
   File Name:
-    app_uart_term.c
+    app_tester.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -53,7 +53,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app_uart_term.h"
+#include "app_tester.h"
 
 
 // *****************************************************************************
@@ -77,13 +77,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Application strings and buffers are be defined outside this structure.
 */
 
-static APP_UART_TERM_DATA app_Data;
-static enum 
-{
-    USART_BM_INIT,
-    USART_BM_WORKING,
-    USART_BM_DONE,
-} usartBMState;
+APP_TESTER_DATA app_testerData;
 
 
 // *****************************************************************************
@@ -102,90 +96,8 @@ static enum
 // *****************************************************************************
 // *****************************************************************************
 
-/**
- * Enqueue a message to UART Tx
- */
-BaseType_t uart_send_tx_queue(const char *fmt, ... )
-{
-    va_list args;
-    uart_queue_item_t q_item;
-    uint16_t len;
-
-    va_start(args, fmt);
-    len = vsnprintf(q_item.buffer, UART_QUEUE_ITEM_SIZE, fmt, args);
-    va_end(args);
-
-    q_item.length = strlen(q_item.buffer);
-    return xQueueSendToBack(app_Data.q_tx, &q_item, 0);
-}
-
-
-/******************************************************************************
-  Function:
-    static void USART_Task (void)
-    
-   Remarks:
-    Feeds the USART transmitter by reading characters from a specified pipe.  The pipeRead function is a 
-    standard interface that allows data to be exchanged between different automatically 
-    generated application modules.  Typically, the pipe is connected to the application's
-    USART receive function, but could be any other Harmony module which supports the pipe interface. 
+/* TODO:  Add any necessary local functions.
 */
-static void USART_Task (void)
-{
-    switch (usartBMState)
-    {
-        default:
-        case USART_BM_INIT:
-        {            
-            usartBMState = USART_BM_WORKING;
-            break;
-        }
-
-        case USART_BM_WORKING:
-        {
-            // ******
-            // * TX *
-            while (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
-            {
-                static uint8_t index = 0;
-                static uart_queue_item_t q_item;
-                bool do_send = true;
-
-                if (index == 0)
-                {
-                    //uxQueueMessagesWaiting();
-                    do_send = xQueueReceive(app_Data.q_tx, &q_item, 0);
-                }
-
-                if (do_send)
-                {
-                    DRV_USART_WriteByte(app_Data.handleUSART, q_item.buffer[index]);
-                    index = (index == q_item.length-1)? 0 : index+1;
-                }
-            }
-
-            // ******
-            // * RX *
-            while (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
-            {
-                if (uxQueueSpacesAvailable(app_Data.q_rx) > 0)
-                {
-                    uint8_t c_rx = DRV_USART_ReadByte(app_Data.handleUSART);
-                }
-            }
-
-            usartBMState = USART_BM_DONE;
-            break;
-        }
-
-        case USART_BM_DONE:
-        {
-            //vTaskDelay(100 / portTICK_PERIOD_MS);
-            usartBMState = USART_BM_WORKING;
-            break;
-        }
-    }
-}
 
 
 // *****************************************************************************
@@ -196,75 +108,57 @@ static void USART_Task (void)
 
 /*******************************************************************************
   Function:
-    void APP_UART_TERM_Initialize ( void )
+    void APP_TESTER_Initialize ( void )
 
   Remarks:
-    See prototype in app0_uart.h.
+    See prototype in app_tester.h.
  */
-void APP_UART_TERM_Initialize ( void )
+void APP_TESTER_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
-    app_Data.state = APP_UART_TERM_STATE_INIT;
+    app_testerData.state = APP_TESTER_STATE_INIT;
 
-    app_Data.handleUSART = DRV_HANDLE_INVALID;
     
-    /* Message queue */
-    app_Data.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
-    app_Data.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
-    if (app_Data.q_tx == NULL || app_Data.q_rx == NULL)
-    {
-        // Some error
-    }
-    xQueueReset(app_Data.q_tx);
-    xQueueReset(app_Data.q_rx);
+    /* TODO: Initialize your application's state machine and other
+     * parameters.
+     */
 }
 
 
 /******************************************************************************
   Function:
-    void APP_UART_TERM_Tasks ( void )
+    void APP_TESTER_Tasks ( void )
 
   Remarks:
-    See prototype in app0_uart.h.
+    See prototype in app_tester.h.
  */
-void APP_UART_TERM_Tasks ( void )
+void APP_TESTER_Tasks ( void )
 {
 
     /* Check the application's current state. */
-    switch ( app_Data.state )
+    switch ( app_testerData.state )
     {
         /* Application's initial state. */
-        case APP_UART_TERM_STATE_INIT:
+        case APP_TESTER_STATE_INIT:
         {
             bool appInitialized = true;
        
-            if (app_Data.handleUSART == DRV_HANDLE_INVALID)
-            {
-                app_Data.handleUSART = DRV_USART_Open(
-                        APP_UART_TERM_DRV_USART, 
-                        DRV_IO_INTENT_READWRITE|DRV_IO_INTENT_NONBLOCKING);
-                appInitialized &= ( DRV_HANDLE_INVALID != app_Data.handleUSART );
-            }
         
             if (appInitialized)
             {
-                /* initialize the USART state machine */
-                usartBMState = USART_BM_INIT;
             
-                app_Data.state = APP_UART_TERM_STATE_SERVICE_TASKS;
-                
-                DRV_USART_WriteByte(app_Data.handleUSART, '.');  // DEBUG: iPAS
+                app_testerData.state = APP_TESTER_STATE_SERVICE_TASKS;
             }
             break;
         }
 
-        case APP_UART_TERM_STATE_SERVICE_TASKS:
+        case APP_TESTER_STATE_SERVICE_TASKS:
         {
-			USART_Task();
-        
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
+             
             break;
         }
-
+        
         /* The default state should never be executed. */
         default:
         {
@@ -273,7 +167,7 @@ void APP_UART_TERM_Tasks ( void )
         }
     }
 }
-
+ 
 
 /*******************************************************************************
  End of File
