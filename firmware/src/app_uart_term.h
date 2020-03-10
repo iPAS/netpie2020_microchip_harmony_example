@@ -57,6 +57,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "system_config.h"
 #include "system_definitions.h"
 
@@ -67,6 +68,7 @@ extern "C" {
 
 #endif
 // DOM-IGNORE-END 
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -84,7 +86,6 @@ extern "C" {
     This enumeration defines the valid application states.  These states
     determine the behavior of the application at various times.
 */
-
 typedef enum
 {
 	APP_UART_TERM_STATE_INIT=0,
@@ -104,7 +105,6 @@ typedef enum
   Remarks:
     Application strings and buffers are be defined outside this structure.
  */
-
 typedef struct
 {
     /* The application's current state */
@@ -131,20 +131,17 @@ typedef struct
     uint8_t length;
 } uart_queue_item_t;
 
-/**
- * Enqueue a message to UART Tx
- */
-BaseType_t uart_send_tx_queue(const char *fmt, ... );
-
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Routines
 // *****************************************************************************
 // *****************************************************************************
+
 /* These routines are called by drivers when certain events occur.
 */
-	
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Initialization and State Machine Functions
@@ -181,7 +178,6 @@ BaseType_t uart_send_tx_queue(const char *fmt, ... );
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
-
 void APP_UART_TERM_Initialize ( void );
 
 
@@ -214,8 +210,19 @@ void APP_UART_TERM_Initialize ( void );
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
-
 void APP_UART_TERM_Tasks( void );
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Global Functions for other module
+// *****************************************************************************
+// *****************************************************************************
+
+/**
+ * Enqueue a message to UART Tx
+ */
+BaseType_t uart_send_tx_queue(const char *fmt, ... );
 
 
 #endif /* _APP_UART_TERM_H */

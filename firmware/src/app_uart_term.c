@@ -53,8 +53,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-#include <stdarg.h>
 #include "app_uart_term.h"
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -94,6 +94,7 @@ static enum
 
 /* TODO:  Add any necessary callback functions.
 */
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -135,16 +136,7 @@ static void USART_Task (void)
     {
         default:
         case USART_BM_INIT:
-        {
-            app_Data.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
-            app_Data.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
-            if (app_Data.q_tx == NULL || app_Data.q_rx == NULL)
-            {
-                // Some error
-            }
-            xQueueReset(app_Data.q_tx);
-            xQueueReset(app_Data.q_rx);
-            
+        {            
             usartBMState = USART_BM_WORKING;
             break;
         }
@@ -153,7 +145,7 @@ static void USART_Task (void)
         {
             // ******
             // * TX *
-            if (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
+            while (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
             {
                 static uint8_t index = 0;
                 static uart_queue_item_t q_item;
@@ -174,29 +166,26 @@ static void USART_Task (void)
 
             // ******
             // * RX *
-            if (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
+            while (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
             {
                 if (uxQueueSpacesAvailable(app_Data.q_rx) > 0)
                 {
-                    //= DRV_USART_ReadByte(app_Data.handleUSART);
+                    uint8_t c_rx = DRV_USART_ReadByte(app_Data.handleUSART);
                 }
             }
 
-            //usartBMState = USART_BM_DONE;
+            usartBMState = USART_BM_DONE;
             break;
         }
 
         case USART_BM_DONE:
         {
-            vTaskDelay(100 / portTICK_PERIOD_MS);
+            //vTaskDelay(100 / portTICK_PERIOD_MS);
             usartBMState = USART_BM_WORKING;
             break;
         }
     }
 }
-
-/* TODO:  Add any necessary local functions.
-*/
 
 
 // *****************************************************************************
@@ -212,7 +201,6 @@ static void USART_Task (void)
   Remarks:
     See prototype in app0_uart.h.
  */
-
 void APP_UART_TERM_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
@@ -220,9 +208,15 @@ void APP_UART_TERM_Initialize ( void )
 
     app_Data.handleUSART = DRV_HANDLE_INVALID;
     
-    /* TODO: Initialize your application's state machine and other
-     * parameters.
-     */
+    /* Message queue */
+    app_Data.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
+    app_Data.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
+    if (app_Data.q_tx == NULL || app_Data.q_rx == NULL)
+    {
+        // Some error
+    }
+    xQueueReset(app_Data.q_tx);
+    xQueueReset(app_Data.q_rx);
 }
 
 
@@ -233,7 +227,6 @@ void APP_UART_TERM_Initialize ( void )
   Remarks:
     See prototype in app0_uart.h.
  */
-
 void APP_UART_TERM_Tasks ( void )
 {
 
@@ -259,6 +252,8 @@ void APP_UART_TERM_Tasks ( void )
                 usartBMState = USART_BM_INIT;
             
                 app_Data.state = APP_UART_TERM_STATE_SERVICE_TASKS;
+                
+                DRV_USART_WriteByte(app_Data.handleUSART, '.');  // DEBUG: iPAS
             }
             break;
         }
@@ -270,9 +265,6 @@ void APP_UART_TERM_Tasks ( void )
             break;
         }
 
-        /* TODO: implement your application state machine.*/
-        
-
         /* The default state should never be executed. */
         default:
         {
@@ -282,7 +274,6 @@ void APP_UART_TERM_Tasks ( void )
     }
 }
 
- 
 
 /*******************************************************************************
  End of File

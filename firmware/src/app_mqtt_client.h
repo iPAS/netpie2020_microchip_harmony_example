@@ -103,7 +103,6 @@ enum AppCodes {
     This enumeration defines the valid application states.  These states
     determine the behavior of the application at various times.
 */
-
 typedef enum
 {
 	/* Application's state machine's initial state. */
@@ -136,7 +135,6 @@ typedef enum
   Remarks:
     Application strings and buffers are be defined outside this structure.
  */
-
 typedef struct
 {
     /* The application's current state */
@@ -172,6 +170,7 @@ typedef struct
 // Section: Application Callback Routines
 // *****************************************************************************
 // *****************************************************************************
+
 /* These routines are called by drivers when certain events occur.
 */
 
@@ -212,7 +211,6 @@ typedef struct
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
-
 void APP_MQTT_CLIENT_Initialize ( void );
 
 
@@ -245,7 +243,6 @@ void APP_MQTT_CLIENT_Initialize ( void );
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
-
 void APP_MQTT_CLIENT_Tasks( void );
 
 
