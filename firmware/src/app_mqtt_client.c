@@ -100,8 +100,8 @@ APP_DATA appData;
 static uint16_t packet_id = 0;
 
 #define MAX_BUFFER_SIZE 1024
-static byte txBuffer[MAX_BUFFER_SIZE];
-static byte rxBuffer[MAX_BUFFER_SIZE];
+static uint8_t txBuffer[MAX_BUFFER_SIZE];
+static uint8_t rxBuffer[MAX_BUFFER_SIZE];
 
 #define MQTT_DEFAULT_CMD_TIMEOUT_MS 30000
 #define MQTT_KEEP_ALIVE 900
@@ -116,11 +116,13 @@ const char mqtt_client_id[] = NETPIE_CLIENT_ID;
 const char mqtt_user[]      = NETPIE_TOKEN;
 const char mqtt_password[]  = NETPIE_SECRET;
 
-// -- MQTT topics for MODBUS --
+// -- MQTT topics for updating register --
 #define MQTT_TOPIC_FILTER "@msg/" NETPIE_DEVICE_NAME "/#"
 const char mqtt_topic_status[]   = "@msg/" NETPIE_DEVICE_NAME "/status";  // Publish the device status
-const char mqtt_topic_update[]   = "@msg/" NETPIE_DEVICE_NAME "/update";  // Get request for updating the register %d
+const char mqtt_topic_update[]   = "@msg/" NETPIE_DEVICE_NAME "/update";  // Get request for updating the register/%d
 const char mqtt_topic_register[] = "@msg/" NETPIE_DEVICE_NAME "/register";  // Publish an update for register/%d
+
+static mqttclient_callback_t subscription_callback = NULL;
 
 
 // *****************************************************************************
@@ -168,6 +170,8 @@ int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id)
 
 int mqttclient_publish_status(void)
 {
+    // TODO: publish status in JSON
+    
     return mqttclient_publish(mqtt_topic_status, NETPIE_DEVICE_NAME, packet_id++);
 }
 
@@ -323,32 +327,39 @@ int APP_tcpipWrite_cb(void *context, const byte* buf, int buf_len, int timeout_m
 
 int APP_mqttMessage_cb(MqttClient *client, MqttMessage *msg, byte msg_new, byte msg_done)
 {
-    /* Show data of the subcribed topic */
-    char *buf, *message, *topic;
-    buf     = (char *)malloc(msg->total_len + msg->topic_name_len + 2);
+    char *buf = (char *)malloc(msg->total_len + msg->topic_name_len + 2);
+    
+    char *message, *topic;
     message = buf;
     topic   = (char *)&buf[msg->total_len + 1];
 
     memcpy(message, msg->buffer, msg->total_len);
-    message[msg->total_len] = '\0';
+    message[msg->total_len] = '\0';  // Requite for using as string
 
     memcpy(topic, msg->topic_name, msg->topic_name_len);
-    topic[msg->topic_name_len] = '\0';
+    topic[msg->topic_name_len] = '\0';  // Requite for using as string
 
 
     TRACE_LOG("--- received #%d from topic:%s msg:%s\n\r", msg->packet_id, topic, message);  // DEBUG: iPAS
-    free(buf);
+    
 
-
-    // --- To update a register ---
-    if (strncmp(mqtt_topic_update, msg->topic_name, sizeof(mqtt_topic_update)-1) == 0)
+    /* --- To update a register --- */
+    if (strncmp(mqtt_topic_update, topic, sizeof(mqtt_topic_update)-1) == 0)
     {
-
-        // Update the data from request to  the register
-        // TODO: call the call back function !!
-
+        if (subscription_callback != NULL)
+        {
+            /* Update the data from request to the register */
+            char *reg = &topic[ sizeof(mqtt_topic_update) ];  // .../update/%d
+            uint32_t addr = atoi(reg);
+            subscription_callback(addr, message);
+        }
+        else
+        {
+            TRACE_LOG("[%d] subscription_callback is NULL!\n\r", __LINE__);
+        }
     }
     
+    free(buf);
     return 0;
 }
 
@@ -359,12 +370,22 @@ int APP_mqttMessage_cb(MqttClient *client, MqttMessage *msg, byte msg_new, byte 
 // *****************************************************************************
 // *****************************************************************************
 
+/**
+ * Check the status of the connections: TCP & MQTT
+ * @return 
+ */
 bool mqttclient_ready(void)
 {
     return appData.socket_connected && appData.mqtt_connected;
 }
 
 
+/**
+ * Publish the update of register at address.
+ * @param address
+ * @param message
+ * @return 
+ */
 int mqttclient_publish_register(uint32_t address, const char *message)
 {
     int rc;
@@ -378,6 +399,16 @@ int mqttclient_publish_register(uint32_t address, const char *message)
         appData.state = APP_TCPIP_ERROR;
     }
     return rc;
+}
+
+
+/**
+ * Set the callback function for updating register as request.
+ * @param cb
+ */
+void mqttclient_set_callback(mqttclient_callback_t cb)
+{
+    subscription_callback = cb;
 }
 
 
