@@ -252,6 +252,7 @@ void APP_MQTT_CLIENT_Tasks( void );
 // *****************************************************************************
 // *****************************************************************************
 
+bool mqttclient_ready(void);
 int mqttclient_publish_register(uint32_t address, const char *message);
 
 

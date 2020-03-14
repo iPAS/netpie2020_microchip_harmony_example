@@ -54,6 +54,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "app_tester.h"
+#include "app_mqtt_client.h"
 
 
 // *****************************************************************************
@@ -154,7 +155,8 @@ void APP_TESTER_Tasks ( void )
 
         case APP_TESTER_STATE_SERVICE_TASKS:
         {
-            vTaskDelay(3000 / portTICK_PERIOD_MS);
+            vTaskDelay(10000 / portTICK_PERIOD_MS);
+            
              
             break;
         }

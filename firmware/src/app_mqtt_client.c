@@ -55,7 +55,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include "app_mqtt_client.h"
 
-#define DO_TRACE
+//#define DO_TRACE
 #ifdef DO_TRACE
 #include "app_uart_term.h"
 #define TRACE_LOG(...) uart_send_tx_queue(__VA_ARGS__)
@@ -358,6 +358,12 @@ int APP_mqttMessage_cb(MqttClient *client, MqttMessage *msg, byte msg_new, byte 
 // Section: Global Functions
 // *****************************************************************************
 // *****************************************************************************
+
+bool mqttclient_ready(void)
+{
+    return appData.socket_connected && appData.mqtt_connected;
+}
+
 
 int mqttclient_publish_register(uint32_t address, const char *message)
 {
