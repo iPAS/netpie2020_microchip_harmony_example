@@ -54,6 +54,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "app_mqtt_client.h"
+#include "aux/parson.h"
 
 //#define DO_TRACE
 #ifdef DO_TRACE
@@ -118,7 +119,8 @@ const char mqtt_password[]  = NETPIE_SECRET;
 
 // -- MQTT topics for updating register --
 #define MQTT_TOPIC_FILTER "@msg/" NETPIE_DEVICE_NAME "/#"
-const char mqtt_topic_status[]   = "@msg/" NETPIE_DEVICE_NAME "/status";  // Publish the device status
+//const char mqtt_topic_status[]   = "@msg/" NETPIE_DEVICE_NAME "/status";  // Publish the device status
+const char mqtt_topic_status[]   = "@shadow/data/update";  // Publish the device status	
 const char mqtt_topic_update[]   = "@msg/" NETPIE_DEVICE_NAME "/update";  // Get request for updating the register/%d
 const char mqtt_topic_register[] = "@msg/" NETPIE_DEVICE_NAME "/register";  // Publish an update for register/%d
 
@@ -170,9 +172,33 @@ int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id)
 
 int mqttclient_publish_status(void)
 {
-    // TODO: publish status in JSON
+    // Example: https://github.com/kgabis/parson/blob/master/tests.c#L348
+
+    char buf[MAX_BUFFER_SIZE];
+
+    /* Make JSON object */
+    JSON_Status sts;
+    JSON_Value  *root_value  = json_value_init_object();
+    JSON_Object *root_object = json_value_get_object(root_value);
     
-    return mqttclient_publish(mqtt_topic_status, NETPIE_DEVICE_NAME, packet_id++);
+    JSON_Value  *data_value  = json_value_init_object();
+    JSON_Object *data_object = json_value_get_object(data_value);
+    json_object_set_value(root_object, "data", data_value);
+    
+    json_object_set_string(data_object, "name", NETPIE_DEVICE_NAME);
+    json_object_set_number(data_object, "temperature", rand() % 250);
+    json_object_set_number(data_object, "humidity", rand() % 100);
+
+    
+    /* Transform the object to string */
+    char *serialized_string = NULL;
+    serialized_string = json_serialize_to_string(root_value);
+    strncpy(buf, serialized_string, sizeof(buf));
+
+    json_free_serialized_string(serialized_string);
+    json_value_free(root_value);
+
+    return mqttclient_publish(mqtt_topic_status, buf, packet_id++);
 }
 
 
