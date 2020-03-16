@@ -188,7 +188,11 @@ int mqttclient_publish_status(void)
     json_object_set_string(data_object, "name", NETPIE_DEVICE_NAME);
     json_object_set_number(data_object, "temperature", rand() % 250);
     json_object_set_number(data_object, "humidity", rand() % 100);
-
+    char ip[15];
+    IPV4_ADDR ipAddr; ipAddr.Val = appData.board_ipAddr.v4Add.Val;
+    sprintf(ip, "%d.%d.%d.%d", ipAddr.v[0], ipAddr.v[1], ipAddr.v[2], ipAddr.v[3]);
+    json_object_set_string(data_object, "ip_address", ip);
+    
     
     /* Transform the object to string */
     char *serialized_string = NULL;
@@ -553,15 +557,11 @@ void APP_MQTT_CLIENT_Tasks ( void )
                 {
                     if (ipAddr.v[0] != 0 && ipAddr.v[0] != 169) // Wait for a Valid IP
                     {
-                        appData.board_ipAddr.v4Add.Val = ipAddr.Val;
+                        appData.board_ipAddr.v4Add.Val = ipAddr.Val;  // saved for debugging
                         appData.state = APP_STATE_MQTT_INIT;
 
-                        TRACE_LOG("[%d] IP: %d.%d.%d.%d\n\r",
-                            __LINE__,
-                            appData.board_ipAddr.v4Add.v[0],
-                            appData.board_ipAddr.v4Add.v[1],
-                            appData.board_ipAddr.v4Add.v[2],
-                            appData.board_ipAddr.v4Add.v[3]);  // DEBUG: iPAS
+                        TRACE_LOG("[%d] IP: %d.%d.%d.%d\n\r", __LINE__,
+                            ipAddr.v[0], ipAddr.v[1], ipAddr.v[2], ipAddr.v[3]);  // DEBUG: iPAS
                     }
                 }
             }
