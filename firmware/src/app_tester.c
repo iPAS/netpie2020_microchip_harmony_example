@@ -56,6 +56,13 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "app_tester.h"
 #include "app_mqtt_client.h"
 
+#ifdef DO_TRACE
+#include "app_uart_term.h"
+#define TRACE_LOG(...) uart_send_tx_queue(__VA_ARGS__)
+#else
+#define TRACE_LOG(...)
+#endif
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -97,8 +104,13 @@ APP_TESTER_DATA app_testerData;
 // *****************************************************************************
 // *****************************************************************************
 
-/* TODO:  Add any necessary local functions.
-*/
+#define LEN_OF_ARRAY(arr) (sizeof(arr)/sizeof(arr[0]))
+
+
+static void mqttclient_callback(uint32_t address, const char *message)
+{
+    TRACE_LOG("[Tester] calling back for updating %d with '%s'\n\r", address, message);  // DEBUG: iPAS
+}
 
 
 // *****************************************************************************
@@ -119,10 +131,7 @@ void APP_TESTER_Initialize ( void )
     /* Place the App state machine in its initial state. */
     app_testerData.state = APP_TESTER_STATE_INIT;
 
-    
-    /* TODO: Initialize your application's state machine and other
-     * parameters.
-     */
+    mqttclient_set_callback(mqttclient_callback);
 }
 
 
@@ -143,11 +152,9 @@ void APP_TESTER_Tasks ( void )
         case APP_TESTER_STATE_INIT:
         {
             bool appInitialized = true;
-       
-        
+
             if (appInitialized)
-            {
-            
+            {     
                 app_testerData.state = APP_TESTER_STATE_SERVICE_TASKS;
             }
             break;
@@ -156,8 +163,23 @@ void APP_TESTER_Tasks ( void )
         case APP_TESTER_STATE_SERVICE_TASKS:
         {
             vTaskDelay(10000 / portTICK_PERIOD_MS);
-            
-             
+            if (mqttclient_ready())
+            {
+                const uint32_t addresses[] = {30000, 30100, 40000};
+                static uint8_t i = 0;
+                static uint16_t cnt = 0;
+                char message[10];
+                snprintf(message, sizeof(message), "%.4X", cnt);
+                
+                mqttclient_publish_register(addresses[i], message);
+                
+                i++;
+                if (i == LEN_OF_ARRAY(addresses))
+                {
+                   i = 0;
+                   cnt++;
+                }
+            }             
             break;
         }
         
