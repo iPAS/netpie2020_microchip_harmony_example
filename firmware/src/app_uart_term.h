@@ -43,8 +43,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _APP0_UART_H
-#define _APP0_UART_H
+
+#ifndef _APP_UART_TERM_H
+#define _APP_UART_TERM_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -56,6 +57,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "system_config.h"
 #include "system_definitions.h"
 
@@ -66,6 +68,7 @@ extern "C" {
 
 #endif
 // DOM-IGNORE-END 
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -83,16 +86,11 @@ extern "C" {
     This enumeration defines the valid application states.  These states
     determine the behavior of the application at various times.
 */
-
 typedef enum
 {
-	/* Application's state machine's initial state. */
-	APP0_UART_STATE_INIT=0,
-	APP0_UART_STATE_SERVICE_TASKS,
-
-	/* TODO: Define states used by the application state machine. */
-
-} APP0_UART_STATES;
+	APP_UART_TERM_STATE_INIT=0,
+	APP_UART_TERM_STATE_SERVICE_TASKS,
+} APP_UART_TERM_STATES;
 
 
 // *****************************************************************************
@@ -107,37 +105,31 @@ typedef enum
   Remarks:
     Application strings and buffers are be defined outside this structure.
  */
-
 typedef struct
 {
     /* The application's current state */
-    APP0_UART_STATES state;
+    APP_UART_TERM_STATES state;
 
     /* TODO: Define any additional data used by the application. */
-    DRV_HANDLE handleUSART0;
+    DRV_HANDLE handleUSART;
 
     /* RTOS Queues */
     QueueHandle_t q_tx;
     QueueHandle_t q_rx;
     
-} APP0_UART_DATA;
+} APP_UART_TERM_DATA;
 
 
 // *****************************************************************************
 /* Queue Management
  */
-#define UART0_QUEUE_SIZE 10
-#define UART0_QUEUE_ITEM_SIZE 200
+#define UART_QUEUE_SIZE 10
+#define UART_QUEUE_ITEM_SIZE 200
 typedef struct
 {
-    uint8_t buffer[UART0_QUEUE_ITEM_SIZE];
+    uint8_t buffer[UART_QUEUE_ITEM_SIZE];
     uint8_t length;
-} uart0_queue_item_t;
-
-/**
- * Enqueue a message to UART0 Tx
- */
-BaseType_t uart0_send_tx_queue(const char *fmt, ... );
+} uart_queue_item_t;
 
 
 // *****************************************************************************
@@ -145,9 +137,11 @@ BaseType_t uart0_send_tx_queue(const char *fmt, ... );
 // Section: Application Callback Routines
 // *****************************************************************************
 // *****************************************************************************
+
 /* These routines are called by drivers when certain events occur.
 */
-	
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Initialization and State Machine Functions
@@ -156,7 +150,7 @@ BaseType_t uart0_send_tx_queue(const char *fmt, ... );
 
 /*******************************************************************************
   Function:
-    void APP0_UART_Initialize ( void )
+    void APP_UART_TERM_Initialize ( void )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -178,19 +172,18 @@ BaseType_t uart0_send_tx_queue(const char *fmt, ... );
 
   Example:
     <code>
-    APP0_UART_Initialize();
+    APP_UART_TERM_Initialize();
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
-
-void APP0_UART_Initialize ( void );
+void APP_UART_TERM_Initialize ( void );
 
 
 /*******************************************************************************
   Function:
-    void APP0_UART_Tasks ( void )
+    void APP_UART_TERM_Tasks ( void )
 
   Summary:
     MPLAB Harmony Demo application tasks function
@@ -211,17 +204,28 @@ void APP0_UART_Initialize ( void );
 
   Example:
     <code>
-    APP0_UART_Tasks();
+    APP_UART_TERM_Tasks();
     </code>
 
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
+void APP_UART_TERM_Tasks( void );
 
-void APP0_UART_Tasks( void );
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Global Functions for other module
+// *****************************************************************************
+// *****************************************************************************
+
+/**
+ * Enqueue a message to UART Tx
+ */
+BaseType_t uart_send_tx_queue(const char *fmt, ... );
 
 
-#endif /* _APP0_UART_H */
+#endif /* _APP_UART_TERM_H */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

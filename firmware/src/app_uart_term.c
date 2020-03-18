@@ -5,7 +5,7 @@
     Microchip Technology Inc.
   
   File Name:
-    app1_tcp_server.c
+    app0_uart.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -53,7 +53,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app1_tcp_server.h"
+#include "app_uart_term.h"
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -76,7 +77,14 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Application strings and buffers are be defined outside this structure.
 */
 
-APP1_TCP_SERVER_DATA app1_tcp_serverData;
+static APP_UART_TERM_DATA app_Data;
+static enum 
+{
+    USART_BM_INIT,
+    USART_BM_WORKING,
+    USART_BM_DONE,
+} usartBMState;
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -87,15 +95,97 @@ APP1_TCP_SERVER_DATA app1_tcp_serverData;
 /* TODO:  Add any necessary callback functions.
 */
 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Local Functions
 // *****************************************************************************
 // *****************************************************************************
 
+/**
+ * Enqueue a message to UART Tx
+ */
+BaseType_t uart_send_tx_queue(const char *fmt, ... )
+{
+    va_list args;
+    uart_queue_item_t q_item;
+    uint16_t len;
 
-/* TODO:  Add any necessary local functions.
+    va_start(args, fmt);
+    len = vsnprintf(q_item.buffer, UART_QUEUE_ITEM_SIZE, fmt, args);
+    va_end(args);
+
+    q_item.length = strlen(q_item.buffer);
+    return xQueueSendToBack(app_Data.q_tx, &q_item, 0);
+}
+
+
+/******************************************************************************
+  Function:
+    static void USART_Task (void)
+    
+   Remarks:
+    Feeds the USART transmitter by reading characters from a specified pipe.  The pipeRead function is a 
+    standard interface that allows data to be exchanged between different automatically 
+    generated application modules.  Typically, the pipe is connected to the application's
+    USART receive function, but could be any other Harmony module which supports the pipe interface. 
 */
+static void USART_Task (void)
+{
+    switch (usartBMState)
+    {
+        default:
+        case USART_BM_INIT:
+        {            
+            usartBMState = USART_BM_WORKING;
+            break;
+        }
+
+        case USART_BM_WORKING:
+        {
+            // ******
+            // * TX *
+            while (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
+            {
+                static uint8_t index = 0;
+                static uart_queue_item_t q_item;
+                bool do_send = true;
+
+                if (index == 0)
+                {
+                    //uxQueueMessagesWaiting();
+                    do_send = xQueueReceive(app_Data.q_tx, &q_item, 0);
+                }
+
+                if (do_send)
+                {
+                    DRV_USART_WriteByte(app_Data.handleUSART, q_item.buffer[index]);
+                    index = (index == q_item.length-1)? 0 : index+1;
+                }
+            }
+
+            // ******
+            // * RX *
+            while (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
+            {
+                if (uxQueueSpacesAvailable(app_Data.q_rx) > 0)
+                {
+                    uint8_t c_rx = DRV_USART_ReadByte(app_Data.handleUSART);
+                }
+            }
+
+            usartBMState = USART_BM_DONE;
+            break;
+        }
+
+        case USART_BM_DONE:
+        {
+            //vTaskDelay(100 / portTICK_PERIOD_MS);
+            usartBMState = USART_BM_WORKING;
+            break;
+        }
+    }
+}
 
 
 // *****************************************************************************
@@ -106,60 +196,74 @@ APP1_TCP_SERVER_DATA app1_tcp_serverData;
 
 /*******************************************************************************
   Function:
-    void APP1_TCP_SERVER_Initialize ( void )
+    void APP_UART_TERM_Initialize ( void )
 
   Remarks:
-    See prototype in app1_tcp_server.h.
+    See prototype in app0_uart.h.
  */
-
-void APP1_TCP_SERVER_Initialize ( void )
+void APP_UART_TERM_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
-    app1_tcp_serverData.state = APP1_TCP_SERVER_STATE_INIT;
+    app_Data.state = APP_UART_TERM_STATE_INIT;
 
+    app_Data.handleUSART = DRV_HANDLE_INVALID;
     
-    /* TODO: Initialize your application's state machine and other
-     * parameters.
-     */
+    /* Message queue */
+    app_Data.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
+    app_Data.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
+    if (app_Data.q_tx == NULL || app_Data.q_rx == NULL)
+    {
+        // Some error
+    }
+    xQueueReset(app_Data.q_tx);
+    xQueueReset(app_Data.q_rx);
 }
 
 
 /******************************************************************************
   Function:
-    void APP1_TCP_SERVER_Tasks ( void )
+    void APP_UART_TERM_Tasks ( void )
 
   Remarks:
-    See prototype in app1_tcp_server.h.
+    See prototype in app0_uart.h.
  */
-
-void APP1_TCP_SERVER_Tasks ( void )
+void APP_UART_TERM_Tasks ( void )
 {
 
     /* Check the application's current state. */
-    switch ( app1_tcp_serverData.state )
+    switch ( app_Data.state )
     {
         /* Application's initial state. */
-        case APP1_TCP_SERVER_STATE_INIT:
+        case APP_UART_TERM_STATE_INIT:
         {
             bool appInitialized = true;
        
+            if (app_Data.handleUSART == DRV_HANDLE_INVALID)
+            {
+                app_Data.handleUSART = DRV_USART_Open(
+                        APP_UART_TERM_DRV_USART, 
+                        DRV_IO_INTENT_READWRITE|DRV_IO_INTENT_NONBLOCKING);
+                appInitialized &= ( DRV_HANDLE_INVALID != app_Data.handleUSART );
+            }
         
             if (appInitialized)
             {
+                /* initialize the USART state machine */
+                usartBMState = USART_BM_INIT;
             
-                app1_tcp_serverData.state = APP1_TCP_SERVER_STATE_SERVICE_TASKS;
+                app_Data.state = APP_UART_TERM_STATE_SERVICE_TASKS;
+                
+                DRV_USART_WriteByte(app_Data.handleUSART, '.');  // DEBUG: iPAS
             }
             break;
         }
 
-        case APP1_TCP_SERVER_STATE_SERVICE_TASKS:
+        case APP_UART_TERM_STATE_SERVICE_TASKS:
         {
+			USART_Task();
         
             break;
         }
-
-        /* TODO: implement your application state machine.*/
-        
 
         /* The default state should never be executed. */
         default:
@@ -170,7 +274,6 @@ void APP1_TCP_SERVER_Tasks ( void )
     }
 }
 
- 
 
 /*******************************************************************************
  End of File

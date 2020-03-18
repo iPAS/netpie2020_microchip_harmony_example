@@ -36,10 +36,8 @@
             <itemPath>../src/system_config/default/system_definitions.h</itemPath>
           </logicalFolder>
         </logicalFolder>
-        <itemPath>../src/app0_uart.h</itemPath>
-        <itemPath>../src/app1_tcp_server.h</itemPath>
-        <itemPath>../src/app2_tcp_client.h</itemPath>
-        <itemPath>../src/app3_mqttc.h</itemPath>
+        <itemPath>../src/app_uart_term.h</itemPath>
+        <itemPath>../src/app_mqtt_client.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f8" displayName="crypto" projectFiles="true">
@@ -383,10 +381,8 @@
             <itemPath>../src/system_config/default/rtos_hooks.c</itemPath>
           </logicalFolder>
         </logicalFolder>
-        <itemPath>../src/app0_uart.c</itemPath>
-        <itemPath>../src/app1_tcp_server.c</itemPath>
-        <itemPath>../src/app2_tcp_client.c</itemPath>
-        <itemPath>../src/app3_mqttc.c</itemPath>
+        <itemPath>../src/app_uart_term.c</itemPath>
+        <itemPath>../src/app_mqtt_client.c</itemPath>
         <itemPath>../src/main.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
@@ -559,7 +555,7 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../src/default;../src/system_config/default/framework;../src/system_config/default;../../../../framework;../../../../third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../../../../third_party/rtos/FreeRTOS/Source/include;../../../../third_party/tcpip/wolfmqtt"/>
+                  value="../src;../src/system_config/default;../src/default;../../../../framework;../src/system_config/default/framework;../../../../third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../../../../third_party/rtos/FreeRTOS/Source/include;../../../../third_party/tcpip/wolfmqtt"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>

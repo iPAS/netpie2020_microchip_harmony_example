@@ -61,10 +61,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include <xc.h>
 #include <sys/attribs.h>
-#include "app0_uart.h"
-#include "app1_tcp_server.h"
-#include "app2_tcp_client.h"
-#include "app3_mqttc.h"
+#include "app_uart_term.h"
+#include "app_mqtt_client.h"
 #include "system_definitions.h"
 
 // *****************************************************************************
