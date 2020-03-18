@@ -143,6 +143,7 @@ typedef struct
     // Timers
     uint32_t genericUseTimer;
     uint32_t mqttKeepAlive;
+    uint32_t mqttUpdateStatus;
 
     /* TCPIP & MQTT */
     char macAddress[12 + 1];
@@ -163,6 +164,12 @@ typedef struct
     IP_MULTI_ADDRESS board_ipAddr;
 
 } APP_DATA;
+
+
+// *****************************************************************************
+/* Callback functions
+ */
+typedef void (*mqttclient_callback_t)(uint32_t address, const char *message);
 
 
 // *****************************************************************************
@@ -252,8 +259,9 @@ void APP_MQTT_CLIENT_Tasks( void );
 // *****************************************************************************
 // *****************************************************************************
 
-int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id);
-int mqttclient_publish_register(uint32_t address, const char *message);
+extern bool mqttclient_ready(void);
+extern int  mqttclient_publish_register(uint32_t address, const char *message);  // Publish the update of register at address.
+extern void mqttclient_set_callback(mqttclient_callback_t cb);  // Set the callback function for updating register as request.
 
 
 #endif /* _APP_MQTT_CLIENT_H */

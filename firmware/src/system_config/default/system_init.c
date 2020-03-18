@@ -499,6 +499,7 @@ void SYS_Initialize ( void* data )
     /* Initialize the Application */
     APP_UART_TERM_Initialize();
     APP_MQTT_CLIENT_Initialize();
+    APP_TESTER_Initialize();
 }
 
 

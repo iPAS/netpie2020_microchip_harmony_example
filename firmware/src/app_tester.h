@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app_uart_term.h
+    app_tester.h
 
   Summary:
     This header file provides prototypes and definitions for the application.
@@ -43,9 +43,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  *******************************************************************************/
 //DOM-IGNORE-END
 
-
-#ifndef _APP_UART_TERM_H
-#define _APP_UART_TERM_H
+#ifndef _APP_TESTER_H
+#define _APP_TESTER_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -57,7 +56,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <stdarg.h>
 #include "system_config.h"
 #include "system_definitions.h"
 
@@ -86,11 +84,16 @@ extern "C" {
     This enumeration defines the valid application states.  These states
     determine the behavior of the application at various times.
 */
+
 typedef enum
 {
-	APP_UART_TERM_STATE_INIT=0,
-	APP_UART_TERM_STATE_SERVICE_TASKS,
-} APP_UART_TERM_STATES;
+	/* Application's state machine's initial state. */
+	APP_TESTER_STATE_INIT=0,
+	APP_TESTER_STATE_SERVICE_TASKS,
+
+	/* TODO: Define states used by the application state machine. */
+
+} APP_TESTER_STATES;
 
 
 // *****************************************************************************
@@ -105,31 +108,15 @@ typedef enum
   Remarks:
     Application strings and buffers are be defined outside this structure.
  */
+
 typedef struct
 {
     /* The application's current state */
-    APP_UART_TERM_STATES state;
+    APP_TESTER_STATES state;
 
     /* TODO: Define any additional data used by the application. */
-    DRV_HANDLE handleUSART;
 
-    /* RTOS Queues */
-    QueueHandle_t q_tx;
-    QueueHandle_t q_rx;
-    
-} APP_UART_TERM_DATA;
-
-
-// *****************************************************************************
-/* Queue Management
- */
-#define UART_QUEUE_SIZE 10
-#define UART_QUEUE_ITEM_SIZE 200
-typedef struct
-{
-    uint8_t buffer[UART_QUEUE_ITEM_SIZE];
-    uint8_t length;
-} uart_queue_item_t;
+} APP_TESTER_DATA;
 
 
 // *****************************************************************************
@@ -137,11 +124,9 @@ typedef struct
 // Section: Application Callback Routines
 // *****************************************************************************
 // *****************************************************************************
-
 /* These routines are called by drivers when certain events occur.
 */
-
-
+	
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Initialization and State Machine Functions
@@ -150,7 +135,7 @@ typedef struct
 
 /*******************************************************************************
   Function:
-    void APP_UART_TERM_Initialize ( void )
+    void APP_TESTER_Initialize ( void )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -172,18 +157,19 @@ typedef struct
 
   Example:
     <code>
-    APP_UART_TERM_Initialize();
+    APP_TESTER_Initialize();
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
-void APP_UART_TERM_Initialize ( void );
+
+void APP_TESTER_Initialize ( void );
 
 
 /*******************************************************************************
   Function:
-    void APP_UART_TERM_Tasks ( void )
+    void APP_TESTER_Tasks ( void )
 
   Summary:
     MPLAB Harmony Demo application tasks function
@@ -204,28 +190,17 @@ void APP_UART_TERM_Initialize ( void );
 
   Example:
     <code>
-    APP_UART_TERM_Tasks();
+    APP_TESTER_Tasks();
     </code>
 
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
-void APP_UART_TERM_Tasks( void );
+
+void APP_TESTER_Tasks( void );
 
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Global Functions for other module
-// *****************************************************************************
-// *****************************************************************************
-
-/**
- * Enqueue a message to UART Tx
- */
-BaseType_t uart_send_tx_queue(const char *fmt, ... );
-
-
-#endif /* _APP_UART_TERM_H */
+#endif /* _APP_TESTER_H */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

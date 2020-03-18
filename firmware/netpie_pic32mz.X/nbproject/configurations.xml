@@ -38,6 +38,7 @@
         </logicalFolder>
         <itemPath>../src/app_uart_term.h</itemPath>
         <itemPath>../src/app_mqtt_client.h</itemPath>
+        <itemPath>../src/app_tester.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f8" displayName="crypto" projectFiles="true">
@@ -383,6 +384,7 @@
         </logicalFolder>
         <itemPath>../src/app_uart_term.c</itemPath>
         <itemPath>../src/app_mqtt_client.c</itemPath>
+        <itemPath>../src/app_tester.c</itemPath>
         <itemPath>../src/main.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
@@ -676,6 +678,7 @@
         <property key="relaxed-math" value="false"/>
         <property key="save-temps" value="false"/>
         <property key="wpo-lto" value="false"/>
+        <appendMe value="-DDO_TRACE"/>
       </C32Global>
       <PICkit3PlatformTool>
         <property key="ADC" value="true"/>
