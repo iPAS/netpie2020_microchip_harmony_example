@@ -98,14 +98,15 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 APP_DATA appData;
 
-static uint16_t packet_id = 0;
+uint16_t packet_id = 0;
 
 #define MAX_BUFFER_SIZE 1024
-static uint8_t txBuffer[MAX_BUFFER_SIZE];
-static uint8_t rxBuffer[MAX_BUFFER_SIZE];
+uint8_t txBuffer[MAX_BUFFER_SIZE];
+uint8_t rxBuffer[MAX_BUFFER_SIZE];
 
 #define MQTT_DEFAULT_CMD_TIMEOUT_MS 30000
-#define MQTT_KEEP_ALIVE 900
+#define MQTT_KEEP_ALIVE_TIMEOUT 900
+#define MQTT_UPDATE_STATUS_TIMEOUT 15
 
 
 // -- NEXPIE2020 --
@@ -120,9 +121,10 @@ const char mqtt_password[]  = NETPIE_SECRET;
 // -- MQTT topics for updating register --
 #define MQTT_TOPIC_FILTER "@msg/" NETPIE_DEVICE_NAME "/#"
 //const char mqtt_topic_status[]   = "@msg/" NETPIE_DEVICE_NAME "/status";  // Publish the device status
-const char mqtt_topic_status[]   = "@shadow/data/update";  // Publish the device status	
+const char mqtt_topic_status[]   = "@shadow/data/update";                 // Publish the device status	
 const char mqtt_topic_update[]   = "@msg/" NETPIE_DEVICE_NAME "/update";  // Get request for updating the register/%d
 const char mqtt_topic_register[] = "@msg/" NETPIE_DEVICE_NAME "/register";  // Publish an update for register/%d
+const char mqtt_topic_log[]      = "@msg/" NETPIE_DEVICE_NAME "/log";     // log
 
 static mqttclient_callback_t subscription_callback = NULL;
 
@@ -167,6 +169,12 @@ int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id)
     TRACE_LOG("[%d] #%d publish topic:'%s' msg:'%s'\n\r", __LINE__, pkg_id, topic, buf);
     
     return MqttClient_Publish(&appData.mqttClient, &publish);
+}
+
+
+int mqttclient_publish_log(const char *message)
+{
+    return mqttclient_publish(mqtt_topic_log, message, packet_id++);
 }
 
 
@@ -621,7 +629,7 @@ void APP_MQTT_CLIENT_Tasks ( void )
         {
             MqttConnect connect;
             XMEMSET(&connect, 0, sizeof(connect));
-            connect.keep_alive_sec = MQTT_KEEP_ALIVE;
+            connect.keep_alive_sec = MQTT_KEEP_ALIVE_TIMEOUT;
             connect.clean_session = 1;
 
             // connect.client_id   = appData.macAddress;
@@ -648,6 +656,7 @@ void APP_MQTT_CLIENT_Tasks ( void )
             }
             appData.mqtt_connected = true;
             APP_timerSet(&appData.mqttKeepAlive);
+            APP_timerSet(&appData.mqttUpdateStatus);
             appData.state = APP_STATE_MQTT_SUBSCRIBE;
 
             TRACE_LOG("[%d] MQTT protocol negotiation success\n\r", __LINE__);  // DEBUG: iPAS
@@ -693,8 +702,8 @@ void APP_MQTT_CLIENT_Tasks ( void )
         {
             int rc = 0;
 
-            /* Keep Alive */
-            if (APP_timerExpired(&appData.mqttKeepAlive, MQTT_KEEP_ALIVE))
+            /* Keep alive */
+            if (APP_timerExpired(&appData.mqttKeepAlive, MQTT_KEEP_ALIVE_TIMEOUT))
             {
                 rc = MqttClient_Ping(&appData.mqttClient);
                 if (rc != MQTT_CODE_SUCCESS)
@@ -703,6 +712,23 @@ void APP_MQTT_CLIENT_Tasks ( void )
                 }
 
                 APP_timerSet(&appData.mqttKeepAlive);  // Reset keep alive timer
+                break;
+            }
+            
+            /* Update status */
+            if (APP_timerExpired(&appData.mqttUpdateStatus, MQTT_UPDATE_STATUS_TIMEOUT))
+            {
+                TRACE_LOG("[%d] Update status every %d s\n\r", __LINE__, MQTT_UPDATE_STATUS_TIMEOUT);  // DEBUG: iPAS
+
+                rc = mqttclient_publish_status();
+                if (rc != MQTT_CODE_SUCCESS)
+                {
+                    appData.state = APP_TCPIP_ERROR;
+                }
+                
+                APP_timerSet(&appData.mqttUpdateStatus);  // Reset status update timer
+                
+                APP_timerSet(&appData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
                 break;
             }
 
@@ -717,6 +743,8 @@ void APP_MQTT_CLIENT_Tasks ( void )
                     appData.state = APP_TCPIP_ERROR;
                     break;
                 }
+                
+                APP_timerSet(&appData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
             }
             else
             if (rc == MQTT_CODE_ERROR_NETWORK)
@@ -726,17 +754,17 @@ void APP_MQTT_CLIENT_Tasks ( void )
             }
             else
             if (rc == APP_CODE_ERROR_CMD_TIMEOUT)  // No any message within DEFAULT_CMD_TIMEOUT_MS, then speak!
-            {
+            {                                      // XXX: maybe returned from WolfMQTT callback functions
                 TRACE_LOG("[%d] No any message within %d ms (APP_CODE_ERROR_CMD_TIMEOUT)\n\r", __LINE__, MQTT_DEFAULT_CMD_TIMEOUT_MS);  // DEBUG: iPAS
 
-                rc = mqttclient_publish_status();
+                rc = mqttclient_publish_log("Waiting too long without message in");
                 if (rc != MQTT_CODE_SUCCESS)
                 {
                     appData.state = APP_TCPIP_ERROR;
+                    break;
                 }
 
                 APP_timerSet(&appData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
-                break;
             }
             else
             if (rc != MQTT_CODE_SUCCESS)

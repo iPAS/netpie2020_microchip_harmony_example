@@ -171,6 +171,7 @@ void APP_TESTER_Tasks ( void )
                 char message[10];
                 snprintf(message, sizeof(message), "%.4X", cnt);
                 
+                TRACE_LOG("[Tester] publish register address %d with '%s'\n\r", addresses[i], message);  // DEBUG: iPAS
                 mqttclient_publish_register(addresses[i], message);
                 
                 i++;

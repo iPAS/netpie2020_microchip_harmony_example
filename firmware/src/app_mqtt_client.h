@@ -143,6 +143,7 @@ typedef struct
     // Timers
     uint32_t genericUseTimer;
     uint32_t mqttKeepAlive;
+    uint32_t mqttUpdateStatus;
 
     /* TCPIP & MQTT */
     char macAddress[12 + 1];
