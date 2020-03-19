@@ -74,11 +74,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 /* NETPIE2020 Configuration
 */
-
-#define NETPIE_DEVICE_NAME  "dev_rtu"
-#define NETPIE_CLIENT_ID    "***REMOVED***"
-#define NETPIE_TOKEN        "***REMOVED***"
-#define NETPIE_SECRET       "***REMOVED***"
+#include "netpie2020_config.h"
 
 
 // *****************************************************************************

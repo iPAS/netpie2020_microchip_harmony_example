@@ -39,6 +39,7 @@
         <itemPath>../src/app_uart_term.h</itemPath>
         <itemPath>../src/app_mqtt_client.h</itemPath>
         <itemPath>../src/app_tester.h</itemPath>
+        <itemPath>../src/netpie2020_config.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f8" displayName="crypto" projectFiles="true">
