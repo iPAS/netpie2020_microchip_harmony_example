@@ -168,12 +168,6 @@ int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id)
 }
 
 
-int mqttclient_publish_log(const char *message)
-{
-    return mqttclient_publish(mqtt_topic_log, message, packet_id++);
-}
-
-
 int mqttclient_publish_status(void)
 {
     // Example: https://github.com/kgabis/parson/blob/master/tests.c#L348
@@ -389,7 +383,7 @@ int APP_mqttMessage_cb(MqttClient *client, MqttMessage *msg, byte msg_new, byte 
         }
         else
         {
-            TRACE_LOG("[%d] subscription_callback is NULL!\n\r", __LINE__);
+            TRACE_LOG("[%d] A subscribed message is received ,but , subscription_callback is NULL!\n\r", __LINE__);
         }
     }
     
@@ -411,6 +405,12 @@ int APP_mqttMessage_cb(MqttClient *client, MqttMessage *msg, byte msg_new, byte 
 bool mqttclient_ready(void)
 {
     return appData.socket_connected && appData.mqtt_connected;
+}
+
+
+int mqttclient_publish_log(const char *message)
+{
+    return mqttclient_publish(mqtt_topic_log, message, packet_id++);
 }
 
 

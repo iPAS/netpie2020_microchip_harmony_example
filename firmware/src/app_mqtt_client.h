@@ -260,6 +260,7 @@ void APP_MQTT_CLIENT_Tasks( void );
 // *****************************************************************************
 
 extern bool mqttclient_ready(void);
+extern int  mqttclient_publish_log(const char *message);  // Publish message to logging channel
 extern int  mqttclient_publish_register(uint32_t address, const char *message);  // Publish the update of register at address.
 extern void mqttclient_set_callback(mqttclient_callback_t cb);  // Set the callback function for updating register as request.
 
