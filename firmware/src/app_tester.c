@@ -87,6 +87,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 APP_TESTER_DATA app_testerData;
 
+const uint32_t register_addresses[] = {30000, 30100, 40000};
+uint16_t register_values[] = {0, 0, 0};
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -109,7 +112,24 @@ APP_TESTER_DATA app_testerData;
 
 static void mqttclient_callback(uint32_t address, const char *message)
 {
-    TRACE_LOG("[Tester] calling back for updating %d with '%s'\n\r", address, message);  // DEBUG: iPAS
+    TRACE_LOG("[Tester] --- calling back for updating reg:%d with '%s'\n\r", address, message);  // DEBUG: iPAS
+
+    uint8_t i;
+    for (i = 0; i < LEN_OF_ARRAY(register_addresses); i++)
+    {
+        if (address == register_addresses[i])
+        {
+            register_values[i] = atoi(message); 
+            break;
+        }
+    }
+    
+    if (i == LEN_OF_ARRAY(register_addresses))
+    {
+        char log[50];
+        snprintf(log, sizeof(log), "Unknown reg:%d was requested!", address);
+        mqttclient_publish_log(log);
+    }
 }
 
 
@@ -162,25 +182,22 @@ void APP_TESTER_Tasks ( void )
 
         case APP_TESTER_STATE_SERVICE_TASKS:
         {
-            vTaskDelay(10000 / portTICK_PERIOD_MS);
+            vTaskDelay(5000 / portTICK_PERIOD_MS);
             if (mqttclient_ready())
             {
-                const uint32_t addresses[] = {30000, 30100, 40000};
                 static uint8_t i = 0;
-                static uint16_t cnt = 0;
                 char message[10];
-                snprintf(message, sizeof(message), "%.4X", cnt);
                 
-                TRACE_LOG("[Tester] publish register address %d with '%s'\n\r", addresses[i], message);  // DEBUG: iPAS
-                mqttclient_publish_register(addresses[i], message);
+                snprintf(message, sizeof(message), "%u", register_values[i]);
                 
+                TRACE_LOG("[Tester] publish every 5s reg:%d > '%s'\n\r", register_addresses[i], message);  // DEBUG: iPAS
+                mqttclient_publish_register(register_addresses[i], message);
+                
+                register_values[i] += rand() % 10000;
                 i++;
-                if (i == LEN_OF_ARRAY(addresses))
-                {
-                   i = 0;
-                   cnt++;
-                }
-            }             
+                if (i == LEN_OF_ARRAY(register_addresses))
+                    i = 0;
+            }
             break;
         }
         
