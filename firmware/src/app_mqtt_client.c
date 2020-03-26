@@ -168,12 +168,6 @@ int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id)
 }
 
 
-int mqttclient_publish_log(const char *message)
-{
-    return mqttclient_publish(mqtt_topic_log, message, packet_id++);
-}
-
-
 int mqttclient_publish_status(void)
 {
     // Example: https://github.com/kgabis/parson/blob/master/tests.c#L348
@@ -377,19 +371,19 @@ int APP_mqttMessage_cb(MqttClient *client, MqttMessage *msg, byte msg_new, byte 
     TRACE_LOG("--- received #%d from topic:%s msg:'%s'\n\r", msg->packet_id, topic, message);  // DEBUG: iPAS
     
 
-    /* --- To update a register --- */
+    /**
+     * Process the request for updating 
+     */
     if (strncmp(mqtt_topic_update, topic, sizeof(mqtt_topic_update)-1) == 0)
     {
-        if (subscription_callback != NULL)
+        if (subscription_callback != NULL)  // If the callback was set, then
         {
-            /* Update the data from request to the register */
-            char *reg = &topic[ sizeof(mqtt_topic_update) ];  // .../update/%d
-            uint32_t addr = atoi(reg);
-            subscription_callback(addr, message);
+            char *sub_topic = &topic[ sizeof(mqtt_topic_update) ];  // .../update/<sub_topic> with 'message'
+            subscription_callback(sub_topic, message);
         }
         else
         {
-            TRACE_LOG("[%d] subscription_callback is NULL!\n\r", __LINE__);
+            TRACE_LOG("[%d] A subscribed message is received ,but , subscription_callback is NULL!\n\r", __LINE__);
         }
     }
     
@@ -414,24 +408,31 @@ bool mqttclient_ready(void)
 }
 
 
+int mqttclient_publish_log(const char *message)
+{
+    return mqttclient_publish(mqtt_topic_log, message, packet_id++);
+}
+
+
 /**
  * Publish the update of register at address.
  * @param address
  * @param message
  * @return 
  */
-int mqttclient_publish_register(uint32_t address, const char *message)
+int mqttclient_publish_register(const char *sub_topic, const char *message)
 {
     int rc;
     
-    char topic[sizeof(mqtt_topic_register)+10];
-    sprintf(topic, "%s/%d", mqtt_topic_register, address);
+    char *topic = (char *)malloc(sizeof(mqtt_topic_register) + 1 + strlen(sub_topic) + 1);
+    sprintf(topic, "%s/%s", mqtt_topic_register, sub_topic);
 
     rc = mqttclient_publish(topic, message, packet_id++);
     if (rc != MQTT_CODE_SUCCESS)
     {
         appData.state = APP_TCPIP_ERROR;
     }
+    free(topic);
     return rc;
 }
 

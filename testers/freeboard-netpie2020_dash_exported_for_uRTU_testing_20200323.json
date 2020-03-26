@@ -1,0 +1,192 @@
+{
+ "version": "application/octet-stream",
+ "allow_edit": true,
+ "plugins": [],
+ "panes": [
+  {
+   "width": 1,
+   "row": {
+    "3": 1,
+    "4": 1
+   },
+   "col": {
+    "3": 1,
+    "4": 2
+   },
+   "col_width": "1",
+   "widgets": [
+    {
+     "type": "text_widget",
+     "settings": {
+      "title": "Name @shadow",
+      "size": "regular",
+      "value": "datasources[\"ds_rtu\"][\"shadow\"][\"name\"]",
+      "animate": true
+     }
+    },
+    {
+     "type": "text_widget",
+     "settings": {
+      "title": "IP Address @shadow",
+      "size": "regular",
+      "value": "datasources[\"ds_rtu\"][\"shadow\"][\"ip_address\"]",
+      "animate": true
+     }
+    },
+    {
+     "type": "gauge",
+     "settings": {
+      "title": "Temperature @shadow",
+      "value": "datasources[\"ds_rtu\"][\"shadow\"][\"temperature\"]",
+      "units": "F",
+      "min_value": 0,
+      "max_value": "500"
+     }
+    },
+    {
+     "type": "gauge",
+     "settings": {
+      "title": "Humidity @shadow",
+      "value": "datasources[\"ds_rtu\"][\"shadow\"][\"humidity\"]",
+      "units": "%RH",
+      "min_value": 0,
+      "max_value": 100
+     }
+    }
+   ]
+  },
+  {
+   "title": "",
+   "width": 1,
+   "row": {
+    "3": 1,
+    "4": 1
+   },
+   "col": {
+    "3": 2,
+    "4": 3
+   },
+   "col_width": "2",
+   "widgets": [
+    {
+     "type": "Slider",
+     "settings": {
+      "caption": "Register 30000 @msg",
+      "color": "grey",
+      "showvalue": true,
+      "min": 0,
+      "max": "65535",
+      "step": 1,
+      "initialvalue": "0",
+      "autovaluesource": "datasources[\"ds_rtu\"][\"msg\"][\"dev_rtu\"][\"register\"][\"30000\"]",
+      "onStop": "netpie[\"ds_rtu\"].publish(\"@msg/dev_rtu/update/30000\", value.toString())"
+     }
+    },
+    {
+     "type": "Slider",
+     "settings": {
+      "caption": "Register 30100 @msg",
+      "color": "grey",
+      "showvalue": 1,
+      "min": 0,
+      "max": "65535",
+      "step": 1,
+      "initialvalue": "0",
+      "autovaluesource": "datasources[\"ds_rtu\"][\"msg\"][\"dev_rtu\"][\"register\"][\"30100\"]",
+      "onStop": "netpie[\"ds_rtu\"].publish(\"@msg/dev_rtu/update/30100\", value.toString())"
+     }
+    },
+    {
+     "type": "Slider",
+     "settings": {
+      "caption": "Register 40000 @msg",
+      "color": "grey",
+      "showvalue": 1,
+      "min": 0,
+      "max": "65535",
+      "step": 1,
+      "initialvalue": "0",
+      "autovaluesource": "datasources[\"ds_rtu\"][\"msg\"][\"dev_rtu\"][\"register\"][\"40000\"]",
+      "onStop": "netpie[\"ds_rtu\"].publish(\"@msg/dev_rtu/update/40000\", value.toString())"
+     }
+    },
+    {
+     "type": "nxpFeedView",
+     "settings": {
+      "title": "Trend @shadow",
+      "datasource": "datasources[\"ds_rtu\"][\"feed\"]",
+      "filter": "temperature, humidity",
+      "type": "line",
+      "yaxis": "°F",
+      "color": "",
+      "marker": true,
+      "multipleaxis": true,
+      "height_block": "300",
+      "height": "5"
+     }
+    }
+   ]
+  },
+  {
+   "title": "Debug",
+   "width": 1,
+   "row": {
+    "3": 19,
+    "4": 19
+   },
+   "col": {
+    "3": 1,
+    "4": 2
+   },
+   "col_width": "3",
+   "widgets": [
+    {
+     "type": "Button",
+     "settings": {
+      "caption": "Publish",
+      "text": "netpie[\"ds_rtu\"].publish(\"@msg/dev_rtu/update/30000\", \"5555\")",
+      "color": "blue",
+      "onClick": "netpie[\"ds_rtu\"].publish(\"@msg/dev_rtu/update/30000\", \"5555\")"
+     }
+    },
+    {
+     "type": "text_widget",
+     "settings": {
+      "title": "datasources[\"ds_rtu\"][\"msg\"][\"dev_rtu\"][\"register\"][\"30000\"]",
+      "size": "regular",
+      "value": "datasources[\"ds_rtu\"][\"msg\"][\"dev_rtu\"][\"register\"][\"30000\"]",
+      "animate": true
+     }
+    },
+    {
+     "type": "text_widget",
+     "settings": {
+      "title": "Log @msg",
+      "size": "regular",
+      "value": "datasources[\"ds_rtu\"][\"msg\"][\"dev_rtu\"][\"log\"]",
+      "animate": true
+     }
+    }
+   ]
+  }
+ ],
+ "datasources": [
+  {
+   "name": "ds_rtu",
+   "type": "netpiex_datasource",
+   "settings": {
+    "name": "ds_rtu",
+    "deviceid": "**REMOVED**",
+    "devicetoken": "**REMOVED**",
+    "topics": "@msg/#",
+    "feed": true,
+    "feed_since_value": "15",
+    "feed_since_unit": "minutes",
+    "feed_downsampling": "1",
+    "feed_downsampling_unit": "seconds"
+   }
+  }
+ ],
+ "columns": 3,
+ "theme": "default"
+}

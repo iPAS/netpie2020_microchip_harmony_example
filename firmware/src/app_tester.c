@@ -55,6 +55,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include "app_tester.h"
 #include "app_mqtt_client.h"
+#include "register_mapping.h"
 
 #ifdef DO_TRACE
 #include "app_uart_term.h"
@@ -87,6 +88,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 APP_TESTER_DATA app_testerData;
 
+#define REGISTER_UPDATE_INTERVAL_MS 30000 
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -107,9 +110,51 @@ APP_TESTER_DATA app_testerData;
 #define LEN_OF_ARRAY(arr) (sizeof(arr)/sizeof(arr[0]))
 
 
-static void mqttclient_callback(uint32_t address, const char *message)
+static void mqttclient_callback(const char *sub_topic, const char *message)
 {
-    TRACE_LOG("[Tester] calling back for updating %d with '%s'\n\r", address, message);  // DEBUG: iPAS
+    TRACE_LOG("[Tester] --- calling back for updating reg:'%s' with '%s'\n\r", sub_topic, message);  // DEBUG: iPAS
+
+    st_register_t *p_reg = st_registers;
+    char *endptr = NULL;
+    float value;
+    
+    while (p_reg->sub_topic != NULL)  // Find the matched reference
+    {
+        if (strcmp(sub_topic, p_reg->sub_topic) == 0)
+        {
+            if (strlen(message) == 0)  // Just refresh
+            {
+                
+            }
+            else  // Update if valid
+            {
+                value = strtof(message, &endptr);
+            }
+            break;
+        }
+        p_reg++;
+    }
+    
+    
+    char msg[50];
+    
+    if (p_reg->sub_topic == NULL)  // Reference error
+    {
+        snprintf(msg, sizeof(msg), "Unknown sub_topic:'%s'", sub_topic);
+        mqttclient_publish_log(msg);
+    } else
+    if (endptr == message)  // Value conversion error
+    {
+        snprintf(msg, sizeof(msg), "Conversion error on message:'%s'", message);
+        mqttclient_publish_log(msg);
+    } 
+    else
+    {
+        if (endptr != NULL)  // Valid
+            *p_reg->p_value = value;            
+        snprintf(msg, sizeof(msg), "%f", *p_reg->p_value);
+        mqttclient_publish_register(sub_topic, msg);
+    }
 }
 
 
@@ -162,25 +207,35 @@ void APP_TESTER_Tasks ( void )
 
         case APP_TESTER_STATE_SERVICE_TASKS:
         {
-            vTaskDelay(10000 / portTICK_PERIOD_MS);
+            static st_register_t *p_reg = st_registers;
+            
             if (mqttclient_ready())
             {
-                const uint32_t addresses[] = {30000, 30100, 40000};
-                static uint8_t i = 0;
-                static uint16_t cnt = 0;
-                char message[10];
-                snprintf(message, sizeof(message), "%.4X", cnt);
+                char message[20];
+                const char *sub_topic = p_reg->sub_topic;
                 
-                TRACE_LOG("[Tester] publish register address %d with '%s'\n\r", addresses[i], message);  // DEBUG: iPAS
-                mqttclient_publish_register(addresses[i], message);
+                snprintf(message, sizeof(message), "%f", *p_reg->p_value);
                 
-                i++;
-                if (i == LEN_OF_ARRAY(addresses))
+                TRACE_LOG("[Tester] publish every %.2fs sub_topic:%s > '%s'\n\r", 
+                        REGISTER_UPDATE_INTERVAL_MS/1000.0, sub_topic, message);  // DEBUG: iPAS
+                mqttclient_publish_register(sub_topic, message);
+                
+                p_reg++;
+                if (p_reg->sub_topic == NULL)
                 {
-                   i = 0;
-                   cnt++;
+                    p_reg = st_registers;
+                    vTaskDelay(REGISTER_UPDATE_INTERVAL_MS / portTICK_PERIOD_MS);
                 }
-            }             
+                else
+                {
+                    vTaskDelay(100 / portTICK_PERIOD_MS);
+                }
+            }
+            else
+            {
+                TRACE_LOG("[Tester] Wait MQTT ready ...\n\r");  // DEBUG: iPAS
+                vTaskDelay(1000 / portTICK_PERIOD_MS);
+            }
             break;
         }
         
