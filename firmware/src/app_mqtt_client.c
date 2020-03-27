@@ -72,12 +72,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 // *****************************************************************************
-/* NETPIE2020 Configuration
-*/
-#include "netpie2020_config.h"
-
-
-// *****************************************************************************
 /* Application Data
 
   Summary:
@@ -94,6 +88,12 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 APP_DATA appData;
 
+
+// *****************************************************************************
+/* NETPIE2020 Configuration
+*/
+#include "netpie2020_config.h"
+
 uint16_t packet_id = 0;
 
 #define MAX_BUFFER_SIZE 1024
@@ -103,7 +103,6 @@ uint8_t rxBuffer[MAX_BUFFER_SIZE];
 #define MQTT_DEFAULT_CMD_TIMEOUT_MS 30000
 #define MQTT_KEEP_ALIVE_TIMEOUT 900
 #define MQTT_UPDATE_STATUS_TIMEOUT 15
-
 
 // -- NEXPIE2020 --
 // server: broker.netpie.io 1883 (mqtt)
@@ -497,10 +496,9 @@ void APP_MQTT_CLIENT_Tasks ( void )
         case APP_STATE_INIT:
         {
             vTaskDelay(3000 / portTICK_PERIOD_MS);
+            appData.state = APP_STATE_TCPIP_WAIT_INIT;
             
             TRACE_LOG("\n\r--- APP MQTT Client Init ---\n\r");  // DEBUG: iPAS
-
-            appData.state = APP_STATE_TCPIP_WAIT_INIT;
             break;
         }
 
