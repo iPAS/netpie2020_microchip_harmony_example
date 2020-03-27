@@ -89,7 +89,7 @@ typedef enum
 {
 	/* Application's state machine's initial state. */
 	APP_TESTER_STATE_INIT=0,
-	APP_TESTER_STATE_SERVICE_TASKS,
+	APP_TESTER_STATE_REGISTER_UPDATE,
 
 	/* TODO: Define states used by the application state machine. */
 
@@ -211,4 +211,3 @@ void APP_TESTER_Tasks( void );
 /*******************************************************************************
  End of File
  */
-
