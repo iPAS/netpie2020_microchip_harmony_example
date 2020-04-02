@@ -5,7 +5,7 @@
     Microchip Technology Inc.
   
   File Name:
-    app_tester.c
+    app_pubsub.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -53,8 +53,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app_tester.h"
-#include "app_mqtt_client.h"
+#include "app_pubsub.h"
+#include "app_netpie.h"
 #include "register_mapping.h"
 
 #ifdef DO_TRACE
@@ -86,7 +86,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Application strings and buffers are be defined outside this structure.
 */
 
-APP_TESTER_DATA app_testerData;
+APP_PUBSUB_DATA app_pubsubData;
 
 
 #define REGISTER_PUBLISH_INTERVAL_MS 500 
@@ -116,7 +116,7 @@ uint16_t register_count = 0;
 
 static void mqttclient_callback(const char *sub_topic, const char *message)
 {
-    TRACE_LOG("[Tester] --- calling back for updating reg:'%s' with '%s'\n\r", sub_topic, message);  // DEBUG: iPAS
+    TRACE_LOG("[PubSub] --- calling back for updating reg:'%s' with '%s'\n\r", sub_topic, message);  // DEBUG: iPAS
 
     st_register_t *p_reg = st_registers;
     char *endptr = NULL;
@@ -145,19 +145,19 @@ static void mqttclient_callback(const char *sub_topic, const char *message)
     if (p_reg->sub_topic == NULL)  // Reference error
     {
         snprintf(msg, sizeof(msg), "Unknown sub_topic:'%s'", sub_topic);
-        mqttclient_publish_log(msg);
+        netpie_publish_log(msg);
     } else
     if (endptr == message)  // Value conversion error
     {
         snprintf(msg, sizeof(msg), "Conversion error on message:'%s'", message);
-        mqttclient_publish_log(msg);
+        netpie_publish_log(msg);
     } 
     else
     {
         if (endptr != NULL)  // Valid
             *p_reg->p_value = value;            
         snprintf(msg, sizeof(msg), "%f", *p_reg->p_value);
-        mqttclient_publish_register(sub_topic, msg);
+        netpie_publish_register(sub_topic, msg);
     }
 }
 
@@ -170,15 +170,15 @@ static void mqttclient_callback(const char *sub_topic, const char *message)
 
 /*******************************************************************************
   Function:
-    void APP_TESTER_Initialize ( void )
+    void APP_PUBSUB_Initialize ( void )
 
   Remarks:
-    See prototype in app_tester.h.
+    See prototype in app_pubsub.h.
  */
-void APP_TESTER_Initialize ( void )
+void APP_PUBSUB_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
-    app_testerData.state = APP_TESTER_STATE_INIT;
+    app_pubsubData.state = APP_PUBSUB_STATE_INIT;
 
     // Allocate and initial 'st_prev_registers' for memorizing the latest
     st_register_t *p_reg = st_registers;
@@ -199,45 +199,45 @@ void APP_TESTER_Initialize ( void )
     }
             
     // Callback function for coping with incoming MQTT message
-    mqttclient_set_callback(mqttclient_callback);
+    netpie_set_callback(mqttclient_callback);
 }
 
 
 /******************************************************************************
   Function:
-    void APP_TESTER_Tasks ( void )
+    void APP_PUBSUB_Tasks ( void )
 
   Remarks:
-    See prototype in app_tester.h.
+    See prototype in app_pubsub.h.
  */
-void APP_TESTER_Tasks ( void )
+void APP_PUBSUB_Tasks ( void )
 {
     static bool first_time = true;
 
     /* Check the application's current state. */
-    switch ( app_testerData.state )
+    switch ( app_pubsubData.state )
     {
         /* Application's initial state. */
-        case APP_TESTER_STATE_INIT:
+        case APP_PUBSUB_STATE_INIT:
         {
-            if (mqttclient_ready())
+            if (netpie_ready())
             {
-                app_testerData.state = APP_TESTER_STATE_REGISTER_UPDATE;
+                app_pubsubData.state = APP_PUBSUB_STATE_REGISTER_UPDATE;
             }
             else
             {
-                TRACE_LOG("[Tester] Wait MQTT ready ...\n\r");  // DEBUG: iPAS
+                TRACE_LOG("[PubSub] Wait MQTT ready ...\n\r");  // DEBUG: iPAS
                 vTaskDelay(1000 / portTICK_PERIOD_MS);
             }
             break;
         }
         
         /* Loop periodically updating all changed registers */
-        case APP_TESTER_STATE_REGISTER_UPDATE:
+        case APP_PUBSUB_STATE_REGISTER_UPDATE:
         {
             static st_register_t *p_reg = st_registers;
             
-            if (mqttclient_ready())
+            if (netpie_ready())
             {
                 st_register_t *p_prev = st_prev_registers;
                 uint32_t i = ((uint32_t)p_reg - (uint32_t)st_registers) / sizeof(st_register_t);
@@ -251,9 +251,9 @@ void APP_TESTER_Tasks ( void )
                     char message[20];
 
                     snprintf(message, sizeof(message), "%f", *p_reg->p_value);
-                    mqttclient_publish_register(sub_topic, message);
+                    netpie_publish_register(sub_topic, message);
 
-                    TRACE_LOG("[Tester] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
+                    TRACE_LOG("[PubSub] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
                 
                     vTaskDelay(REGISTER_PUBLISH_INTERVAL_MS / portTICK_PERIOD_MS);
                 }
@@ -276,7 +276,7 @@ void APP_TESTER_Tasks ( void )
                     uint16_t i = rand() % (register_count-1);
                     float val = rand() % 100;
                     *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
-                    TRACE_LOG("[Tester] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
+                    TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
 
                     
                     
@@ -286,7 +286,7 @@ void APP_TESTER_Tasks ( void )
             {
                 first_time = true;
                 p_reg = st_registers;
-                app_testerData.state = APP_TESTER_STATE_INIT;
+                app_pubsubData.state = APP_PUBSUB_STATE_INIT;
             }
             break;
         }

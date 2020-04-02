@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app_tester.h
+    app_pubsub.h
 
   Summary:
     This header file provides prototypes and definitions for the application.
@@ -43,8 +43,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _APP_TESTER_H
-#define _APP_TESTER_H
+#ifndef _APP_PUBSUB_H
+#define _APP_PUBSUB_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -88,12 +88,10 @@ extern "C" {
 typedef enum
 {
 	/* Application's state machine's initial state. */
-	APP_TESTER_STATE_INIT=0,
-	APP_TESTER_STATE_REGISTER_UPDATE,
+	APP_PUBSUB_STATE_INIT=0,
+	APP_PUBSUB_STATE_REGISTER_UPDATE,
 
-	/* TODO: Define states used by the application state machine. */
-
-} APP_TESTER_STATES;
+} APP_PUBSUB_STATES;
 
 
 // *****************************************************************************
@@ -112,11 +110,9 @@ typedef enum
 typedef struct
 {
     /* The application's current state */
-    APP_TESTER_STATES state;
+    APP_PUBSUB_STATES state;
 
-    /* TODO: Define any additional data used by the application. */
-
-} APP_TESTER_DATA;
+} APP_PUBSUB_DATA;
 
 
 // *****************************************************************************
@@ -135,7 +131,7 @@ typedef struct
 
 /*******************************************************************************
   Function:
-    void APP_TESTER_Initialize ( void )
+    void APP_PUBSUB_Initialize ( void )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -157,19 +153,19 @@ typedef struct
 
   Example:
     <code>
-    APP_TESTER_Initialize();
+    APP_PUBSUB_Initialize();
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
 
-void APP_TESTER_Initialize ( void );
+void APP_PUBSUB_Initialize ( void );
 
 
 /*******************************************************************************
   Function:
-    void APP_TESTER_Tasks ( void )
+    void APP_PUBSUB_Tasks ( void )
 
   Summary:
     MPLAB Harmony Demo application tasks function
@@ -190,17 +186,17 @@ void APP_TESTER_Initialize ( void );
 
   Example:
     <code>
-    APP_TESTER_Tasks();
+    APP_PUBSUB_Tasks();
     </code>
 
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
 
-void APP_TESTER_Tasks( void );
+void APP_PUBSUB_Tasks( void );
 
 
-#endif /* _APP_TESTER_H */
+#endif /* _APP_PUBSUB_H */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

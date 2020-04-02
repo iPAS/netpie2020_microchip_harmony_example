@@ -55,8 +55,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_config.h"
 #include "system_definitions.h"
 #include "app_uart_term.h"
-#include "app_mqtt_client.h"
-#include "app_tester.h"
+#include "app_netpie.h"
+#include "app_pubsub.h"
 
 
 // *****************************************************************************
@@ -69,8 +69,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  
 static void _SYS_Tasks ( void );
 static void _APP_UART_TERM_Tasks(void);
-static void _APP_MQTT_CLIENT_Tasks(void);
-static void _APP_TESTER_Tasks(void);
+static void _APP_NETPIE_Tasks(void);
+static void _APP_PUBSUB_Tasks(void);
 
 
 // *****************************************************************************
@@ -99,14 +99,14 @@ void SYS_Tasks ( void )
                 "APP_UART_TERM Tasks",
                 1024, NULL, 1, NULL);
 
-    /* Create OS Thread for APP_MQTT_CLIENT Tasks. */
-    xTaskCreate((TaskFunction_t) _APP_MQTT_CLIENT_Tasks,
-                "APP_MQTT_CLIENT Tasks",
+    /* Create OS Thread for APP_NETPIE Tasks. */
+    xTaskCreate((TaskFunction_t) _APP_NETPIE_Tasks,
+                "APP_NETPIE Tasks",
                 1024, NULL, 1, NULL);
 
-    /* Create OS Thread for APP_TESTER Tasks. */
-    xTaskCreate((TaskFunction_t) _APP_TESTER_Tasks,
-                "APP_TESTER Tasks",
+    /* Create OS Thread for APP_PUBSUB Tasks. */
+    xTaskCreate((TaskFunction_t) _APP_PUBSUB_Tasks,
+                "APP_PUBSUB Tasks",
                 1024, NULL, 1, NULL);
 
     /**************
@@ -164,34 +164,34 @@ static void _APP_UART_TERM_Tasks(void)
 
 /*******************************************************************************
   Function:
-    void _APP_MQTT_CLIENT_Tasks ( void )
+    void _APP_NETPIE_Tasks ( void )
 
   Summary:
-    Maintains state machine of APP_MQTT_CLIENT.
+    Maintains state machine of APP_NETPIE.
 */
 
-static void _APP_MQTT_CLIENT_Tasks(void)
+static void _APP_NETPIE_Tasks(void)
 {
     while(1)
     {
-        APP_MQTT_CLIENT_Tasks();
+        APP_NETPIE_Tasks();
     }
 }
 
 
 /*******************************************************************************
   Function:
-    void _APP_TESTER_Tasks ( void )
+    void _APP_PUBSUB_Tasks ( void )
 
   Summary:
-    Maintains state machine of APP_TESTER.
+    Maintains state machine of APP_PUBSUB.
 */
 
-static void _APP_TESTER_Tasks(void)
+static void _APP_PUBSUB_Tasks(void)
 {
     while(1)
     {
-        APP_TESTER_Tasks();
+        APP_PUBSUB_Tasks();
     }
 }
 
