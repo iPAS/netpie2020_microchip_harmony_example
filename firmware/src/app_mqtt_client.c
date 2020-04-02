@@ -5,7 +5,7 @@
     Microchip Technology Inc.
   
   File Name:
-    app_mqtt_client.c
+    app_netpie.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -53,7 +53,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app_mqtt_client.h"
+#include "app_netpie.h"
 #include "aux/parson.h"
 
 //#define DO_TRACE
@@ -454,12 +454,12 @@ void mqttclient_set_callback(mqttclient_callback_t cb)
 
 /*******************************************************************************
   Function:
-    void APP_MQTT_CLIENT_Initialize ( void )
+    void APP_NETPIE_Initialize ( void )
 
   Remarks:
-    See prototype in app_mqtt_client.h.
+    See prototype in app_netpie.h.
  */
-void APP_MQTT_CLIENT_Initialize ( void )
+void APP_NETPIE_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
     appData.state = APP_STATE_INIT;
@@ -482,12 +482,12 @@ void APP_MQTT_CLIENT_Initialize ( void )
 
 /******************************************************************************
   Function:
-    void APP_MQTT_CLIENT_Tasks ( void )
+    void APP_NETPIE_Tasks ( void )
 
   Remarks:
-    See prototype in app_mqtt_client.h.
+    See prototype in app_netpie.h.
  */
-void APP_MQTT_CLIENT_Tasks ( void )
+void APP_NETPIE_Tasks ( void )
 {
     /* Check the application's current state. */
     switch ( appData.state )

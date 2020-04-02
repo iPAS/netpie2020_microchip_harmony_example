@@ -54,7 +54,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "app_pubsub.h"
-#include "app_mqtt_client.h"
+#include "app_netpie.h"
 #include "register_mapping.h"
 
 #ifdef DO_TRACE

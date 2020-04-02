@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app_mqtt_client.h
+    app_netpie.h
 
   Summary:
     This header file provides prototypes and definitions for the application.
@@ -44,8 +44,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 //DOM-IGNORE-END
 
 
-#ifndef _APP_MQTT_CLIENT_H
-#define _APP_MQTT_CLIENT_H
+#ifndef _APP_NETPIE_H
+#define _APP_NETPIE_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -190,7 +190,7 @@ typedef void (*mqttclient_callback_t)(const char *sub_topic, const char *message
 
 /*******************************************************************************
   Function:
-    void APP_MQTT_CLIENT_Initialize ( void )
+    void APP_NETPIE_Initialize ( void )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -212,18 +212,18 @@ typedef void (*mqttclient_callback_t)(const char *sub_topic, const char *message
 
   Example:
     <code>
-    APP_MQTT_CLIENT_Initialize();
+    APP_NETPIE_Initialize();
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
-void APP_MQTT_CLIENT_Initialize ( void );
+void APP_NETPIE_Initialize ( void );
 
 
 /*******************************************************************************
   Function:
-    void APP_MQTT_CLIENT_Tasks ( void )
+    void APP_NETPIE_Tasks ( void )
 
   Summary:
     MPLAB Harmony Demo application tasks function
@@ -244,13 +244,13 @@ void APP_MQTT_CLIENT_Initialize ( void );
 
   Example:
     <code>
-    APP_MQTT_CLIENT_Tasks();
+    APP_NETPIE_Tasks();
     </code>
 
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
-void APP_MQTT_CLIENT_Tasks( void );
+void APP_NETPIE_Tasks( void );
 
 
 // *****************************************************************************
@@ -265,7 +265,7 @@ extern int  mqttclient_publish_register(const char *sub_topic, const char *messa
 extern void mqttclient_set_callback(mqttclient_callback_t cb);  // Set the callback function for updating register as request.
 
 
-#endif /* _APP_MQTT_CLIENT_H */
+#endif /* _APP_NETPIE_H */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
