@@ -78,22 +78,6 @@ extern "C" {
 // *****************************************************************************
 
 // *****************************************************************************
-/* Application Codes */
-enum AppCodes {
-    APP_CODE_ERROR_BAD_ARG = -255,
-    APP_CODE_ERROR_OUT_OF_BUFFER,
-    APP_CODE_ERROR_SSL_FATAL,
-    APP_CODE_ERROR_INVALID_SOCKET,
-    APP_CODE_ERROR_FAILED_TO_BEGIN_DNS_RESOLUTION,
-    APP_CODE_ERROR_DNS_FAILED,
-    APP_CODE_ERROR_FAILED_SSL_NEGOTIATION,
-    APP_CODE_ERROR_TIMEOUT,
-    APP_CODE_ERROR_CMD_TIMEOUT,
-    APP_CODE_SUCCESS = 0,
-};
-
-
-// *****************************************************************************
 /* Application states
 
   Summary:
@@ -106,21 +90,21 @@ enum AppCodes {
 typedef enum
 {
 	/* Application's state machine's initial state. */
-    APP_STATE_INIT = 0,
+    APP_NETPIE_STATE_INIT = 0,
 
-    APP_STATE_TCPIP_WAIT_INIT,
-    APP_STATE_TCPIP_WAIT_FOR_IP,
+    APP_NETPIE_STATE_TCPIP_WAIT_INIT,
+    APP_NETPIE_STATE_TCPIP_WAIT_FOR_IP,
 
-    APP_STATE_MQTT_INIT,
-    APP_STATE_MQTT_NET_CONNECT,
-    APP_STATE_MQTT_PROTOCOL_CONNECT,
-    APP_STATE_MQTT_SUBSCRIBE,
-    APP_STATE_MQTT_LOOP,
+    APP_NETPIE_STATE_MQTT_INIT,
+    APP_NETPIE_STATE_MQTT_NET_CONNECT,
+    APP_NETPIE_STATE_MQTT_PROTOCOL_CONNECT,
+    APP_NETPIE_STATE_MQTT_SUBSCRIBE,
+    APP_NETPIE_STATE_MQTT_LOOP,
 
-    APP_TCPIP_ERROR,
-    APP_FATAL_ERROR,
+    APP_NETPIE_STATE_TCPIP_ERROR,
+    APP_NETPIE_STATE_FATAL_ERROR,
 
-} APP_STATES;
+} APP_NETPIE_STATES;
 
 
 // *****************************************************************************
@@ -138,7 +122,7 @@ typedef enum
 typedef struct
 {
     /* The application's current state */
-    APP_STATES state;
+    APP_NETPIE_STATES state;
 
     // Timers
     uint32_t genericUseTimer;

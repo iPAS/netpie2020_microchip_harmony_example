@@ -91,8 +91,6 @@ typedef enum
 	APP_PUBSUB_STATE_INIT=0,
 	APP_PUBSUB_STATE_REGISTER_UPDATE,
 
-	/* TODO: Define states used by the application state machine. */
-
 } APP_PUBSUB_STATES;
 
 
@@ -113,8 +111,6 @@ typedef struct
 {
     /* The application's current state */
     APP_PUBSUB_STATES state;
-
-    /* TODO: Define any additional data used by the application. */
 
 } APP_PUBSUB_DATA;
 
