@@ -62,8 +62,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <xc.h>
 #include <sys/attribs.h>
 #include "app_uart_term.h"
-#include "app_mqtt_client.h"
-#include "app_tester.h"
+#include "app_netpie.h"
+#include "app_pubsub.h"
 #include "system_definitions.h"
 
 // *****************************************************************************
