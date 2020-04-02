@@ -5,7 +5,7 @@
     Microchip Technology Inc.
   
   File Name:
-    app_tester.c
+    app_pubsub.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -53,7 +53,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app_tester.h"
+#include "app_pubsub.h"
 #include "app_mqtt_client.h"
 #include "register_mapping.h"
 
@@ -86,7 +86,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Application strings and buffers are be defined outside this structure.
 */
 
-APP_TESTER_DATA app_testerData;
+APP_PUBSUB_DATA app_pubsubData;
 
 
 #define REGISTER_PUBLISH_INTERVAL_MS 500 
@@ -116,7 +116,7 @@ uint16_t register_count = 0;
 
 static void mqttclient_callback(const char *sub_topic, const char *message)
 {
-    TRACE_LOG("[Tester] --- calling back for updating reg:'%s' with '%s'\n\r", sub_topic, message);  // DEBUG: iPAS
+    TRACE_LOG("[PubSub] --- calling back for updating reg:'%s' with '%s'\n\r", sub_topic, message);  // DEBUG: iPAS
 
     st_register_t *p_reg = st_registers;
     char *endptr = NULL;
@@ -170,15 +170,15 @@ static void mqttclient_callback(const char *sub_topic, const char *message)
 
 /*******************************************************************************
   Function:
-    void APP_TESTER_Initialize ( void )
+    void APP_PUBSUB_Initialize ( void )
 
   Remarks:
-    See prototype in app_tester.h.
+    See prototype in app_pubsub.h.
  */
-void APP_TESTER_Initialize ( void )
+void APP_PUBSUB_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
-    app_testerData.state = APP_TESTER_STATE_INIT;
+    app_pubsubData.state = APP_PUBSUB_STATE_INIT;
 
     // Allocate and initial 'st_prev_registers' for memorizing the latest
     st_register_t *p_reg = st_registers;
@@ -205,35 +205,35 @@ void APP_TESTER_Initialize ( void )
 
 /******************************************************************************
   Function:
-    void APP_TESTER_Tasks ( void )
+    void APP_PUBSUB_Tasks ( void )
 
   Remarks:
-    See prototype in app_tester.h.
+    See prototype in app_pubsub.h.
  */
-void APP_TESTER_Tasks ( void )
+void APP_PUBSUB_Tasks ( void )
 {
     static bool first_time = true;
 
     /* Check the application's current state. */
-    switch ( app_testerData.state )
+    switch ( app_pubsubData.state )
     {
         /* Application's initial state. */
-        case APP_TESTER_STATE_INIT:
+        case APP_PUBSUB_STATE_INIT:
         {
             if (mqttclient_ready())
             {
-                app_testerData.state = APP_TESTER_STATE_REGISTER_UPDATE;
+                app_pubsubData.state = APP_PUBSUB_STATE_REGISTER_UPDATE;
             }
             else
             {
-                TRACE_LOG("[Tester] Wait MQTT ready ...\n\r");  // DEBUG: iPAS
+                TRACE_LOG("[PubSub] Wait MQTT ready ...\n\r");  // DEBUG: iPAS
                 vTaskDelay(1000 / portTICK_PERIOD_MS);
             }
             break;
         }
         
         /* Loop periodically updating all changed registers */
-        case APP_TESTER_STATE_REGISTER_UPDATE:
+        case APP_PUBSUB_STATE_REGISTER_UPDATE:
         {
             static st_register_t *p_reg = st_registers;
             
@@ -253,7 +253,7 @@ void APP_TESTER_Tasks ( void )
                     snprintf(message, sizeof(message), "%f", *p_reg->p_value);
                     mqttclient_publish_register(sub_topic, message);
 
-                    TRACE_LOG("[Tester] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
+                    TRACE_LOG("[PubSub] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
                 
                     vTaskDelay(REGISTER_PUBLISH_INTERVAL_MS / portTICK_PERIOD_MS);
                 }
@@ -276,7 +276,7 @@ void APP_TESTER_Tasks ( void )
                     uint16_t i = rand() % (register_count-1);
                     float val = rand() % 100;
                     *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
-                    TRACE_LOG("[Tester] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
+                    TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
 
                     
                     
@@ -286,7 +286,7 @@ void APP_TESTER_Tasks ( void )
             {
                 first_time = true;
                 p_reg = st_registers;
-                app_testerData.state = APP_TESTER_STATE_INIT;
+                app_pubsubData.state = APP_PUBSUB_STATE_INIT;
             }
             break;
         }
