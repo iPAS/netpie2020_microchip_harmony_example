@@ -5,7 +5,7 @@
     Microchip Technology Inc.
   
   File Name:
-    app_mqtt_client.c
+    app_netpie.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -53,7 +53,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app_mqtt_client.h"
+#include "app_netpie.h"
 #include "aux/parson.h"
 
 //#define DO_TRACE
@@ -86,7 +86,20 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Application strings and buffers are be defined outside this structure.
 */
 
-APP_DATA appData;
+APP_NETPIE_DATA appNetpieData;
+
+enum AppCodes {  /* Application Codes */
+    APP_CODE_ERROR_BAD_ARG = -255,
+    APP_CODE_ERROR_OUT_OF_BUFFER,
+    APP_CODE_ERROR_SSL_FATAL,
+    APP_CODE_ERROR_INVALID_SOCKET,
+    APP_CODE_ERROR_FAILED_TO_BEGIN_DNS_RESOLUTION,
+    APP_CODE_ERROR_DNS_FAILED,
+    APP_CODE_ERROR_FAILED_SSL_NEGOTIATION,
+    APP_CODE_ERROR_TIMEOUT,
+    APP_CODE_ERROR_CMD_TIMEOUT,
+    APP_CODE_SUCCESS = 0,
+};
 
 
 // *****************************************************************************
@@ -121,7 +134,7 @@ const char mqtt_topic_update[]   = "@msg/" NETPIE_DEVICE_NAME "/update";  // Get
 const char mqtt_topic_register[] = "@msg/" NETPIE_DEVICE_NAME "/register";  // Publish an update for register/%d
 const char mqtt_topic_log[]      = "@msg/" NETPIE_DEVICE_NAME "/log";     // log
 
-static mqttclient_callback_t subscription_callback = NULL;
+static netpie_callback_t subscription_callback = NULL;
 
 
 // *****************************************************************************
@@ -130,26 +143,26 @@ static mqttclient_callback_t subscription_callback = NULL;
 // *****************************************************************************
 // *****************************************************************************
 
-bool APP_timerExpired(uint32_t * timer, uint32_t seconds)
+static bool APP_timerExpired(uint32_t * timer, uint32_t seconds)
 {
     return ((SYS_TMR_TickCountGet() - *timer) > (seconds * 1000))? true : false;
 }
 
 
-bool APP_timerExpired_ms(uint32_t * timer, uint32_t mseconds)
+static bool APP_timerExpired_ms(uint32_t * timer, uint32_t mseconds)
 {
     return ((SYS_TMR_TickCountGet() - *timer) > (mseconds))? true : false;
 }
 
 
-bool APP_timerSet(uint32_t * timer)
+static bool APP_timerSet(uint32_t * timer)
 {
     *timer = SYS_TMR_TickCountGet();
     return true;
 }
 
 
-int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id)
+int netpie_publish(const char *topic, const char *buf, uint16_t pkg_id)
 {
     MqttPublish publish;
     XMEMSET(&publish, 0, sizeof(MqttPublish));
@@ -163,11 +176,11 @@ int mqttclient_publish(const char *topic, const char *buf, uint16_t pkg_id)
 
     TRACE_LOG("[%d] #%d publish topic:'%s' msg:'%s'\n\r", __LINE__, pkg_id, topic, buf);
     
-    return MqttClient_Publish(&appData.mqttClient, &publish);
+    return MqttClient_Publish(&appNetpieData.mqttClient, &publish);
 }
 
 
-int mqttclient_publish_status(void)
+int netpie_publish_status(void)
 {
     // Example: https://github.com/kgabis/parson/blob/master/tests.c#L348
 
@@ -186,7 +199,7 @@ int mqttclient_publish_status(void)
     json_object_set_number(data_object, "temperature", rand() % 250);
     json_object_set_number(data_object, "humidity", rand() % 100);
     char ip[15];
-    IPV4_ADDR ipAddr; ipAddr.Val = appData.board_ipAddr.v4Add.Val;
+    IPV4_ADDR ipAddr; ipAddr.Val = appNetpieData.board_ipAddr.v4Add.Val;
     sprintf(ip, "%d.%d.%d.%d", ipAddr.v[0], ipAddr.v[1], ipAddr.v[2], ipAddr.v[3]);
     json_object_set_string(data_object, "ip_address", ip);
     
@@ -199,7 +212,7 @@ int mqttclient_publish_status(void)
     json_free_serialized_string(serialized_string);
     json_value_free(root_value);
 
-    return mqttclient_publish(mqtt_topic_status, buf, packet_id++);
+    return netpie_publish(mqtt_topic_status, buf, packet_id++);
 }
 
 
@@ -219,16 +232,16 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
     uint32_t timeout;
     timeout = SYS_TMR_TickCountGet();
 
-    appData.socket_connected = false;
+    appNetpieData.socket_connected = false;
 
-    TCPIP_DNS_RESULT dnsResult = TCPIP_DNS_Resolve((const char *)appData.host, TCPIP_DNS_TYPE_A);
+    TCPIP_DNS_RESULT dnsResult = TCPIP_DNS_Resolve((const char *)appNetpieData.host, TCPIP_DNS_TYPE_A);
     if(dnsResult < 0)
     {
         TRACE_LOG("[%d] TCPIP_DNS_Resolve() fail\n\r", __LINE__);  // DEBUG: iPAS
         return APP_CODE_ERROR_FAILED_TO_BEGIN_DNS_RESOLUTION;  // DNS resolving problem
     }
 
-    while((dnsResult = TCPIP_DNS_IsResolved((const char *)appData.host, &appData.host_ipv4, IP_ADDRESS_TYPE_IPV4)
+    while((dnsResult = TCPIP_DNS_IsResolved((const char *)appNetpieData.host, &appNetpieData.host_ipv4, IP_ADDRESS_TYPE_IPV4)
           ) == TCPIP_DNS_RES_PENDING)
     {
         if(APP_timerExpired_ms(&timeout, timeout_ms))
@@ -243,21 +256,21 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
         return APP_CODE_ERROR_DNS_FAILED;
     }
 
-    appData.socket = NET_PRES_SocketOpen(0, NET_PRES_SKT_UNENCRYPTED_STREAM_CLIENT, IP_ADDRESS_TYPE_IPV4,
+    appNetpieData.socket = NET_PRES_SocketOpen(0, NET_PRES_SKT_UNENCRYPTED_STREAM_CLIENT, IP_ADDRESS_TYPE_IPV4,
                                          (NET_PRES_SKT_PORT_T)port,
-                                         (NET_PRES_ADDRESS *)&appData.host_ipv4,
-                                         (NET_PRES_SKT_ERROR_T*)&appData.error);
-    NET_PRES_SocketWasReset(appData.socket);
+                                         (NET_PRES_ADDRESS *)&appNetpieData.host_ipv4,
+                                         (NET_PRES_SKT_ERROR_T*)&appNetpieData.error);
+    NET_PRES_SocketWasReset(appNetpieData.socket);
 
-    if (appData.socket == INVALID_SOCKET)
+    if (appNetpieData.socket == INVALID_SOCKET)
     {
         TRACE_LOG("[%d] NET_PRES_SocketOpen() socket invalid\n\r", __LINE__);  // DEBUG: iPAS
 
-        NET_PRES_SocketClose(appData.socket);
+        NET_PRES_SocketClose(appNetpieData.socket);
         return APP_CODE_ERROR_INVALID_SOCKET;
     }
 
-    while (!NET_PRES_SKT_IsConnected(appData.socket))
+    while (!NET_PRES_SKT_IsConnected(appNetpieData.socket))
     {
         if (APP_timerExpired_ms(&timeout, timeout_ms))
         {
@@ -266,7 +279,7 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
         }
     }
 
-    while (NET_PRES_SKT_IsNegotiatingEncryption(appData.socket))
+    while (NET_PRES_SKT_IsNegotiatingEncryption(appNetpieData.socket))
     {
         if (APP_timerExpired_ms(&timeout, timeout_ms))
         {
@@ -282,7 +295,7 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
     //     return APP_CODE_ERROR_FAILED_SSL_NEGOTIATION;
     // }
 
-    appData.socket_connected = true;
+    appNetpieData.socket_connected = true;
     return 0;  //Success
 }
 
@@ -293,9 +306,9 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
 int APP_tcpipDisconnect_cb(void *context)
 {
     int ret = 0;
-    appData.socket_connected = false;
-    NET_PRES_SKT_Close(appData.socket);
-    appData.state = APP_STATE_MQTT_NET_CONNECT;
+    appNetpieData.socket_connected = false;
+    NET_PRES_SKT_Close(appNetpieData.socket);
+    appNetpieData.state = APP_NETPIE_STATE_MQTT_NET_CONNECT;
     return ret;
 }
 
@@ -307,9 +320,9 @@ int APP_tcpipRead_cb(void *context, byte* buf, int buf_len, int timeout_ms)
 
     APP_timerSet(&timeout);
     // Wait for data to be read, or error, or timeout
-    while (NET_PRES_SocketReadIsReady(appData.socket) == 0)
+    while (NET_PRES_SocketReadIsReady(appNetpieData.socket) == 0)
     {
-        if (NET_PRES_SocketWasReset(appData.socket))
+        if (NET_PRES_SocketWasReset(appNetpieData.socket))
         {
             ret = APP_CODE_ERROR_SSL_FATAL;
             return ret;
@@ -321,7 +334,7 @@ int APP_tcpipRead_cb(void *context, byte* buf, int buf_len, int timeout_ms)
         }
     }
 
-    ret = NET_PRES_SocketRead(appData.socket, (uint8_t*)buf, buf_len);
+    ret = NET_PRES_SocketRead(appNetpieData.socket, (uint8_t*)buf, buf_len);
     return ret;
 }
 
@@ -333,9 +346,9 @@ int APP_tcpipWrite_cb(void *context, const byte* buf, int buf_len, int timeout_m
 
     APP_timerSet(&timeout);
     // Wait for data to be read, or error, or timeout
-    while (NET_PRES_SocketWriteIsReady(appData.socket, buf_len, 0) == 0)
+    while (NET_PRES_SocketWriteIsReady(appNetpieData.socket, buf_len, 0) == 0)
     {
-        if (NET_PRES_SocketWasReset(appData.socket))
+        if (NET_PRES_SocketWasReset(appNetpieData.socket))
         {
             ret = APP_CODE_ERROR_SSL_FATAL;
             return ret;
@@ -347,7 +360,7 @@ int APP_tcpipWrite_cb(void *context, const byte* buf, int buf_len, int timeout_m
         }
     }
 
-    ret = NET_PRES_SocketWrite(appData.socket, (uint8_t*)buf, buf_len);
+    ret = NET_PRES_SocketWrite(appNetpieData.socket, (uint8_t*)buf, buf_len);
     return ret;
 }
 
@@ -401,15 +414,20 @@ int APP_mqttMessage_cb(MqttClient *client, MqttMessage *msg, byte msg_new, byte 
  * Check the status of the connections: TCP & MQTT
  * @return 
  */
-bool mqttclient_ready(void)
+bool netpie_ready(void)
 {
-    return appData.socket_connected && appData.mqtt_connected;
+    return appNetpieData.socket_connected && appNetpieData.mqtt_connected;
 }
 
 
-int mqttclient_publish_log(const char *message)
+/**
+ * Publish log message
+ * @param message
+ * @return 
+ */
+int netpie_publish_log(const char *message)
 {
-    return mqttclient_publish(mqtt_topic_log, message, packet_id++);
+    return netpie_publish(mqtt_topic_log, message, packet_id++);
 }
 
 
@@ -419,17 +437,17 @@ int mqttclient_publish_log(const char *message)
  * @param message
  * @return 
  */
-int mqttclient_publish_register(const char *sub_topic, const char *message)
+int netpie_publish_register(const char *sub_topic, const char *message)
 {
     int rc;
     
     char *topic = (char *)malloc(sizeof(mqtt_topic_register) + 1 + strlen(sub_topic) + 1);
     sprintf(topic, "%s/%s", mqtt_topic_register, sub_topic);
 
-    rc = mqttclient_publish(topic, message, packet_id++);
+    rc = netpie_publish(topic, message, packet_id++);
     if (rc != MQTT_CODE_SUCCESS)
     {
-        appData.state = APP_TCPIP_ERROR;
+        appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
     }
     free(topic);
     return rc;
@@ -440,7 +458,7 @@ int mqttclient_publish_register(const char *sub_topic, const char *message)
  * Set the callback function for updating register as request.
  * @param cb
  */
-void mqttclient_set_callback(mqttclient_callback_t cb)
+void netpie_set_callback(netpie_callback_t cb)
 {
     subscription_callback = cb;
 }
@@ -454,55 +472,55 @@ void mqttclient_set_callback(mqttclient_callback_t cb)
 
 /*******************************************************************************
   Function:
-    void APP_MQTT_CLIENT_Initialize ( void )
+    void APP_NETPIE_Initialize ( void )
 
   Remarks:
-    See prototype in app_mqtt_client.h.
+    See prototype in app_netpie.h.
  */
-void APP_MQTT_CLIENT_Initialize ( void )
+void APP_NETPIE_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
-    appData.state = APP_STATE_INIT;
+    appNetpieData.state = APP_NETPIE_STATE_INIT;
 
     /* Initialize MQTT */
-    sprintf(appData.macAddress, "Null");
-    strncpy(appData.host, mqtt_broker, sizeof(appData.host));
-    appData.port = mqtt_port;
+    sprintf(appNetpieData.macAddress, "Null");
+    strncpy(appNetpieData.host, mqtt_broker, sizeof(appNetpieData.host));
+    appNetpieData.port = mqtt_port;
 
-    appData.mqttNet.connect    = APP_tcpipConnect_cb;
-    appData.mqttNet.disconnect = APP_tcpipDisconnect_cb;
-    appData.mqttNet.read       = APP_tcpipRead_cb;
-    appData.mqttNet.write      = APP_tcpipWrite_cb;
+    appNetpieData.mqttNet.connect    = APP_tcpipConnect_cb;
+    appNetpieData.mqttNet.disconnect = APP_tcpipDisconnect_cb;
+    appNetpieData.mqttNet.read       = APP_tcpipRead_cb;
+    appNetpieData.mqttNet.write      = APP_tcpipWrite_cb;
 
     /* ETC. */
-    appData.socket_connected   = false;
-    appData.mqtt_connected     = false;
+    appNetpieData.socket_connected   = false;
+    appNetpieData.mqtt_connected     = false;
 }
 
 
 /******************************************************************************
   Function:
-    void APP_MQTT_CLIENT_Tasks ( void )
+    void APP_NETPIE_Tasks ( void )
 
   Remarks:
-    See prototype in app_mqtt_client.h.
+    See prototype in app_netpie.h.
  */
-void APP_MQTT_CLIENT_Tasks ( void )
+void APP_NETPIE_Tasks ( void )
 {
     /* Check the application's current state. */
-    switch ( appData.state )
+    switch ( appNetpieData.state )
     {
         /* Application's initial state. */
-        case APP_STATE_INIT:
+        case APP_NETPIE_STATE_INIT:
         {
             vTaskDelay(3000 / portTICK_PERIOD_MS);
-            appData.state = APP_STATE_TCPIP_WAIT_INIT;
+            appNetpieData.state = APP_NETPIE_STATE_TCPIP_WAIT_INIT;
             
             TRACE_LOG("\n\r--- APP MQTT Client Init ---\n\r");  // DEBUG: iPAS
             break;
         }
 
-        case APP_STATE_TCPIP_WAIT_INIT:
+        case APP_NETPIE_STATE_TCPIP_WAIT_INIT:
         {
             TCPIP_NET_HANDLE    netH;
             int                 i, nNets;
@@ -527,26 +545,26 @@ void APP_MQTT_CLIENT_Tasks ( void )
                     // Retrieve MAC Address to store and convert to string
                     TCPIP_NET_HANDLE netH = TCPIP_STACK_NetHandleGet("PIC32INT");
                     TCPIP_MAC_ADDR* pAddr = (TCPIP_MAC_ADDR *)TCPIP_STACK_NetAddressMac(netH);
-                    sprintf(appData.macAddress, "%02x%02x%02x%02x%02x%02x",
+                    sprintf(appNetpieData.macAddress, "%02x%02x%02x%02x%02x%02x",
                             pAddr->v[0], pAddr->v[1], pAddr->v[2], pAddr->v[3], pAddr->v[4], pAddr->v[5]);
                 }
 
-                APP_timerSet(&appData.genericUseTimer);
-                appData.state = APP_STATE_TCPIP_WAIT_FOR_IP;
+                APP_timerSet(&appNetpieData.genericUseTimer);
+                appNetpieData.state = APP_NETPIE_STATE_TCPIP_WAIT_FOR_IP;
 
-                TRACE_LOG("[%d] MAC: %s\n\r", __LINE__, appData.macAddress);  // DEBUG: iPAS
+                TRACE_LOG("[%d] MAC: %s\n\r", __LINE__, appNetpieData.macAddress);  // DEBUG: iPAS
             }
             break;
         }
 
-        case APP_STATE_TCPIP_WAIT_FOR_IP:
+        case APP_NETPIE_STATE_TCPIP_WAIT_FOR_IP:
         {
             TCPIP_NET_HANDLE    netH;
             int                 i, nNets;
 
-            if (APP_timerExpired(&appData.genericUseTimer, 10))
+            if (APP_timerExpired(&appNetpieData.genericUseTimer, 10))
             {
-                APP_timerSet(&appData.genericUseTimer);
+                APP_timerSet(&appNetpieData.genericUseTimer);
             }
 
             nNets = TCPIP_STACK_NumberOfNetworksGet();
@@ -560,8 +578,8 @@ void APP_MQTT_CLIENT_Tasks ( void )
                 {
                     if (ipAddr.v[0] != 0 && ipAddr.v[0] != 169) // Wait for a Valid IP
                     {
-                        appData.board_ipAddr.v4Add.Val = ipAddr.Val;  // saved for debugging
-                        appData.state = APP_STATE_MQTT_INIT;
+                        appNetpieData.board_ipAddr.v4Add.Val = ipAddr.Val;  // saved for debugging
+                        appNetpieData.state = APP_NETPIE_STATE_MQTT_INIT;
 
                         TRACE_LOG("[%d] IP: %d.%d.%d.%d\n\r", __LINE__,
                             ipAddr.v[0], ipAddr.v[1], ipAddr.v[2], ipAddr.v[3]);  // DEBUG: iPAS
@@ -571,30 +589,30 @@ void APP_MQTT_CLIENT_Tasks ( void )
             break;
         }
 
-        case APP_STATE_MQTT_INIT:
+        case APP_NETPIE_STATE_MQTT_INIT:
         {
-            int rc = MqttClient_Init(&appData.mqttClient,
-                                     &appData.mqttNet,
+            int rc = MqttClient_Init(&appNetpieData.mqttClient,
+                                     &appNetpieData.mqttNet,
                                      APP_mqttMessage_cb,
                                      txBuffer, MAX_BUFFER_SIZE,
                                      rxBuffer, MAX_BUFFER_SIZE,
                                      MQTT_DEFAULT_CMD_TIMEOUT_MS);
             if (rc != MQTT_CODE_SUCCESS)
             {
-                appData.state = APP_FATAL_ERROR;
+                appNetpieData.state = APP_NETPIE_STATE_FATAL_ERROR;
                 break;
             }
-            APP_timerSet(&appData.genericUseTimer);
-            appData.state = APP_STATE_MQTT_NET_CONNECT;
+            APP_timerSet(&appNetpieData.genericUseTimer);
+            appNetpieData.state = APP_NETPIE_STATE_MQTT_NET_CONNECT;
 
             TRACE_LOG("[%d] MQTT init ready\n\r", __LINE__);  // DEBUG: iPAS
             break;
         }
 
-        case APP_STATE_MQTT_NET_CONNECT:
+        case APP_NETPIE_STATE_MQTT_NET_CONNECT:
         {
-            int rc = MqttClient_NetConnect(&appData.mqttClient,
-                                           (const char *)appData.host, appData.port,
+            int rc = MqttClient_NetConnect(&appNetpieData.mqttClient,
+                                           (const char *)appNetpieData.host, appNetpieData.port,
                                            MQTT_DEFAULT_CMD_TIMEOUT_MS,
                                            NULL,    // TLS disable
                                            NULL);   // TLS callback
@@ -605,22 +623,22 @@ void APP_MQTT_CLIENT_Tasks ( void )
 
             if (rc != MQTT_CODE_SUCCESS)
             {
-                appData.socket_connected = appData.mqtt_connected = false;
-                NET_PRES_SocketClose(appData.socket);
+                appNetpieData.socket_connected = appNetpieData.mqtt_connected = false;
+                NET_PRES_SocketClose(appNetpieData.socket);
 
-                while (!APP_timerExpired(&appData.genericUseTimer, 5));  // Delay 5 seconds before trying next
-                APP_timerSet(&appData.genericUseTimer);
+                while (!APP_timerExpired(&appNetpieData.genericUseTimer, 5));  // Delay 5 seconds before trying next
+                APP_timerSet(&appNetpieData.genericUseTimer);
 
-                TRACE_LOG("[%d] MQTT connect network %s fail (rc=%d)\n\r", __LINE__, appData.host, rc);  // DEBUG: iPAS
+                TRACE_LOG("[%d] MQTT connect network %s fail (rc=%d)\n\r", __LINE__, appNetpieData.host, rc);  // DEBUG: iPAS
                 break;
             }
-            appData.state = APP_STATE_MQTT_PROTOCOL_CONNECT;
+            appNetpieData.state = APP_NETPIE_STATE_MQTT_PROTOCOL_CONNECT;
 
             TRACE_LOG("[%d] MQTT network ready\n\r", __LINE__);  // DEBUG: iPAS
             break;
         }
 
-        case APP_STATE_MQTT_PROTOCOL_CONNECT:
+        case APP_NETPIE_STATE_MQTT_PROTOCOL_CONNECT:
         {
             MqttConnect connect;
             XMEMSET(&connect, 0, sizeof(connect));
@@ -638,27 +656,27 @@ void APP_MQTT_CLIENT_Tasks ( void )
             connect.enable_lwt  = 0;
 
             /* Send Connect and wait for Connect Ack */
-            int rc = MqttClient_Connect(&appData.mqttClient, &connect);
+            int rc = MqttClient_Connect(&appNetpieData.mqttClient, &connect);
             if(rc != MQTT_CODE_SUCCESS)
             {
-                APP_timerSet(&appData.genericUseTimer);
-                while (!APP_timerExpired(&appData.genericUseTimer, 5));
+                APP_timerSet(&appNetpieData.genericUseTimer);
+                while (!APP_timerExpired(&appNetpieData.genericUseTimer, 5));
 
-                appData.state = APP_TCPIP_ERROR;
+                appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
 
                 TRACE_LOG("[%d] MQTT protocol negotiation fail (rc=%d)\n\r", __LINE__, rc);  // DEBUG: iPAS
                 break;
             }
-            appData.mqtt_connected = true;
-            APP_timerSet(&appData.mqttKeepAlive);
-            APP_timerSet(&appData.mqttUpdateStatus);
-            appData.state = APP_STATE_MQTT_SUBSCRIBE;
+            appNetpieData.mqtt_connected = true;
+            APP_timerSet(&appNetpieData.mqttKeepAlive);
+            APP_timerSet(&appNetpieData.mqttUpdateStatus);
+            appNetpieData.state = APP_NETPIE_STATE_MQTT_SUBSCRIBE;
 
             TRACE_LOG("[%d] MQTT protocol negotiation success\n\r", __LINE__);  // DEBUG: iPAS
             break;
         }
 
-        case APP_STATE_MQTT_SUBSCRIBE:
+        case APP_NETPIE_STATE_MQTT_SUBSCRIBE:
         {
             MqttSubscribe subscribe;
             MqttTopic topics[1];
@@ -675,76 +693,76 @@ void APP_MQTT_CLIENT_Tasks ( void )
             subscribe.topic_count = sizeof(topics)/sizeof(MqttTopic);
             subscribe.topics = topics;
 
-            rc = MqttClient_Subscribe(&appData.mqttClient, &subscribe);
+            rc = MqttClient_Subscribe(&appNetpieData.mqttClient, &subscribe);
             if (rc != MQTT_CODE_SUCCESS)
             {
-                APP_timerSet(&appData.genericUseTimer);
-                while (!APP_timerExpired(&appData.genericUseTimer, 5));
+                APP_timerSet(&appNetpieData.genericUseTimer);
+                while (!APP_timerExpired(&appNetpieData.genericUseTimer, 5));
 
-                appData.state = APP_TCPIP_ERROR;
+                appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
 
                 TRACE_LOG("[%d] MQTT subscription fail (rc=%d)\n\r", __LINE__, rc);  // DEBUG: iPAS
                 break;
             }
 
-            appData.state = APP_STATE_MQTT_LOOP;
+            appNetpieData.state = APP_NETPIE_STATE_MQTT_LOOP;
 
             TRACE_LOG("[%d] MQTT subscribe '%s'\n\r", __LINE__, topics[0].topic_filter);  // DEBUG: iPAS
             break;
         }
 
-        case APP_STATE_MQTT_LOOP:
+        case APP_NETPIE_STATE_MQTT_LOOP:
         {
             int rc = 0;
 
             /* Keep alive */
-            if (APP_timerExpired(&appData.mqttKeepAlive, MQTT_KEEP_ALIVE_TIMEOUT))
+            if (APP_timerExpired(&appNetpieData.mqttKeepAlive, MQTT_KEEP_ALIVE_TIMEOUT))
             {
-                rc = MqttClient_Ping(&appData.mqttClient);
+                rc = MqttClient_Ping(&appNetpieData.mqttClient);
                 if (rc != MQTT_CODE_SUCCESS)
                 {
-                    appData.state = APP_TCPIP_ERROR;
+                    appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
                 }
 
-                APP_timerSet(&appData.mqttKeepAlive);  // Reset keep alive timer
+                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer
                 break;
             }
             
             /* Update status */
-            if (APP_timerExpired(&appData.mqttUpdateStatus, MQTT_UPDATE_STATUS_TIMEOUT))
+            if (APP_timerExpired(&appNetpieData.mqttUpdateStatus, MQTT_UPDATE_STATUS_TIMEOUT))
             {
                 TRACE_LOG("[%d] Update status every %d s\n\r", __LINE__, MQTT_UPDATE_STATUS_TIMEOUT);  // DEBUG: iPAS
 
-                rc = mqttclient_publish_status();
+                rc = netpie_publish_status();
                 if (rc != MQTT_CODE_SUCCESS)
                 {
-                    appData.state = APP_TCPIP_ERROR;
+                    appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
                 }
                 
-                APP_timerSet(&appData.mqttUpdateStatus);  // Reset status update timer
+                APP_timerSet(&appNetpieData.mqttUpdateStatus);  // Reset status update timer
                 
-                APP_timerSet(&appData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
+                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
                 break;
             }
 
             /* Check for incoming messages */
-            rc = MqttClient_WaitMessage(&appData.mqttClient, MQTT_DEFAULT_CMD_TIMEOUT_MS);
+            rc = MqttClient_WaitMessage(&appNetpieData.mqttClient, MQTT_DEFAULT_CMD_TIMEOUT_MS);
             if (rc == MQTT_CODE_ERROR_TIMEOUT)
             {
                 /* Keep Alive */
-                rc = MqttClient_Ping(&appData.mqttClient);
+                rc = MqttClient_Ping(&appNetpieData.mqttClient);
                 if (rc != MQTT_CODE_SUCCESS)
                 {
-                    appData.state = APP_TCPIP_ERROR;
+                    appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
                     break;
                 }
                 
-                APP_timerSet(&appData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
+                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
             }
             else
             if (rc == MQTT_CODE_ERROR_NETWORK)
             {
-                appData.state = APP_TCPIP_ERROR;
+                appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
                 break;
             }
             else
@@ -752,19 +770,19 @@ void APP_MQTT_CLIENT_Tasks ( void )
             {                                      // XXX: maybe returned from WolfMQTT callback functions
                 TRACE_LOG("[%d] No any message within %d ms (APP_CODE_ERROR_CMD_TIMEOUT)\n\r", __LINE__, MQTT_DEFAULT_CMD_TIMEOUT_MS);  // DEBUG: iPAS
 
-                rc = mqttclient_publish_log("Waiting too long without message in");
+                rc = netpie_publish_log("Waiting too long without message in");
                 if (rc != MQTT_CODE_SUCCESS)
                 {
-                    appData.state = APP_TCPIP_ERROR;
+                    appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
                     break;
                 }
 
-                APP_timerSet(&appData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
+                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
             }
             else
             if (rc != MQTT_CODE_SUCCESS)
             {
-                appData.state = APP_TCPIP_ERROR;
+                appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
                 break;
             }
 
@@ -772,18 +790,18 @@ void APP_MQTT_CLIENT_Tasks ( void )
         }
 
         /* Connection lost */
-        case APP_TCPIP_ERROR:
+        case APP_NETPIE_STATE_TCPIP_ERROR:
         {
-            appData.socket_connected = appData.mqtt_connected = false;
-            NET_PRES_SocketClose(appData.socket);
-            appData.state = APP_STATE_MQTT_NET_CONNECT;
+            appNetpieData.socket_connected = appNetpieData.mqtt_connected = false;
+            NET_PRES_SocketClose(appNetpieData.socket);
+            appNetpieData.state = APP_NETPIE_STATE_MQTT_NET_CONNECT;
 
             TRACE_LOG("[%d] APP_TCPIP_ERROR, going to APP_STATE_MQTT_NET_CONNECT\n\r", __LINE__);  // DEBUG: iPAS
             break;
         }
 
         /* This error requires system reset or hardware debugging */
-        case APP_FATAL_ERROR:
+        case APP_NETPIE_STATE_FATAL_ERROR:
         {
             TRACE_LOG("[%d] APP_FATAL_ERROR\n\r", __LINE__);  // DEBUG: iPAS
             break;

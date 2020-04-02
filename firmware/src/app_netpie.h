@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app_mqtt_client.h
+    app_netpie.h
 
   Summary:
     This header file provides prototypes and definitions for the application.
@@ -44,8 +44,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 //DOM-IGNORE-END
 
 
-#ifndef _APP_MQTT_CLIENT_H
-#define _APP_MQTT_CLIENT_H
+#ifndef _APP_NETPIE_H
+#define _APP_NETPIE_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -78,22 +78,6 @@ extern "C" {
 // *****************************************************************************
 
 // *****************************************************************************
-/* Application Codes */
-enum AppCodes {
-    APP_CODE_ERROR_BAD_ARG = -255,
-    APP_CODE_ERROR_OUT_OF_BUFFER,
-    APP_CODE_ERROR_SSL_FATAL,
-    APP_CODE_ERROR_INVALID_SOCKET,
-    APP_CODE_ERROR_FAILED_TO_BEGIN_DNS_RESOLUTION,
-    APP_CODE_ERROR_DNS_FAILED,
-    APP_CODE_ERROR_FAILED_SSL_NEGOTIATION,
-    APP_CODE_ERROR_TIMEOUT,
-    APP_CODE_ERROR_CMD_TIMEOUT,
-    APP_CODE_SUCCESS = 0,
-};
-
-
-// *****************************************************************************
 /* Application states
 
   Summary:
@@ -106,21 +90,21 @@ enum AppCodes {
 typedef enum
 {
 	/* Application's state machine's initial state. */
-    APP_STATE_INIT = 0,
+    APP_NETPIE_STATE_INIT = 0,
 
-    APP_STATE_TCPIP_WAIT_INIT,
-    APP_STATE_TCPIP_WAIT_FOR_IP,
+    APP_NETPIE_STATE_TCPIP_WAIT_INIT,
+    APP_NETPIE_STATE_TCPIP_WAIT_FOR_IP,
 
-    APP_STATE_MQTT_INIT,
-    APP_STATE_MQTT_NET_CONNECT,
-    APP_STATE_MQTT_PROTOCOL_CONNECT,
-    APP_STATE_MQTT_SUBSCRIBE,
-    APP_STATE_MQTT_LOOP,
+    APP_NETPIE_STATE_MQTT_INIT,
+    APP_NETPIE_STATE_MQTT_NET_CONNECT,
+    APP_NETPIE_STATE_MQTT_PROTOCOL_CONNECT,
+    APP_NETPIE_STATE_MQTT_SUBSCRIBE,
+    APP_NETPIE_STATE_MQTT_LOOP,
 
-    APP_TCPIP_ERROR,
-    APP_FATAL_ERROR,
+    APP_NETPIE_STATE_TCPIP_ERROR,
+    APP_NETPIE_STATE_FATAL_ERROR,
 
-} APP_STATES;
+} APP_NETPIE_STATES;
 
 
 // *****************************************************************************
@@ -138,7 +122,7 @@ typedef enum
 typedef struct
 {
     /* The application's current state */
-    APP_STATES state;
+    APP_NETPIE_STATES state;
 
     // Timers
     uint32_t genericUseTimer;
@@ -163,13 +147,13 @@ typedef struct
     bool mqtt_connected;
     IP_MULTI_ADDRESS board_ipAddr;
 
-} APP_DATA;
+} APP_NETPIE_DATA;
 
 
 // *****************************************************************************
 /* Callback functions
  */
-typedef void (*mqttclient_callback_t)(const char *sub_topic, const char *message);
+typedef void (*netpie_callback_t)(const char *sub_topic, const char *message);
 
 
 // *****************************************************************************
@@ -190,7 +174,7 @@ typedef void (*mqttclient_callback_t)(const char *sub_topic, const char *message
 
 /*******************************************************************************
   Function:
-    void APP_MQTT_CLIENT_Initialize ( void )
+    void APP_NETPIE_Initialize ( void )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -212,18 +196,18 @@ typedef void (*mqttclient_callback_t)(const char *sub_topic, const char *message
 
   Example:
     <code>
-    APP_MQTT_CLIENT_Initialize();
+    APP_NETPIE_Initialize();
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
-void APP_MQTT_CLIENT_Initialize ( void );
+void APP_NETPIE_Initialize ( void );
 
 
 /*******************************************************************************
   Function:
-    void APP_MQTT_CLIENT_Tasks ( void )
+    void APP_NETPIE_Tasks ( void )
 
   Summary:
     MPLAB Harmony Demo application tasks function
@@ -244,13 +228,13 @@ void APP_MQTT_CLIENT_Initialize ( void );
 
   Example:
     <code>
-    APP_MQTT_CLIENT_Tasks();
+    APP_NETPIE_Tasks();
     </code>
 
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
-void APP_MQTT_CLIENT_Tasks( void );
+void APP_NETPIE_Tasks( void );
 
 
 // *****************************************************************************
@@ -259,13 +243,13 @@ void APP_MQTT_CLIENT_Tasks( void );
 // *****************************************************************************
 // *****************************************************************************
 
-extern bool mqttclient_ready(void);
-extern int  mqttclient_publish_log(const char *message);  // Publish message to logging channel
-extern int  mqttclient_publish_register(const char *sub_topic, const char *message);  // Publish the update of register at address.
-extern void mqttclient_set_callback(mqttclient_callback_t cb);  // Set the callback function for updating register as request.
+extern bool netpie_ready(void);
+extern int  netpie_publish_log(const char *message);  // Publish message to logging channel
+extern int  netpie_publish_register(const char *sub_topic, const char *message);  // Publish the update of register at address.
+extern void netpie_set_callback(netpie_callback_t cb);  // Set the callback function for updating register as request.
 
 
-#endif /* _APP_MQTT_CLIENT_H */
+#endif /* _APP_NETPIE_H */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
