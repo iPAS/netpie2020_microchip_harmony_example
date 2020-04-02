@@ -163,13 +163,13 @@ typedef struct
     bool mqtt_connected;
     IP_MULTI_ADDRESS board_ipAddr;
 
-} APP_DATA;
+} APP_NETPIE_DATA;
 
 
 // *****************************************************************************
 /* Callback functions
  */
-typedef void (*mqttclient_callback_t)(const char *sub_topic, const char *message);
+typedef void (*netpie_callback_t)(const char *sub_topic, const char *message);
 
 
 // *****************************************************************************
@@ -259,10 +259,10 @@ void APP_NETPIE_Tasks( void );
 // *****************************************************************************
 // *****************************************************************************
 
-extern bool mqttclient_ready(void);
-extern int  mqttclient_publish_log(const char *message);  // Publish message to logging channel
-extern int  mqttclient_publish_register(const char *sub_topic, const char *message);  // Publish the update of register at address.
-extern void mqttclient_set_callback(mqttclient_callback_t cb);  // Set the callback function for updating register as request.
+extern bool netpie_ready(void);
+extern int  netpie_publish_log(const char *message);  // Publish message to logging channel
+extern int  netpie_publish_register(const char *sub_topic, const char *message);  // Publish the update of register at address.
+extern void netpie_set_callback(netpie_callback_t cb);  // Set the callback function for updating register as request.
 
 
 #endif /* _APP_NETPIE_H */

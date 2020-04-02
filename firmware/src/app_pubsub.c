@@ -145,19 +145,19 @@ static void mqttclient_callback(const char *sub_topic, const char *message)
     if (p_reg->sub_topic == NULL)  // Reference error
     {
         snprintf(msg, sizeof(msg), "Unknown sub_topic:'%s'", sub_topic);
-        mqttclient_publish_log(msg);
+        netpie_publish_log(msg);
     } else
     if (endptr == message)  // Value conversion error
     {
         snprintf(msg, sizeof(msg), "Conversion error on message:'%s'", message);
-        mqttclient_publish_log(msg);
+        netpie_publish_log(msg);
     } 
     else
     {
         if (endptr != NULL)  // Valid
             *p_reg->p_value = value;            
         snprintf(msg, sizeof(msg), "%f", *p_reg->p_value);
-        mqttclient_publish_register(sub_topic, msg);
+        netpie_publish_register(sub_topic, msg);
     }
 }
 
@@ -199,7 +199,7 @@ void APP_PUBSUB_Initialize ( void )
     }
             
     // Callback function for coping with incoming MQTT message
-    mqttclient_set_callback(mqttclient_callback);
+    netpie_set_callback(mqttclient_callback);
 }
 
 
@@ -220,7 +220,7 @@ void APP_PUBSUB_Tasks ( void )
         /* Application's initial state. */
         case APP_PUBSUB_STATE_INIT:
         {
-            if (mqttclient_ready())
+            if (netpie_ready())
             {
                 app_pubsubData.state = APP_PUBSUB_STATE_REGISTER_UPDATE;
             }
@@ -237,7 +237,7 @@ void APP_PUBSUB_Tasks ( void )
         {
             static st_register_t *p_reg = st_registers;
             
-            if (mqttclient_ready())
+            if (netpie_ready())
             {
                 st_register_t *p_prev = st_prev_registers;
                 uint32_t i = ((uint32_t)p_reg - (uint32_t)st_registers) / sizeof(st_register_t);
@@ -251,7 +251,7 @@ void APP_PUBSUB_Tasks ( void )
                     char message[20];
 
                     snprintf(message, sizeof(message), "%f", *p_reg->p_value);
-                    mqttclient_publish_register(sub_topic, message);
+                    netpie_publish_register(sub_topic, message);
 
                     TRACE_LOG("[PubSub] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
                 
