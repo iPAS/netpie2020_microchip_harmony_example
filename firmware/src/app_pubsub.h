@@ -67,6 +67,7 @@ extern "C" {
 #endif
 // DOM-IGNORE-END 
 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Type Definitions
@@ -88,7 +89,7 @@ typedef enum
 {
 	/* Application's state machine's initial state. */
 	APP_PUBSUB_STATE_INIT=0,
-	APP_PUBSUB_STATE_SERVICE_TASKS,
+	APP_PUBSUB_STATE_REGISTER_UPDATE,
 
 	/* TODO: Define states used by the application state machine. */
 
@@ -210,4 +211,3 @@ void APP_PUBSUB_Tasks( void );
 /*******************************************************************************
  End of File
  */
-

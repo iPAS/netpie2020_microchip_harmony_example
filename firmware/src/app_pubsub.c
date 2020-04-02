@@ -54,6 +54,16 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "app_pubsub.h"
+#include "app_netpie.h"
+#include "register_mapping.h"
+
+#ifdef DO_TRACE
+#include "app_uart_term.h"
+#define TRACE_LOG(...) uart_send_tx_queue(__VA_ARGS__)
+#else
+#define TRACE_LOG(...)
+#endif
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -78,6 +88,14 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 APP_PUBSUB_DATA app_pubsubData;
 
+
+#define REGISTER_PUBLISH_INTERVAL_MS 500 
+
+st_register_t *st_prev_registers;  // Allocated for keeping previous values of registers
+float *register_prev_values;
+uint16_t register_count = 0;
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Functions
@@ -87,15 +105,61 @@ APP_PUBSUB_DATA app_pubsubData;
 /* TODO:  Add any necessary callback functions.
 */
 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Local Functions
 // *****************************************************************************
 // *****************************************************************************
 
+#define LEN_OF_ARRAY(arr) (sizeof(arr)/sizeof(arr[0]))
 
-/* TODO:  Add any necessary local functions.
-*/
+static void mqttclient_callback(const char *sub_topic, const char *message)
+{
+    TRACE_LOG("[PubSub] --- calling back for updating reg:'%s' with '%s'\n\r", sub_topic, message);  // DEBUG: iPAS
+
+    st_register_t *p_reg = st_registers;
+    char *endptr = NULL;
+    float value;
+    
+    while (p_reg->sub_topic != NULL)  // Find the matched reference
+    {
+        if (strcmp(sub_topic, p_reg->sub_topic) == 0)
+        {
+            if (strlen(message) == 0)  // Just refresh
+            {
+                
+            }
+            else  // Update if valid
+            {
+                value = strtof(message, &endptr);
+            }
+            break;
+        }
+        p_reg++;
+    }
+    
+    
+    char msg[50];
+    
+    if (p_reg->sub_topic == NULL)  // Reference error
+    {
+        snprintf(msg, sizeof(msg), "Unknown sub_topic:'%s'", sub_topic);
+        mqttclient_publish_log(msg);
+    } else
+    if (endptr == message)  // Value conversion error
+    {
+        snprintf(msg, sizeof(msg), "Conversion error on message:'%s'", message);
+        mqttclient_publish_log(msg);
+    } 
+    else
+    {
+        if (endptr != NULL)  // Valid
+            *p_reg->p_value = value;            
+        snprintf(msg, sizeof(msg), "%f", *p_reg->p_value);
+        mqttclient_publish_register(sub_topic, msg);
+    }
+}
 
 
 // *****************************************************************************
@@ -111,16 +175,31 @@ APP_PUBSUB_DATA app_pubsubData;
   Remarks:
     See prototype in app_pubsub.h.
  */
-
 void APP_PUBSUB_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
     app_pubsubData.state = APP_PUBSUB_STATE_INIT;
 
-    
-    /* TODO: Initialize your application's state machine and other
-     * parameters.
-     */
+    // Allocate and initial 'st_prev_registers' for memorizing the latest
+    st_register_t *p_reg = st_registers;
+    for (; p_reg->sub_topic != NULL; p_reg++)
+    {
+        register_count++;  // Using counting method because of unknown-size extern array st_registers
+    }
+    st_prev_registers = (void *)malloc(register_count * sizeof(st_register_t));
+    memcpy(st_prev_registers, st_registers, register_count * sizeof(st_register_t));
+
+    // Allocate Buffer for the previous values
+    register_prev_values = (void *)malloc(register_count * sizeof(float));
+    uint16_t i;
+    for (i = 0; i < register_count; i++)
+    {
+        st_prev_registers[i].p_value = &register_prev_values[i];
+        *st_prev_registers[i].p_value = *st_registers[i].p_value;
+    }
+            
+    // Callback function for coping with incoming MQTT message
+    mqttclient_set_callback(mqttclient_callback);
 }
 
 
@@ -131,9 +210,9 @@ void APP_PUBSUB_Initialize ( void )
   Remarks:
     See prototype in app_pubsub.h.
  */
-
 void APP_PUBSUB_Tasks ( void )
 {
+    static bool first_time = true;
 
     /* Check the application's current state. */
     switch ( app_pubsubData.state )
@@ -141,26 +220,77 @@ void APP_PUBSUB_Tasks ( void )
         /* Application's initial state. */
         case APP_PUBSUB_STATE_INIT:
         {
-            bool appInitialized = true;
-       
-        
-            if (appInitialized)
+            if (mqttclient_ready())
             {
-            
-                app_pubsubData.state = APP_PUBSUB_STATE_SERVICE_TASKS;
+                app_pubsubData.state = APP_PUBSUB_STATE_REGISTER_UPDATE;
+            }
+            else
+            {
+                TRACE_LOG("[PubSub] Wait MQTT ready ...\n\r");  // DEBUG: iPAS
+                vTaskDelay(1000 / portTICK_PERIOD_MS);
             }
             break;
         }
-
-        case APP_PUBSUB_STATE_SERVICE_TASKS:
-        {
         
+        /* Loop periodically updating all changed registers */
+        case APP_PUBSUB_STATE_REGISTER_UPDATE:
+        {
+            static st_register_t *p_reg = st_registers;
+            
+            if (mqttclient_ready())
+            {
+                st_register_t *p_prev = st_prev_registers;
+                uint32_t i = ((uint32_t)p_reg - (uint32_t)st_registers) / sizeof(st_register_t);
+                p_prev += i;
+                                
+                if ((*p_prev->p_value != *p_reg->p_value) || first_time)  // The value has been changed.
+                {   
+                    *p_prev->p_value = *p_reg->p_value;  // Update
+                    
+                    const char *sub_topic = p_reg->sub_topic;
+                    char message[20];
+
+                    snprintf(message, sizeof(message), "%f", *p_reg->p_value);
+                    mqttclient_publish_register(sub_topic, message);
+
+                    TRACE_LOG("[PubSub] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
+                
+                    vTaskDelay(REGISTER_PUBLISH_INTERVAL_MS / portTICK_PERIOD_MS);
+                }
+                else
+                {
+                    vTaskDelay(50 / portTICK_PERIOD_MS);
+                }
+                
+                p_reg++;  // Next register
+                if (p_reg->sub_topic == NULL)
+                {
+                    first_time = false;
+                    p_reg = st_registers;
+                    
+                    
+                    
+                    // -------------------------------
+                    // --- For testing only ----------
+                    // --- Randomly changing value ---
+                    uint16_t i = rand() % (register_count-1);
+                    float val = rand() % 100;
+                    *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
+                    TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
+
+                    
+                    
+                }
+            }
+            else
+            {
+                first_time = true;
+                p_reg = st_registers;
+                app_pubsubData.state = APP_PUBSUB_STATE_INIT;
+            }
             break;
         }
-
-        /* TODO: implement your application state machine.*/
         
-
         /* The default state should never be executed. */
         default:
         {
@@ -169,7 +299,6 @@ void APP_PUBSUB_Tasks ( void )
         }
     }
 }
-
  
 
 /*******************************************************************************
