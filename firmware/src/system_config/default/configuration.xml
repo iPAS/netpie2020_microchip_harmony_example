@@ -978,21 +978,23 @@
         <Name>app_pubsub.c</Name>
         <Path>Source Files/app</Path>
         <Checksum>3419CE6BC734C17689279D4505FAC267</Checksum>
+        <ProjectFileChecksum>5EC96E2DF3E0F3FFB309306B04CB1D5C</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>sys_ports_static.c</Name>
         <Path>Source Files/app/system_config/default/framework/system/ports/src</Path>
-        <Checksum>8301C880BDC364486FECA5F07A2C1509</Checksum>
+        <Checksum>95A725CAF636BBA7B196B88C8017BD50</Checksum>
       </Template>
       <Template>
         <Name>system_interrupt_a.S</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>4594F9EB4F0F2E90348F3003A5DAE228</Checksum>
+        <Checksum>67F76D0848561E560FFAE157425ECCB6</Checksum>
       </Template>
       <Template>
         <Name>app_netpie.h</Name>
         <Path>Header Files/app</Path>
         <Checksum>F1B3A42F53E4C92540006BB5C0083531</Checksum>
+        <ProjectFileChecksum>EFAEC49C2F289CFDCD071241B400B896</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>net_pres_enc_glue.h</Name>
@@ -1003,11 +1005,12 @@
         <Name>app_netpie.c</Name>
         <Path>Source Files/app</Path>
         <Checksum>C48AFB4A95B8EF6A71AD0DFD64C27E51</Checksum>
+        <ProjectFileChecksum>F1FAC6DFBF2E17B6511ECE0E2F4742EA</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>drv_usart_mapping.c</Name>
         <Path>Source Files/app/system_config/default/framework/driver/usart/src</Path>
-        <Checksum>115DDE4372E58D4116BC77DC36FD97DC</Checksum>
+        <Checksum>F7AA7FC04CBAD5FE7D390C8D3ABE0994</Checksum>
       </Template>
       <Template>
         <Name>FreeRTOSConfig.h</Name>
@@ -1017,7 +1020,7 @@
       <Template>
         <Name>drv_usart_static_byte_model.c</Name>
         <Path>Source Files/app/system_config/default/framework/driver/usart/src</Path>
-        <Checksum>920F2F0163C63F1045EFC1B86BA4B94D</Checksum>
+        <Checksum>7C7784F2F3859DC104B0D7A3E806E47D</Checksum>
       </Template>
       <Template>
         <Name>net_pres_enc_glue.c</Name>
@@ -1032,7 +1035,7 @@
       <Template>
         <Name>system_interrupt.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>E46AD5C2E416B0095C91499E48E5C9CA</Checksum>
+        <Checksum>95D5FB1C3438F081C3BABF6B8D584F38</Checksum>
       </Template>
       <Template>
         <Name>sys_clk_static.c</Name>
@@ -1048,12 +1051,12 @@
       <Template>
         <Name>drv_usart_static.c</Name>
         <Path>Source Files/app/system_config/default/framework/driver/usart/src</Path>
-        <Checksum>CCB26B27987D7833A5B20E59C644D826</Checksum>
+        <Checksum>F3E64125C9EA8B008950B16BAF595F5F</Checksum>
       </Template>
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>BF76E01F64B58F02649DA506A30962F2</Checksum>
+        <Checksum>A84BCD27B99E8856B13299D7BB9F66B9</Checksum>
         <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
@@ -1075,7 +1078,7 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>D628D2AB58729E9792468352715DBFC2</Checksum>
+        <Checksum>E07ED818692CC00F2E96960920BDA60E</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
@@ -1086,11 +1089,12 @@
         <Name>app_pubsub.h</Name>
         <Path>Header Files/app</Path>
         <Checksum>84C24ADF6CA5ECCCB11B385C06821286</Checksum>
+        <ProjectFileChecksum>1D4BF2DA1B83F140F892A87E8B88BF1C</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>drv_usart_static.h</Name>
         <Path>Header Files/app/system_config/default/framework/driver/usart</Path>
-        <Checksum>AE37BD63B6EC9F6ADD6B8006CE192FCB</Checksum>
+        <Checksum>D7DEB7C41F1E91D0B9D0727439F58319</Checksum>
       </Template>
       <Template>
         <Name>system_tasks.c</Name>
@@ -1100,7 +1104,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>FB3710E22AC88BD5813C051BBFFA4446</Checksum>
+        <Checksum>58929AA027C6B0A5392FACBDF668208B</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>
