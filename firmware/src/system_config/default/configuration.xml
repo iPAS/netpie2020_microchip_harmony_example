@@ -981,6 +981,12 @@
         <ProjectFileChecksum>5EC96E2DF3E0F3FFB309306B04CB1D5C</ProjectFileChecksum>
       </Template>
       <Template>
+        <Name>app_logger.c</Name>
+        <Path>Source Files/app</Path>
+        <Checksum>76D6FEF618C75C640B96379980B2D14C</Checksum>
+        <ProjectFileChecksum>5816F6F232B7BC6E92B1F77A613193BF</ProjectFileChecksum>
+      </Template>
+      <Template>
         <Name>sys_ports_static.c</Name>
         <Path>Source Files/app/system_config/default/framework/system/ports/src</Path>
         <Checksum>95A725CAF636BBA7B196B88C8017BD50</Checksum>
@@ -1013,6 +1019,11 @@
         <Checksum>F7AA7FC04CBAD5FE7D390C8D3ABE0994</Checksum>
       </Template>
       <Template>
+        <Name>app_logger.h</Name>
+        <Path>Header Files/app</Path>
+        <Checksum>148634B6AAC0538B1EAFEB5DC1C261C6</Checksum>
+      </Template>
+      <Template>
         <Name>FreeRTOSConfig.h</Name>
         <Path>Header Files/app/system_config/default</Path>
         <Checksum>A9B4E5F61BF804D5A302295DB25FDC77</Checksum>
@@ -1035,7 +1046,7 @@
       <Template>
         <Name>system_interrupt.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>95D5FB1C3438F081C3BABF6B8D584F38</Checksum>
+        <Checksum>B1F729228C13ED1BE003C8A510F51796</Checksum>
       </Template>
       <Template>
         <Name>sys_clk_static.c</Name>
@@ -1056,7 +1067,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>A84BCD27B99E8856B13299D7BB9F66B9</Checksum>
+        <Checksum>CB66182D8FF96DE0997B3BEC72512653</Checksum>
         <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
@@ -1078,7 +1089,7 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>E07ED818692CC00F2E96960920BDA60E</Checksum>
+        <Checksum>DA2CD3113FC445A39155508CB3686523</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
@@ -1099,12 +1110,12 @@
       <Template>
         <Name>system_tasks.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>5A60D3DE476C8D1F1A23D294C31FFD2B</Checksum>
+        <Checksum>D3B407481B870DA1B984CCCD572C4F7E</Checksum>
       </Template>
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>58929AA027C6B0A5392FACBDF668208B</Checksum>
+        <Checksum>1637BB569A26B793F29413EF57E19D58</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>

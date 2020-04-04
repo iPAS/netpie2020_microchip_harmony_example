@@ -507,6 +507,7 @@ void SYS_Initialize ( void* data )
     APP_UART_TERM_Initialize();
     APP_NETPIE_Initialize();
     APP_PUBSUB_Initialize();
+    APP_LOGGER_Initialize();
 }
 
 

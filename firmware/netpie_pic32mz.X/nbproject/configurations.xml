@@ -41,6 +41,7 @@
         <itemPath>../src/app_uart_term.h</itemPath>
         <itemPath>../src/app_netpie.h</itemPath>
         <itemPath>../src/app_pubsub.h</itemPath>
+        <itemPath>../src/app_logger.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f8" displayName="crypto" projectFiles="true">
@@ -388,6 +389,7 @@
         <itemPath>../src/app_uart_term.c</itemPath>
         <itemPath>../src/app_netpie.c</itemPath>
         <itemPath>../src/app_pubsub.c</itemPath>
+        <itemPath>../src/app_logger.c</itemPath>
         <itemPath>../src/main.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">

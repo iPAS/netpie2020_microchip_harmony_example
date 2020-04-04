@@ -76,6 +76,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "app_uart_term.h"
 #include "app_netpie.h"
 #include "app_pubsub.h"
+#include "app_logger.h"
 
 
 // DOM-IGNORE-BEGIN
