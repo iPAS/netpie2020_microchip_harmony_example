@@ -216,7 +216,6 @@ static void _APP_LOGGER_Tasks(void)
     while(1)
     {
         APP_LOGGER_Tasks();
-        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 }
 

@@ -1110,7 +1110,7 @@
       <Template>
         <Name>system_tasks.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>D3B407481B870DA1B984CCCD572C4F7E</Checksum>
+        <Checksum>87778BDC7DA0A37FD3DB5E3509167860</Checksum>
       </Template>
       <Template>
         <Name>system_config.h</Name>
