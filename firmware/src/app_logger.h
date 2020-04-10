@@ -115,9 +115,15 @@ typedef struct
 
     /* TODO: Define any additional data used by the application. */
     DRV_HANDLE handleUSART1;
+
+
 	int tx_count;
 	int rx_count;
 
+    /* RTOS Queues */
+    QueueHandle_t q_tx;
+    QueueHandle_t q_rx;
+    
 } APP_LOGGER_DATA;
 
 

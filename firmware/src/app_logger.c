@@ -189,9 +189,15 @@ void APP_LOGGER_Initialize ( void )
 
     app_loggerData.handleUSART1 = DRV_HANDLE_INVALID;
     
-    /* TODO: Initialize your application's state machine and other
-     * parameters.
-     */
+    /* Message queue */
+    app_loggerData.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
+    app_loggerData.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
+    if (app_loggerData.q_tx == NULL || app_loggerData.q_rx == NULL)
+    {
+        // Some error
+    }
+    xQueueReset(app_loggerData.q_tx);
+    xQueueReset(app_loggerData.q_rx);
 }
 
 
@@ -216,7 +222,9 @@ void APP_LOGGER_Tasks ( void )
        
             if (app_loggerData.handleUSART1 == DRV_HANDLE_INVALID)
             {
-                app_loggerData.handleUSART1 = DRV_USART_Open(APP_LOGGER_DRV_USART, DRV_IO_INTENT_READWRITE|DRV_IO_INTENT_NONBLOCKING);
+                app_loggerData.handleUSART1 = DRV_USART_Open(
+                        APP_LOGGER_DRV_USART, 
+                        DRV_IO_INTENT_READWRITE|DRV_IO_INTENT_NONBLOCKING);
                 appInitialized &= ( DRV_HANDLE_INVALID != app_loggerData.handleUSART1 );
             }
         
@@ -226,6 +234,8 @@ void APP_LOGGER_Tasks ( void )
                 usartBMState = USART_BM_INIT;
             
                 app_loggerData.state = APP_LOGGER_STATE_SERVICE_TASKS;
+            
+                DRV_USART_WriteByte(app_loggerData.handleUSART1, '.');  // DEBUG: iPAS
             }
             break;
         }
@@ -236,9 +246,6 @@ void APP_LOGGER_Tasks ( void )
         
             break;
         }
-
-        /* TODO: implement your application state machine.*/
-        
 
         /* The default state should never be executed. */
         default:
