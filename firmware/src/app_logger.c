@@ -76,7 +76,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Application strings and buffers are be defined outside this structure.
 */
 
-APP_LOGGER_DATA app_loggerData;
+static APP_LOGGER_DATA app_Data;
 static uint8_t app_logger_tx_buf[] = "Hello World\r\n";
 static uint8_t app_logger_rx_buf[10];
 static enum 
@@ -95,6 +95,7 @@ static enum
 
 /* TODO:  Add any necessary callback functions.
 */
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -118,47 +119,52 @@ static void USART_Task (void)
     {
         default:
         case USART_BM_INIT:
-        {
-            app_loggerData.tx_count = 0;
-            app_loggerData.rx_count = 0;
+        {            
             usartBMState = USART_BM_WORKING;
             break;
         }
 
         case USART_BM_WORKING:
         {
-            if (app_loggerData.tx_count < sizeof(app_logger_tx_buf)) 
+            // ******
+            // * TX *
+            while (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
             {
-                if(!DRV_USART_TransmitBufferIsFull(app_loggerData.handleUSART1))
+                static uint8_t index = 0;
+                static uart_queue_item_t q_item;
+                bool do_send = true;
+
+                if (index == 0)
                 {
-                    DRV_USART_WriteByte(app_loggerData.handleUSART1, app_logger_tx_buf[app_loggerData.tx_count]);
-                    app_loggerData.tx_count++;
+                    //uxQueueMessagesWaiting();
+                    do_send = xQueueReceive(app_Data.q_tx, &q_item, 0);
+                }
+
+                if (do_send)
+                {
+                    DRV_USART_WriteByte(app_Data.handleUSART, q_item.buffer[index]);
+                    index = (index == q_item.length-1)? 0 : index+1;
                 }
             }
 
-            if (app_loggerData.rx_count < sizeof(app_logger_rx_buf)) 
+            // ******
+            // * RX *
+            while (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
             {
-                if(!DRV_USART_ReceiverBufferIsEmpty(app_loggerData.handleUSART1))
+                if (uxQueueSpacesAvailable(app_Data.q_rx) > 0)
                 {
-                    app_logger_rx_buf[app_loggerData.rx_count] = DRV_USART_ReadByte(app_loggerData.handleUSART1);
-                    app_loggerData.rx_count++;
+                    uint8_t c_rx = DRV_USART_ReadByte(app_Data.handleUSART);
                 }
             }
 
-            /* Have we finished? */
-            if (app_loggerData.tx_count == sizeof(app_logger_tx_buf) 
-                    //&& app_loggerData.rx_count == sizeof(app_logger_rx_buf)
-                    )
-            {
-                usartBMState = USART_BM_DONE;
-            }
+            usartBMState = USART_BM_DONE;
             break;
         }
 
         case USART_BM_DONE:
         {
-            usartBMState = USART_BM_INIT;
-            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            //vTaskDelay(100 / portTICK_PERIOD_MS);
+            usartBMState = USART_BM_WORKING;
             break;
         }
     }
@@ -185,19 +191,19 @@ static void USART_Task (void)
 void APP_LOGGER_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
-    app_loggerData.state = APP_LOGGER_STATE_INIT;
+    app_Data.state = APP_LOGGER_STATE_INIT;
 
-    app_loggerData.handleUSART1 = DRV_HANDLE_INVALID;
+    app_Data.handleUSART = DRV_HANDLE_INVALID;
     
     /* Message queue */
-    app_loggerData.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
-    app_loggerData.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
-    if (app_loggerData.q_tx == NULL || app_loggerData.q_rx == NULL)
+    app_Data.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
+    app_Data.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
+    if (app_Data.q_tx == NULL || app_Data.q_rx == NULL)
     {
         // Some error
     }
-    xQueueReset(app_loggerData.q_tx);
-    xQueueReset(app_loggerData.q_rx);
+    xQueueReset(app_Data.q_tx);
+    xQueueReset(app_Data.q_rx);
 }
 
 
@@ -213,19 +219,19 @@ void APP_LOGGER_Tasks ( void )
 {
 
     /* Check the application's current state. */
-    switch ( app_loggerData.state )
+    switch ( app_Data.state )
     {
         /* Application's initial state. */
         case APP_LOGGER_STATE_INIT:
         {
             bool appInitialized = true;
        
-            if (app_loggerData.handleUSART1 == DRV_HANDLE_INVALID)
+            if (app_Data.handleUSART == DRV_HANDLE_INVALID)
             {
-                app_loggerData.handleUSART1 = DRV_USART_Open(
+                app_Data.handleUSART = DRV_USART_Open(
                         APP_LOGGER_DRV_USART, 
                         DRV_IO_INTENT_READWRITE|DRV_IO_INTENT_NONBLOCKING);
-                appInitialized &= ( DRV_HANDLE_INVALID != app_loggerData.handleUSART1 );
+                appInitialized &= ( DRV_HANDLE_INVALID != app_Data.handleUSART );
             }
         
             if (appInitialized)
@@ -233,9 +239,9 @@ void APP_LOGGER_Tasks ( void )
                 /* initialize the USART state machine */
                 usartBMState = USART_BM_INIT;
             
-                app_loggerData.state = APP_LOGGER_STATE_SERVICE_TASKS;
+                app_Data.state = APP_LOGGER_STATE_SERVICE_TASKS;
             
-                DRV_USART_WriteByte(app_loggerData.handleUSART1, '.');  // DEBUG: iPAS
+                DRV_USART_WriteByte(app_Data.handleUSART, '.');  // DEBUG: iPAS
             }
             break;
         }

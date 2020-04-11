@@ -114,11 +114,7 @@ typedef struct
     APP_LOGGER_STATES state;
 
     /* TODO: Define any additional data used by the application. */
-    DRV_HANDLE handleUSART1;
-
-
-	int tx_count;
-	int rx_count;
+    DRV_HANDLE handleUSART;
 
     /* RTOS Queues */
     QueueHandle_t q_tx;
