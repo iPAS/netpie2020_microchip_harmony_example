@@ -125,11 +125,6 @@ typedef struct
  */
 #define UART_QUEUE_SIZE 10
 #define UART_QUEUE_ITEM_SIZE 200
-typedef struct
-{
-    uint8_t buffer[UART_QUEUE_ITEM_SIZE];
-    uint8_t length;
-} uart_queue_item_t;
 
 
 // *****************************************************************************

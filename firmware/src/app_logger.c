@@ -55,6 +55,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include "app_logger.h"
 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Global Data Definitions
@@ -77,14 +78,18 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 */
 
 static APP_LOGGER_DATA app_Data;
-static uint8_t app_logger_tx_buf[] = "Hello World\r\n";
-static uint8_t app_logger_rx_buf[10];
 static enum 
 {
     USART_BM_INIT,
     USART_BM_WORKING,
     USART_BM_DONE,
 } usartBMState;
+
+typedef struct
+{
+    uint8_t buffer[LOGGER_QUEUE_ITEM_SIZE];
+    uint8_t length;
+} logger_queue_item_t;
 
 
 // *****************************************************************************
@@ -102,6 +107,24 @@ static enum
 // Section: Application Local Functions
 // *****************************************************************************
 // *****************************************************************************
+
+/**
+ * Enqueue a message to UART Tx
+ */
+BaseType_t logger_send_tx_queue(const char *fmt, ... )
+{
+    va_list args;
+    logger_queue_item_t q_item;
+    uint16_t len;
+
+    va_start(args, fmt);
+    len = vsnprintf(q_item.buffer, UART_QUEUE_ITEM_SIZE, fmt, args);
+    va_end(args);
+
+    q_item.length = strlen(q_item.buffer);
+    return xQueueSendToBack(app_Data.q_tx, &q_item, 0);
+}
+
 
 /******************************************************************************
   Function:
@@ -131,7 +154,7 @@ static void USART_Task (void)
             while (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
             {
                 static uint8_t index = 0;
-                static uart_queue_item_t q_item;
+                static logger_queue_item_t q_item;
                 bool do_send = true;
 
                 if (index == 0)
@@ -170,9 +193,6 @@ static void USART_Task (void)
     }
 }
 
-/* TODO:  Add any necessary local functions.
-*/
-
 
 // *****************************************************************************
 // *****************************************************************************
@@ -187,7 +207,6 @@ static void USART_Task (void)
   Remarks:
     See prototype in app_logger.h.
  */
-
 void APP_LOGGER_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
@@ -196,8 +215,8 @@ void APP_LOGGER_Initialize ( void )
     app_Data.handleUSART = DRV_HANDLE_INVALID;
     
     /* Message queue */
-    app_Data.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
-    app_Data.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
+    app_Data.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(logger_queue_item_t));
+    app_Data.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(logger_queue_item_t));
     if (app_Data.q_tx == NULL || app_Data.q_rx == NULL)
     {
         // Some error
@@ -214,7 +233,6 @@ void APP_LOGGER_Initialize ( void )
   Remarks:
     See prototype in app_logger.h.
  */
-
 void APP_LOGGER_Tasks ( void )
 {
 
@@ -261,7 +279,6 @@ void APP_LOGGER_Tasks ( void )
         }
     }
 }
-
  
 
 /*******************************************************************************
