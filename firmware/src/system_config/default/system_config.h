@@ -104,7 +104,7 @@ extern "C" {
 #define SYS_PORT_A_CNPD         0x0
 #define SYS_PORT_A_CNEN         0x0
 
-#define SYS_PORT_B_ANSEL        0xc65f
+#define SYS_PORT_B_ANSEL        0xc65b
 #define SYS_PORT_B_TRIS         0xfd77
 #define SYS_PORT_B_LAT          0x280
 #define SYS_PORT_B_ODC          0x0
@@ -128,7 +128,7 @@ extern "C" {
 #define SYS_PORT_D_CNPD         0x0
 #define SYS_PORT_D_CNEN         0x0
 
-#define SYS_PORT_E_ANSEL        0x3f0
+#define SYS_PORT_E_ANSEL        0x1f0
 #define SYS_PORT_E_TRIS         0x3f9
 #define SYS_PORT_E_LAT          0x6
 #define SYS_PORT_E_ODC          0x0
@@ -194,8 +194,8 @@ extern "C" {
  // *****************************************************************************
 /* USART Driver Configuration Options
 */
-#define DRV_USART_INSTANCES_NUMBER                  1
-#define DRV_USART_CLIENTS_NUMBER                    1
+#define DRV_USART_INSTANCES_NUMBER                  2
+#define DRV_USART_CLIENTS_NUMBER                    2
 #define DRV_USART_INTERRUPT_MODE                    true
 #define DRV_USART_BYTE_MODEL_SUPPORT                true
 #define DRV_USART_READ_WRITE_MODEL_SUPPORT          false
@@ -427,6 +427,9 @@ extern "C" {
 /*** Application Instance 1 Configuration ***/
 
 /*** Application Instance 2 Configuration ***/
+
+/*** Application Instance 3 Configuration ***/
+#define APP_LOGGER_DRV_USART                     1
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

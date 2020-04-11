@@ -57,6 +57,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "app_uart_term.h"
 #include "app_netpie.h"
 #include "app_pubsub.h"
+#include "app_logger.h"
 
 
 // *****************************************************************************
@@ -71,6 +72,7 @@ static void _SYS_Tasks ( void );
 static void _APP_UART_TERM_Tasks(void);
 static void _APP_NETPIE_Tasks(void);
 static void _APP_PUBSUB_Tasks(void);
+static void _APP_LOGGER_Tasks(void);
 
 
 // *****************************************************************************
@@ -107,6 +109,11 @@ void SYS_Tasks ( void )
     /* Create OS Thread for APP_PUBSUB Tasks. */
     xTaskCreate((TaskFunction_t) _APP_PUBSUB_Tasks,
                 "APP_PUBSUB Tasks",
+                1024, NULL, 1, NULL);
+
+    /* Create OS Thread for APP_LOGGER Tasks. */
+    xTaskCreate((TaskFunction_t) _APP_LOGGER_Tasks,
+                "APP_LOGGER Tasks",
                 1024, NULL, 1, NULL);
 
     /**************
@@ -192,6 +199,23 @@ static void _APP_PUBSUB_Tasks(void)
     while(1)
     {
         APP_PUBSUB_Tasks();
+    }
+}
+
+
+/*******************************************************************************
+  Function:
+    void _APP_LOGGER_Tasks ( void )
+
+  Summary:
+    Maintains state machine of APP_LOGGER.
+*/
+
+static void _APP_LOGGER_Tasks(void)
+{
+    while(1)
+    {
+        APP_LOGGER_Tasks();
     }
 }
 

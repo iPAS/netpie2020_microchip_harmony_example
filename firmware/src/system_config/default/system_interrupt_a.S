@@ -133,6 +133,69 @@ IntVectorDrvUsartErrorInstance0:
     .end	IntVectorDrvUsartErrorInstance0
 
 
+
+/* USART Instance 1 Interrupt */
+
+   .extern  IntHandlerDrvUsartReceiveInstance1
+
+   .section	.vector_189,code, keep
+   .equ     __vector_dispatch_189, IntVectorDrvUsartReceiveInstance1
+   .global  __vector_dispatch_189
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVectorDrvUsartReceiveInstance1
+
+IntVectorDrvUsartReceiveInstance1:
+    portSAVE_CONTEXT
+    la    s6,  IntHandlerDrvUsartReceiveInstance1
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end	IntVectorDrvUsartReceiveInstance1
+
+
+   .extern  IntHandlerDrvUsartTransmitInstance1
+
+   .section	.vector_190,code, keep
+   .equ     __vector_dispatch_190, IntVectorDrvUsartTransmitInstance1
+   .global  __vector_dispatch_190
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVectorDrvUsartTransmitInstance1
+
+IntVectorDrvUsartTransmitInstance1:
+    portSAVE_CONTEXT
+    la    s6,  IntHandlerDrvUsartTransmitInstance1
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end	IntVectorDrvUsartTransmitInstance1
+
+
+   .extern  IntHandlerDrvUsartErrorInstance1
+
+   .section	.vector_188,code, keep
+   .equ     __vector_dispatch_188, IntVectorDrvUsartErrorInstance1
+   .global  __vector_dispatch_188
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVectorDrvUsartErrorInstance1
+
+IntVectorDrvUsartErrorInstance1:
+    portSAVE_CONTEXT
+    la    s6,  IntHandlerDrvUsartErrorInstance1
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end	IntVectorDrvUsartErrorInstance1
+
+
 /* ETHMAC Interrupt */
    .extern  IntHandler_ETHMAC
 

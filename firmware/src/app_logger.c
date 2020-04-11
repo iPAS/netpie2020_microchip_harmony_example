@@ -5,7 +5,7 @@
     Microchip Technology Inc.
   
   File Name:
-    app_pubsub.c
+    app_logger.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -53,19 +53,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app_pubsub.h"
-#include "app_netpie.h"
-#include "register_mapping.h"
-
-#if defined(DO_TRACE)
-#include "app_uart_term.h"
-#define TRACE_LOG(...) uart_send_tx_queue(__VA_ARGS__)
-#elif defined(DO_LOG)
 #include "app_logger.h"
-#define TRACE_LOG(...) logger_send_tx_queue(__VA_ARGS__)
-#else
-#define TRACE_LOG(...)
-#endif
 
 
 // *****************************************************************************
@@ -89,14 +77,19 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Application strings and buffers are be defined outside this structure.
 */
 
-APP_PUBSUB_DATA app_pubsubData;
+static APP_LOGGER_DATA app_Data;
+static enum 
+{
+    USART_BM_INIT,
+    USART_BM_WORKING,
+    USART_BM_DONE,
+} usartBMState;
 
-
-#define REGISTER_PUBLISH_INTERVAL_MS 500 
-
-st_register_t *st_prev_registers;  // Allocated for keeping previous values of registers
-float *register_prev_values;
-uint16_t register_count = 0;
+typedef struct
+{
+    uint8_t buffer[LOGGER_QUEUE_ITEM_SIZE];
+    uint8_t length;
+} logger_queue_item_t;
 
 
 // *****************************************************************************
@@ -115,52 +108,88 @@ uint16_t register_count = 0;
 // *****************************************************************************
 // *****************************************************************************
 
-#define LEN_OF_ARRAY(arr) (sizeof(arr)/sizeof(arr[0]))
-
-static void mqttclient_callback(const char *sub_topic, const char *message)
+/**
+ * Enqueue a message to UART Tx
+ */
+BaseType_t logger_send_tx_queue(const char *fmt, ... )
 {
-    TRACE_LOG("[PubSub] --- calling back for updating reg:'%s' with '%s'\n\r", sub_topic, message);  // DEBUG: iPAS
+    va_list args;
+    logger_queue_item_t q_item;
+    uint16_t len;
 
-    st_register_t *p_reg = st_registers;
-    char *endptr = NULL;
-    float value;
+    va_start(args, fmt);
+    len = vsnprintf(q_item.buffer, LOGGER_QUEUE_ITEM_SIZE, fmt, args);
+    va_end(args);
+
+    q_item.length = strlen(q_item.buffer);
+    return xQueueSendToBack(app_Data.q_tx, &q_item, 0);
+}
+
+
+/******************************************************************************
+  Function:
+    static void USART_Task (void)
     
-    while (p_reg->sub_topic != NULL)  // Find the matched reference
+   Remarks:
+    Feeds the USART transmitter by reading characters from a specified pipe.  The pipeRead function is a 
+    standard interface that allows data to be exchanged between different automatically 
+    generated application modules.  Typically, the pipe is connected to the application's
+    USART receive function, but could be any other Harmony module which supports the pipe interface. 
+*/
+static void USART_Task (void)
+{
+    switch (usartBMState)
     {
-        if (strcmp(sub_topic, p_reg->sub_topic) == 0)
-        {
-            if (strlen(message) == 0)  // Just refresh
-            {
-                
-            }
-            else  // Update if valid
-            {
-                value = strtof(message, &endptr);
-            }
+        default:
+        case USART_BM_INIT:
+        {            
+            usartBMState = USART_BM_WORKING;
             break;
         }
-        p_reg++;
-    }
-    
-    
-    char msg[50];
-    
-    if (p_reg->sub_topic == NULL)  // Reference error
-    {
-        snprintf(msg, sizeof(msg), "Unknown sub_topic:'%s'", sub_topic);
-        netpie_publish_log(msg);
-    } else
-    if (endptr == message)  // Value conversion error
-    {
-        snprintf(msg, sizeof(msg), "Conversion error on message:'%s'", message);
-        netpie_publish_log(msg);
-    } 
-    else
-    {
-        if (endptr != NULL)  // Valid
-            *p_reg->p_value = value;            
-        snprintf(msg, sizeof(msg), "%f", *p_reg->p_value);
-        netpie_publish_register(sub_topic, msg);
+
+        case USART_BM_WORKING:
+        {
+            // ******
+            // * TX *
+            while (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
+            {
+                static uint8_t index = 0;
+                static logger_queue_item_t q_item;
+                bool do_send = true;
+
+                if (index == 0)
+                {
+                    //uxQueueMessagesWaiting();
+                    do_send = xQueueReceive(app_Data.q_tx, &q_item, 0);
+                }
+
+                if (do_send)
+                {
+                    DRV_USART_WriteByte(app_Data.handleUSART, q_item.buffer[index]);
+                    index = (index == q_item.length-1)? 0 : index+1;
+                }
+            }
+
+            // ******
+            // * RX *
+            while (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
+            {
+                if (uxQueueSpacesAvailable(app_Data.q_rx) > 0)
+                {
+                    uint8_t c_rx = DRV_USART_ReadByte(app_Data.handleUSART);
+                }
+            }
+
+            usartBMState = USART_BM_DONE;
+            break;
+        }
+
+        case USART_BM_DONE:
+        {
+            //vTaskDelay(100 / portTICK_PERIOD_MS);
+            usartBMState = USART_BM_WORKING;
+            break;
+        }
     }
 }
 
@@ -173,127 +202,75 @@ static void mqttclient_callback(const char *sub_topic, const char *message)
 
 /*******************************************************************************
   Function:
-    void APP_PUBSUB_Initialize ( void )
+    void APP_LOGGER_Initialize ( void )
 
   Remarks:
-    See prototype in app_pubsub.h.
+    See prototype in app_logger.h.
  */
-void APP_PUBSUB_Initialize ( void )
+void APP_LOGGER_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
-    app_pubsubData.state = APP_PUBSUB_STATE_INIT;
+    app_Data.state = APP_LOGGER_STATE_INIT;
 
-    // Allocate and initial 'st_prev_registers' for memorizing the latest
-    st_register_t *p_reg = st_registers;
-    for (; p_reg->sub_topic != NULL; p_reg++)
+    app_Data.handleUSART = DRV_HANDLE_INVALID;
+    
+    /* Message queue */
+    app_Data.q_tx = xQueueCreate(LOGGER_QUEUE_SIZE, sizeof(logger_queue_item_t));
+    app_Data.q_rx = xQueueCreate(LOGGER_QUEUE_SIZE, sizeof(logger_queue_item_t));
+    if (app_Data.q_tx == NULL || app_Data.q_rx == NULL)
     {
-        register_count++;  // Using counting method because of unknown-size extern array st_registers
+        // Some error
     }
-    st_prev_registers = (void *)malloc(register_count * sizeof(st_register_t));
-    memcpy(st_prev_registers, st_registers, register_count * sizeof(st_register_t));
-
-    // Allocate Buffer for the previous values
-    register_prev_values = (void *)malloc(register_count * sizeof(float));
-    uint16_t i;
-    for (i = 0; i < register_count; i++)
-    {
-        st_prev_registers[i].p_value = &register_prev_values[i];
-        *st_prev_registers[i].p_value = *st_registers[i].p_value;
-    }
-            
-    // Callback function for coping with incoming MQTT message
-    netpie_set_callback(mqttclient_callback);
+    xQueueReset(app_Data.q_tx);
+    xQueueReset(app_Data.q_rx);
 }
 
 
 /******************************************************************************
   Function:
-    void APP_PUBSUB_Tasks ( void )
+    void APP_LOGGER_Tasks ( void )
 
   Remarks:
-    See prototype in app_pubsub.h.
+    See prototype in app_logger.h.
  */
-void APP_PUBSUB_Tasks ( void )
+void APP_LOGGER_Tasks ( void )
 {
-    static bool first_time = true;
 
     /* Check the application's current state. */
-    switch ( app_pubsubData.state )
+    switch ( app_Data.state )
     {
         /* Application's initial state. */
-        case APP_PUBSUB_STATE_INIT:
+        case APP_LOGGER_STATE_INIT:
         {
-            if (netpie_ready())
+            bool appInitialized = true;
+       
+            if (app_Data.handleUSART == DRV_HANDLE_INVALID)
             {
-                app_pubsubData.state = APP_PUBSUB_STATE_REGISTER_UPDATE;
+                app_Data.handleUSART = DRV_USART_Open(
+                        APP_LOGGER_DRV_USART, 
+                        DRV_IO_INTENT_READWRITE|DRV_IO_INTENT_NONBLOCKING);
+                appInitialized &= ( DRV_HANDLE_INVALID != app_Data.handleUSART );
             }
-            else
-            {
-                TRACE_LOG("[PubSub] Wait MQTT ready ...\n\r");  // DEBUG: iPAS
-                vTaskDelay(1000 / portTICK_PERIOD_MS);
-            }
-            break;
-        }
         
-        /* Loop periodically updating all changed registers */
-        case APP_PUBSUB_STATE_REGISTER_UPDATE:
-        {
-            static st_register_t *p_reg = st_registers;
+            if (appInitialized)
+            {
+                /* initialize the USART state machine */
+                usartBMState = USART_BM_INIT;
             
-            if (netpie_ready())
-            {
-                st_register_t *p_prev = st_prev_registers;
-                uint32_t i = ((uint32_t)p_reg - (uint32_t)st_registers) / sizeof(st_register_t);
-                p_prev += i;
-                                
-                if ((*p_prev->p_value != *p_reg->p_value) || first_time)  // The value has been changed.
-                {   
-                    *p_prev->p_value = *p_reg->p_value;  // Update
-                    
-                    const char *sub_topic = p_reg->sub_topic;
-                    char message[20];
-
-                    snprintf(message, sizeof(message), "%f", *p_reg->p_value);
-                    netpie_publish_register(sub_topic, message);
-
-                    TRACE_LOG("[PubSub] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
-                
-                    vTaskDelay(REGISTER_PUBLISH_INTERVAL_MS / portTICK_PERIOD_MS);
-                }
-                else
-                {
-                    vTaskDelay(50 / portTICK_PERIOD_MS);
-                }
-                
-                p_reg++;  // Next register
-                if (p_reg->sub_topic == NULL)
-                {
-                    first_time = false;
-                    p_reg = st_registers;
-                    
-                    
-                    
-                    // -------------------------------
-                    // --- For testing only ----------
-                    // --- Randomly changing value ---
-                    uint16_t i = rand() % (register_count-1);
-                    float val = rand() % 100;
-                    *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
-                    TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
-
-                    
-                    
-                }
-            }
-            else
-            {
-                first_time = true;
-                p_reg = st_registers;
-                app_pubsubData.state = APP_PUBSUB_STATE_INIT;
+                app_Data.state = APP_LOGGER_STATE_SERVICE_TASKS;
+            
+                DRV_USART_WriteByte(app_Data.handleUSART, '.');  // DEBUG: iPAS
             }
             break;
         }
+
+        case APP_LOGGER_STATE_SERVICE_TASKS:
+        {
+			USART_Task();
         
+            break;
+        }
+
         /* The default state should never be executed. */
         default:
         {

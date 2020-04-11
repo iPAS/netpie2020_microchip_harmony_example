@@ -85,6 +85,12 @@ static enum
     USART_BM_DONE,
 } usartBMState;
 
+typedef struct
+{
+    uint8_t buffer[UART_QUEUE_ITEM_SIZE];
+    uint8_t length;
+} uart_queue_item_t;
+
 
 // *****************************************************************************
 // *****************************************************************************
