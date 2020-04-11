@@ -118,7 +118,7 @@ BaseType_t logger_send_tx_queue(const char *fmt, ... )
     uint16_t len;
 
     va_start(args, fmt);
-    len = vsnprintf(q_item.buffer, UART_QUEUE_ITEM_SIZE, fmt, args);
+    len = vsnprintf(q_item.buffer, LOGGER_QUEUE_ITEM_SIZE, fmt, args);
     va_end(args);
 
     q_item.length = strlen(q_item.buffer);
@@ -215,8 +215,8 @@ void APP_LOGGER_Initialize ( void )
     app_Data.handleUSART = DRV_HANDLE_INVALID;
     
     /* Message queue */
-    app_Data.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(logger_queue_item_t));
-    app_Data.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(logger_queue_item_t));
+    app_Data.q_tx = xQueueCreate(LOGGER_QUEUE_SIZE, sizeof(logger_queue_item_t));
+    app_Data.q_rx = xQueueCreate(LOGGER_QUEUE_SIZE, sizeof(logger_queue_item_t));
     if (app_Data.q_tx == NULL || app_Data.q_rx == NULL)
     {
         // Some error
