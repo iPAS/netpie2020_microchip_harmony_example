@@ -5,7 +5,7 @@
     Microchip Technology Inc.
   
   File Name:
-    app_uart_term.c
+    app_logger.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -53,7 +53,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app_uart_term.h"
+#include "app_logger.h"
 
 
 // *****************************************************************************
@@ -77,7 +77,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Application strings and buffers are be defined outside this structure.
 */
 
-static APP_UART_TERM_DATA app_Data;
+static APP_LOGGER_DATA app_Data;
 static enum 
 {
     USART_BM_INIT,
@@ -87,9 +87,9 @@ static enum
 
 typedef struct
 {
-    uint8_t buffer[UART_QUEUE_ITEM_SIZE];
+    uint8_t buffer[LOGGER_QUEUE_ITEM_SIZE];
     uint8_t length;
-} uart_queue_item_t;
+} logger_queue_item_t;
 
 
 // *****************************************************************************
@@ -111,10 +111,10 @@ typedef struct
 /**
  * Enqueue a message to UART Tx
  */
-BaseType_t uart_send_tx_queue(const char *fmt, ... )
+BaseType_t logger_send_tx_queue(const char *fmt, ... )
 {
     va_list args;
-    uart_queue_item_t q_item;
+    logger_queue_item_t q_item;
     uint16_t len;
 
     va_start(args, fmt);
@@ -154,7 +154,7 @@ static void USART_Task (void)
             while (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
             {
                 static uint8_t index = 0;
-                static uart_queue_item_t q_item;
+                static logger_queue_item_t q_item;
                 bool do_send = true;
 
                 if (index == 0)
@@ -202,21 +202,21 @@ static void USART_Task (void)
 
 /*******************************************************************************
   Function:
-    void APP_UART_TERM_Initialize ( void )
+    void APP_LOGGER_Initialize ( void )
 
   Remarks:
-    See prototype in app0_uart.h.
+    See prototype in app_logger.h.
  */
-void APP_UART_TERM_Initialize ( void )
+void APP_LOGGER_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
-    app_Data.state = APP_UART_TERM_STATE_INIT;
+    app_Data.state = APP_LOGGER_STATE_INIT;
 
     app_Data.handleUSART = DRV_HANDLE_INVALID;
     
     /* Message queue */
-    app_Data.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
-    app_Data.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(uart_queue_item_t));
+    app_Data.q_tx = xQueueCreate(UART_QUEUE_SIZE, sizeof(logger_queue_item_t));
+    app_Data.q_rx = xQueueCreate(UART_QUEUE_SIZE, sizeof(logger_queue_item_t));
     if (app_Data.q_tx == NULL || app_Data.q_rx == NULL)
     {
         // Some error
@@ -228,26 +228,26 @@ void APP_UART_TERM_Initialize ( void )
 
 /******************************************************************************
   Function:
-    void APP_UART_TERM_Tasks ( void )
+    void APP_LOGGER_Tasks ( void )
 
   Remarks:
-    See prototype in app0_uart.h.
+    See prototype in app_logger.h.
  */
-void APP_UART_TERM_Tasks ( void )
+void APP_LOGGER_Tasks ( void )
 {
 
     /* Check the application's current state. */
     switch ( app_Data.state )
     {
         /* Application's initial state. */
-        case APP_UART_TERM_STATE_INIT:
+        case APP_LOGGER_STATE_INIT:
         {
             bool appInitialized = true;
        
             if (app_Data.handleUSART == DRV_HANDLE_INVALID)
             {
                 app_Data.handleUSART = DRV_USART_Open(
-                        APP_UART_TERM_DRV_USART, 
+                        APP_LOGGER_DRV_USART, 
                         DRV_IO_INTENT_READWRITE|DRV_IO_INTENT_NONBLOCKING);
                 appInitialized &= ( DRV_HANDLE_INVALID != app_Data.handleUSART );
             }
@@ -257,14 +257,14 @@ void APP_UART_TERM_Tasks ( void )
                 /* initialize the USART state machine */
                 usartBMState = USART_BM_INIT;
             
-                app_Data.state = APP_UART_TERM_STATE_SERVICE_TASKS;
-                
+                app_Data.state = APP_LOGGER_STATE_SERVICE_TASKS;
+            
                 DRV_USART_WriteByte(app_Data.handleUSART, '.');  // DEBUG: iPAS
             }
             break;
         }
 
-        case APP_UART_TERM_STATE_SERVICE_TASKS:
+        case APP_LOGGER_STATE_SERVICE_TASKS:
         {
 			USART_Task();
         
@@ -279,7 +279,7 @@ void APP_UART_TERM_Tasks ( void )
         }
     }
 }
-
+ 
 
 /*******************************************************************************
  End of File

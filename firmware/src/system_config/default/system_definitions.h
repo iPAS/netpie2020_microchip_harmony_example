@@ -76,6 +76,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "app_uart_term.h"
 #include "app_netpie.h"
 #include "app_pubsub.h"
+#include "app_logger.h"
 
 
 // DOM-IGNORE-BEGIN
@@ -113,6 +114,7 @@ typedef struct
     SYS_MODULE_OBJ  sysTmr;
     SYS_MODULE_OBJ  drvTmr0;
     SYS_MODULE_OBJ  drvUsart0;
+    SYS_MODULE_OBJ  drvUsart1;
     SYS_MODULE_OBJ  tcpip;
     SYS_MODULE_OBJ  netPres;
 
