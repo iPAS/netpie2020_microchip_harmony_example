@@ -404,10 +404,6 @@ const TCPIP_STACK_MODULE_CONFIG TCPIP_STACK_MODULE_CONFIG_TBL [] =
 
 SYS_MODULE_OBJ TCPIP_STACK_Init()
 {
-    // Release the reset pin on LAN8740 by setting ETH_RES=1
-    PLIB_PORTS_PinSet (PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_15);  // XXX: iPAS
-
-
     TCPIP_STACK_INIT    tcpipInit;
 
     tcpipInit.moduleInit.sys.powerState = SYS_MODULE_POWER_RUN_FULL;
@@ -478,6 +474,11 @@ void SYS_Initialize ( void* data )
     SYS_INT_VectorSubprioritySet(INT_VECTOR_UART6_FAULT, INT_SUBPRIORITY_LEVEL0);
 
     /* Initialize System Services */
+    
+    
+    /*** Release the reset pin on LAN8740 by setting ETH_RES=1 ***/
+    PLIB_PORTS_PinSet (PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_15);  // XXX: iPAS
+
 
     /*** Interrupt Service Initialization Code ***/
     SYS_INT_Initialize();

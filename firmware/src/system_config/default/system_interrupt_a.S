@@ -75,9 +75,9 @@ IntVectorDrvTmrInstance0:
 
    .extern  IntHandlerDrvUsartReceiveInstance0
 
-   .section	.vector_146,code, keep
-   .equ     __vector_dispatch_146, IntVectorDrvUsartReceiveInstance0
-   .global  __vector_dispatch_146
+   .section	.vector_189,code, keep
+   .equ     __vector_dispatch_189, IntVectorDrvUsartReceiveInstance0
+   .global  __vector_dispatch_189
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -95,9 +95,9 @@ IntVectorDrvUsartReceiveInstance0:
 
    .extern  IntHandlerDrvUsartTransmitInstance0
 
-   .section	.vector_147,code, keep
-   .equ     __vector_dispatch_147, IntVectorDrvUsartTransmitInstance0
-   .global  __vector_dispatch_147
+   .section	.vector_190,code, keep
+   .equ     __vector_dispatch_190, IntVectorDrvUsartTransmitInstance0
+   .global  __vector_dispatch_190
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -115,9 +115,9 @@ IntVectorDrvUsartTransmitInstance0:
 
    .extern  IntHandlerDrvUsartErrorInstance0
 
-   .section	.vector_145,code, keep
-   .equ     __vector_dispatch_145, IntVectorDrvUsartErrorInstance0
-   .global  __vector_dispatch_145
+   .section	.vector_188,code, keep
+   .equ     __vector_dispatch_188, IntVectorDrvUsartErrorInstance0
+   .global  __vector_dispatch_188
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -138,9 +138,9 @@ IntVectorDrvUsartErrorInstance0:
 
    .extern  IntHandlerDrvUsartReceiveInstance1
 
-   .section	.vector_189,code, keep
-   .equ     __vector_dispatch_189, IntVectorDrvUsartReceiveInstance1
-   .global  __vector_dispatch_189
+   .section	.vector_146,code, keep
+   .equ     __vector_dispatch_146, IntVectorDrvUsartReceiveInstance1
+   .global  __vector_dispatch_146
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -158,9 +158,9 @@ IntVectorDrvUsartReceiveInstance1:
 
    .extern  IntHandlerDrvUsartTransmitInstance1
 
-   .section	.vector_190,code, keep
-   .equ     __vector_dispatch_190, IntVectorDrvUsartTransmitInstance1
-   .global  __vector_dispatch_190
+   .section	.vector_147,code, keep
+   .equ     __vector_dispatch_147, IntVectorDrvUsartTransmitInstance1
+   .global  __vector_dispatch_147
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -178,9 +178,9 @@ IntVectorDrvUsartTransmitInstance1:
 
    .extern  IntHandlerDrvUsartErrorInstance1
 
-   .section	.vector_188,code, keep
-   .equ     __vector_dispatch_188, IntVectorDrvUsartErrorInstance1
-   .global  __vector_dispatch_188
+   .section	.vector_145,code, keep
+   .equ     __vector_dispatch_145, IntVectorDrvUsartErrorInstance1
+   .global  __vector_dispatch_145
    .set     nomicromips
    .set     noreorder
    .set     nomips16
