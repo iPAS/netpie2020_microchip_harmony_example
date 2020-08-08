@@ -391,6 +391,7 @@
         <itemPath>../src/app_pubsub.c</itemPath>
         <itemPath>../src/app_logger.c</itemPath>
         <itemPath>../src/main.c</itemPath>
+        <itemPath>../src/register_dummy.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="driver" projectFiles="true">
