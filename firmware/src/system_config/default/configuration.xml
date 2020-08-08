@@ -1068,7 +1068,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>CE9416B50A9E159DB8FD82FA4CF2985F</Checksum>
+        <Checksum>1A82182AB221B5D8451DE27CA6E7F25D</Checksum>
         <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
@@ -1116,7 +1116,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>DAF700AA61FCF3A914E537DD1D1C5FDA</Checksum>
+        <Checksum>0C621439FDEC57E7D4B0B69C3E223AD1</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>

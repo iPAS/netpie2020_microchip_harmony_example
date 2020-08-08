@@ -104,8 +104,8 @@ extern "C" {
 #define SYS_PORT_A_CNPD         0x0
 #define SYS_PORT_A_CNEN         0x0
 
-#define SYS_PORT_B_ANSEL        0x65b
-#define SYS_PORT_B_TRIS         0xfd77
+#define SYS_PORT_B_ANSEL        0xc65b
+#define SYS_PORT_B_TRIS         0xfd57
 #define SYS_PORT_B_LAT          0x280
 #define SYS_PORT_B_ODC          0x0
 #define SYS_PORT_B_CNPU         0x0
@@ -144,7 +144,7 @@ extern "C" {
 #define SYS_PORT_F_CNPD         0x0
 #define SYS_PORT_F_CNEN         0x0
 
-#define SYS_PORT_G_ANSEL        0x0
+#define SYS_PORT_G_ANSEL        0xc0
 #define SYS_PORT_G_TRIS         0x43c2
 #define SYS_PORT_G_LAT          0x3000
 #define SYS_PORT_G_ODC          0x0
@@ -344,6 +344,7 @@ extern "C" {
                                                     TCPIP_ETH_OPEN_100 |\
                                                     TCPIP_ETH_OPEN_10 |\
                                                     TCPIP_ETH_OPEN_MDIX_AUTO |\
+                                                    TCPIP_ETH_OPEN_RMII |\
                                                     0
 #define TCPIP_EMAC_PHY_CONFIG_FLAGS     			\
                                                     DRV_ETHPHY_CFG_RMII | \
