@@ -5,8 +5,8 @@
                    displayName="Header Files"
                    projectFiles="true">
       <logicalFolder name="f4" displayName="app" projectFiles="true">
-        <logicalFolder name="f2" displayName="aux" projectFiles="true">
-          <itemPath>../src/aux/parson.h</itemPath>
+        <logicalFolder name="f2" displayName="parson" projectFiles="true">
+          <itemPath>../src/parson/parson.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="system_config" projectFiles="true">
           <logicalFolder name="f1" displayName="default" projectFiles="true">
@@ -344,8 +344,8 @@
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="f4" displayName="app" projectFiles="true">
-        <logicalFolder name="f2" displayName="aux" projectFiles="true">
-          <itemPath>../src/aux/parson.c</itemPath>
+        <logicalFolder name="f2" displayName="parson" projectFiles="true">
+          <itemPath>../src/parson/parson.c</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="system_config" projectFiles="true">
           <logicalFolder name="f1" displayName="default" projectFiles="true">

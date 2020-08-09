@@ -54,7 +54,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "app_netpie.h"
-#include "aux/parson.h"
+#include "parson/parson.h"
 
 #if defined(DO_TRACE)
 #include "app_uart_term.h"
