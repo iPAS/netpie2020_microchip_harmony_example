@@ -223,14 +223,23 @@ void APP_PUBSUB_Tasks ( void )
         /* Application's initial state. */
         case APP_PUBSUB_STATE_INIT:
         {
+            static uint8_t retry_count = 0;
+
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
             if (netpie_ready())
             {
                 app_pubsubData.state = APP_PUBSUB_STATE_REGISTER_UPDATE;
+                retry_count = 0;
             }
             else
             {
-                TRACE_LOG("[PubSub] Wait MQTT ready ...\n\r");  // DEBUG: iPAS
-                vTaskDelay(1000 / portTICK_PERIOD_MS);
+                TRACE_LOG("[PubSub] Wait MQTT ready ...\n\r");  // DEBUG: iPAS                
+                if (retry_count >= 10)
+                {
+                    SYS_RESET_SoftwareReset();  // Reset after tried for a while
+                }
+                else
+                    retry_count++;                
             }
             break;
         }
