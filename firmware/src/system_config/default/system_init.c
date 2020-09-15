@@ -120,6 +120,29 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // Section: Driver Initialization Data
 // *****************************************************************************
 // *****************************************************************************
+// <editor-fold defaultstate="collapsed" desc="DRV_SPI Initialization Data"> 
+ /*** SPI Driver Initialization Data ***/
+  /*** Index 0  ***/
+ DRV_SPI_INIT drvSpi0InitData =
+ {
+    .spiId = DRV_SPI_SPI_ID_IDX0,
+    .taskMode = DRV_SPI_TASK_MODE_IDX0,
+    .spiMode = DRV_SPI_SPI_MODE_IDX0,
+    .allowIdleRun = DRV_SPI_ALLOW_IDLE_RUN_IDX0,
+    .spiProtocolType = DRV_SPI_SPI_PROTOCOL_TYPE_IDX0,
+    .commWidth = DRV_SPI_COMM_WIDTH_IDX0,
+    .spiClk = DRV_SPI_SPI_CLOCK_IDX0,
+    .baudRate = DRV_SPI_BAUD_RATE_IDX0,
+    .bufferType = DRV_SPI_BUFFER_TYPE_IDX0,
+    .clockMode = DRV_SPI_CLOCK_MODE_IDX0,
+    .inputSamplePhase = DRV_SPI_INPUT_PHASE_IDX0,
+    .txInterruptSource = DRV_SPI_TX_INT_SOURCE_IDX0,
+    .rxInterruptSource = DRV_SPI_RX_INT_SOURCE_IDX0,
+    .errInterruptSource = DRV_SPI_ERROR_INT_SOURCE_IDX0,
+    .queueSize = DRV_SPI_QUEUE_SIZE_IDX0,
+    .jobQueueReserveSize = DRV_SPI_RESERVED_JOB_IDX0,
+ };
+// </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="DRV_Timer Initialization Data">
 /*** TMR Driver Initialization Data ***/
 
@@ -316,6 +339,9 @@ const TCPIP_MODULE_MAC_PIC32INT_CONFIG tcpipMACPIC32INTInitData =
     .pPhyBase               = &DRV_ETHPHY_OBJECT_BASE_Default,
 };
 
+/*** Wi-Fi Interface MRF24W Initialization Data ***/
+const TCPIP_MODULE_MAC_MRF24W_CONFIG macMRF24WConfigData ={
+};
 
 
 
@@ -452,6 +478,16 @@ void SYS_Initialize ( void* data )
 
     /* Initialize Drivers */
 
+    /*** SPI Driver Index 0 initialization***/
+
+    SYS_INT_VectorPrioritySet(DRV_SPI_TX_INT_VECTOR_IDX0, DRV_SPI_TX_INT_PRIORITY_IDX0);
+    SYS_INT_VectorSubprioritySet(DRV_SPI_TX_INT_VECTOR_IDX0, DRV_SPI_TX_INT_SUB_PRIORITY_IDX0);
+    SYS_INT_VectorPrioritySet(DRV_SPI_RX_INT_VECTOR_IDX0, DRV_SPI_RX_INT_PRIORITY_IDX0);
+    SYS_INT_VectorSubprioritySet(DRV_SPI_RX_INT_VECTOR_IDX0, DRV_SPI_RX_INT_SUB_PRIORITY_IDX0);
+    SYS_INT_VectorPrioritySet(DRV_DRV_SPI_ERROR_INT_VECTOR_IDX0, DRV_SPI_ERROR_INT_PRIORITY_IDX0);
+    SYS_INT_VectorSubprioritySet(DRV_DRV_SPI_ERROR_INT_VECTOR_IDX0, DRV_SPI_ERROR_INT_SUB_PRIORITY_IDX0);
+    sysObj.spiObjectIdx0 = DRV_SPI_Initialize(DRV_SPI_INDEX_0, (const SYS_MODULE_INIT  * const)&drvSpi0InitData);
+
     sysObj.drvTmr0 = DRV_TMR_Initialize(DRV_TMR_INDEX_0, (SYS_MODULE_INIT *)&drvTmr0InitData);
 
     SYS_INT_VectorPrioritySet(INT_VECTOR_T2, INT_PRIORITY_LEVEL1);
@@ -482,6 +518,17 @@ void SYS_Initialize ( void* data )
 
     /*** Interrupt Service Initialization Code ***/
     SYS_INT_Initialize();
+
+    /*Setup the INT_SOURCE_EXTERNAL_1 and Enable it*/
+    SYS_INT_VectorPrioritySet(INT_VECTOR_INT1, INT_PRIORITY_LEVEL1);
+    SYS_INT_VectorSubprioritySet(INT_VECTOR_INT1, INT_SUBPRIORITY_LEVEL0);
+    SYS_INT_ExternalInterruptTriggerSet(INT_EXTERNAL_INT_SOURCE1,INT_EDGE_TRIGGER_FALLING);
+    SYS_INT_SourceEnable(INT_SOURCE_EXTERNAL_1);
+
+
+
+
+
 
     /*** Random Service Initialization Code ***/
     SYS_RANDOM_Initialize(0, 0);

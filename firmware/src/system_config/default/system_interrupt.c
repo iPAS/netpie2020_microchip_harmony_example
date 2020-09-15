@@ -72,6 +72,12 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // Section: System Interrupt Vector Functions
 // *****************************************************************************
 // *****************************************************************************
+void IntHandlerExternalInterruptInstance0(void)
+{
+    PLIB_INT_SourceFlagClear(INT_ID_0, INT_SOURCE_EXTERNAL_1);
+    SYS_INT_SourceDisable(MRF_INT_SOURCE); // disable further interrupts
+    DRV_WIFI_DeferredISR_SemGive();
+}
 
     
 void IntHandlerDrvTmrInstance0(void)
@@ -117,7 +123,20 @@ void IntHandlerDrvUsartErrorInstance1(void)
  
 
  
- void IntHandler_ETHMAC(void)
+ 
+void IntHandlerSPIRxInstance0(void)
+{
+    DRV_SPI_Tasks(sysObj.spiObjectIdx0);
+}
+void IntHandlerSPITxInstance0(void)
+{
+    DRV_SPI_Tasks(sysObj.spiObjectIdx0);
+}
+void IntHandlerSPIFaultInstance0(void)
+{
+    DRV_SPI_Tasks(sysObj.spiObjectIdx0);
+}
+void IntHandler_ETHMAC(void)
 {
     DRV_ETHMAC_Tasks_ISR((SYS_MODULE_OBJ)0);
 }

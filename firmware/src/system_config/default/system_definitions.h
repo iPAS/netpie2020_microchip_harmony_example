@@ -62,11 +62,13 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "driver/tmr/drv_tmr.h"
 #include "driver/usart/drv_usart_static.h"
 #include "system/ports/sys_ports.h"
+#include "driver/spi/drv_spi.h"
 
 
 
 #include "tcpip/tcpip.h"
 #include "driver/ethmac/drv_ethmac.h"
+#include "driver/wifi/mrf24w/drv_wifi.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "net/pres/net_pres.h"
@@ -115,6 +117,9 @@ typedef struct
     SYS_MODULE_OBJ  drvTmr0;
     SYS_MODULE_OBJ  drvUsart0;
     SYS_MODULE_OBJ  drvUsart1;
+
+    /*** SPI Object for Index 0 ***/
+    SYS_MODULE_OBJ				spiObjectIdx0;
     SYS_MODULE_OBJ  tcpip;
     SYS_MODULE_OBJ  netPres;
 

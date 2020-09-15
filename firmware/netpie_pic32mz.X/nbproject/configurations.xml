@@ -44,12 +44,70 @@
         <itemPath>../src/app_logger.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
-        <logicalFolder name="f8" displayName="crypto" projectFiles="true">
+        <logicalFolder name="f1" displayName="crypto" projectFiles="true">
           <logicalFolder name="f1" displayName="src" projectFiles="true">
+            <logicalFolder name="f1" displayName="zlib-1.2.7" projectFiles="true">
+              <logicalFolder name="f1" displayName="examples" projectFiles="true">
+                <itemPath>../../../../framework/crypto/src/zlib-1.2.7/examples/gzlog.h</itemPath>
+              </logicalFolder>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/crc32.h</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/deflate.h</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/inffast.h</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/inffixed.h</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/inflate.h</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/inftrees.h</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/trees.h</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/zconf.h</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/zlib.h</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/zutil.h</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/gzguts.h</itemPath>
+            </logicalFolder>
+            <itemPath>../../../../framework/crypto/src/ecc.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/arc4.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/pwdbased.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/tfm.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/asn.h</itemPath>
             <itemPath>../../../../framework/crypto/src/des3.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/rsa.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/aes.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/md5.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha256.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha512.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/hmac.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/hash.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/compress.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/random.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/coding.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/error-crypt.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/integer.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/internal.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/logging.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/memory.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/misc.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/port.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/settings.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/types.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/version.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/visibility.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/asn_public.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/camellia.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/certs_test.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/dh.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/dsa.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/ec.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/hc128.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/md2.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/md4.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/mpi_class.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/mpi_superclass.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/rabbit.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/ripemd.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/ssl.h</itemPath>
           </logicalFolder>
+          <itemPath>../../../../framework/crypto/crypto.h</itemPath>
         </logicalFolder>
-        <logicalFolder name="f1" displayName="driver" projectFiles="true">
+        <logicalFolder name="f2" displayName="driver" projectFiles="true">
           <logicalFolder name="f1" displayName="ethmac" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
@@ -76,7 +134,20 @@
             </logicalFolder>
             <itemPath>../../../../framework/driver/ethphy/drv_ethphy.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f3" displayName="tmr" projectFiles="true">
+          <logicalFolder name="f3" displayName="spi" projectFiles="true">
+            <logicalFolder name="f1" displayName="private" projectFiles="true">
+              <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
+                <itemPath>../../../../framework/driver/spi/src/dynamic/drv_spi_internal.h</itemPath>
+              </logicalFolder>
+              <itemPath>../../../../framework/driver/spi/src/drv_spi_sys_queue.h</itemPath>
+              <itemPath>../../../../framework/driver/spi/src/drv_spi_sys_queue_local_fifo.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f2" displayName="src" projectFiles="true">
+              <itemPath>../../../../framework/driver/spi/src/drv_spi_variant_mapping.h</itemPath>
+            </logicalFolder>
+            <itemPath>../../../../framework/driver/spi/drv_spi.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f4" displayName="tmr" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../framework/driver/tmr/src/drv_tmr_variant_mapping.h</itemPath>
               <itemPath>../../../../framework/driver/tmr/src/drv_tmr_local.h</itemPath>
@@ -85,18 +156,33 @@
             <itemPath>../../../../framework/driver/tmr/drv_tmr_mapping.h</itemPath>
             <itemPath>../../../../framework/driver/tmr/drv_tmr_compatibility.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f4" displayName="wifi" projectFiles="true">
+          <logicalFolder name="f5" displayName="wifi" projectFiles="true">
             <logicalFolder name="f1" displayName="mrf24w" projectFiles="true">
+              <logicalFolder name="f1" displayName="src" projectFiles="true">
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_commands.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_config.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_debug_output.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_eint.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_iwpriv.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_mac.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_mgmt_msg.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_priv.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_raw.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_scan_helper.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_softap_client_cache.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_spi.h</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_rtos_wrapper.h</itemPath>
+              </logicalFolder>
               <itemPath>../../../../framework/driver/wifi/mrf24w/drv_wifi.h</itemPath>
             </logicalFolder>
           </logicalFolder>
           <itemPath>../../../../framework/driver/driver.h</itemPath>
           <itemPath>../../../../framework/driver/driver_common.h</itemPath>
         </logicalFolder>
-        <logicalFolder name="f2" displayName="gfx" projectFiles="true">
+        <logicalFolder name="f3" displayName="gfx" projectFiles="true">
           <itemPath>../../../../framework/gfx/gfx_palette.h</itemPath>
         </logicalFolder>
-        <logicalFolder name="f3" displayName="net" projectFiles="true">
+        <logicalFolder name="f4" displayName="net" projectFiles="true">
           <logicalFolder name="f1" displayName="pres" projectFiles="true">
             <logicalFolder name="f1" displayName="priv" projectFiles="true">
               <itemPath>../../../../framework/net/pres/src/net_pres_local.h</itemPath>
@@ -109,7 +195,7 @@
             <itemPath>../../../../framework/net/pres/net_pres_socketapiconversion.h</itemPath>
           </logicalFolder>
         </logicalFolder>
-        <logicalFolder name="f4" displayName="osal" projectFiles="true">
+        <logicalFolder name="f5" displayName="osal" projectFiles="true">
           <logicalFolder name="f1" displayName="src" projectFiles="true">
             <itemPath>../../../../framework/osal/src/osal_impl_basic.h</itemPath>
             <itemPath>../../../../framework/osal/src/osal_impl_none.h</itemPath>
@@ -118,12 +204,12 @@
           <itemPath>../../../../framework/osal/osal.h</itemPath>
           <itemPath>../../../../framework/osal/osal_definitions.h</itemPath>
         </logicalFolder>
-        <logicalFolder name="f5" displayName="peripheral" projectFiles="true">
+        <logicalFolder name="f6" displayName="peripheral" projectFiles="true">
           <itemPath>../../../../framework/peripheral/peripheral.h</itemPath>
           <itemPath>../../../../framework/peripheral/peripheral_common.h</itemPath>
           <itemPath>../../../../framework/peripheral/peripheral_common_32bit.h</itemPath>
         </logicalFolder>
-        <logicalFolder name="f6" displayName="system" projectFiles="true">
+        <logicalFolder name="f7" displayName="system" projectFiles="true">
           <logicalFolder name="f1" displayName="clk" projectFiles="true">
             <itemPath>../../../../framework/system/clk/sys_clk.h</itemPath>
             <itemPath>../../../../framework/system/clk/sys_clk_mapping.h</itemPath>
@@ -177,7 +263,7 @@
           </logicalFolder>
           <itemPath>../../../../framework/system/system.h</itemPath>
         </logicalFolder>
-        <logicalFolder name="f7" displayName="tcpip" projectFiles="true">
+        <logicalFolder name="f8" displayName="tcpip" projectFiles="true">
           <logicalFolder name="f1" displayName="src" projectFiles="true">
             <logicalFolder name="f2" displayName="common" projectFiles="true">
               <itemPath>../../../../framework/tcpip/src/common/helpers.h</itemPath>
@@ -351,7 +437,14 @@
           <logicalFolder name="f1" displayName="default" projectFiles="true">
             <logicalFolder name="f1" displayName="framework" projectFiles="true">
               <logicalFolder name="f1" displayName="driver" projectFiles="true">
-                <logicalFolder name="f1" displayName="usart" projectFiles="true">
+                <logicalFolder name="f1" displayName="spi" projectFiles="true">
+                  <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
+                    <itemPath>../src/system_config/default/framework/driver/spi/dynamic/drv_spi_tasks.c</itemPath>
+                    <itemPath>../src/system_config/default/framework/driver/spi/dynamic/drv_spi_api.c</itemPath>
+                    <itemPath>../src/system_config/default/framework/driver/spi/dynamic/drv_spi_master_ebm_tasks.c</itemPath>
+                  </logicalFolder>
+                </logicalFolder>
+                <logicalFolder name="f2" displayName="usart" projectFiles="true">
                   <logicalFolder name="f1" displayName="src" projectFiles="true">
                     <itemPath>../src/system_config/default/framework/driver/usart/src/drv_usart_mapping.c</itemPath>
                     <itemPath>../src/system_config/default/framework/driver/usart/src/drv_usart_static.c</itemPath>
@@ -394,7 +487,48 @@
         <itemPath>../src/main.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
-        <logicalFolder name="f1" displayName="driver" projectFiles="true">
+        <logicalFolder name="f1" displayName="crypto" projectFiles="true">
+          <logicalFolder name="f1" displayName="src" projectFiles="true">
+            <logicalFolder name="f1" displayName="zlib-1.2.7" projectFiles="true">
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/adler32.c</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/compress.c</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/crc32.c</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/deflate.c</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/infback.c</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/inffast.c</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/inflate.c</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/inftrees.c</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/trees.c</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/uncompr.c</itemPath>
+              <itemPath>../../../../framework/crypto/src/zlib-1.2.7/zutil.c</itemPath>
+            </logicalFolder>
+            <itemPath>../../../../framework/crypto/src/ecc.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/arc4.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/pwdbased.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/tfm.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/asn.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/des3.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/rsa.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/aes.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/md5.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha256.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha512.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/hmac.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/hash.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/compress.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/random.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/crypto.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/coding.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/error.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/integer.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/logging.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/memory.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/misc.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/port.c</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <logicalFolder name="f2" displayName="driver" projectFiles="true">
           <logicalFolder name="f1" displayName="ethmac" projectFiles="true">
             <itemPath>../../../../framework/driver/ethmac/src/dynamic/drv_ethmac.c</itemPath>
             <itemPath>../../../../framework/driver/ethmac/src/dynamic/drv_ethmac_lib.c</itemPath>
@@ -403,25 +537,63 @@
             <itemPath>../../../../framework/driver/ethphy/src/dynamic/drv_ethphy.c</itemPath>
             <itemPath>../../../../framework/driver/ethphy/src/dynamic/drv_extphy_smsc8740.c</itemPath>
           </logicalFolder>
-          <logicalFolder name="f3" displayName="tmr" projectFiles="true">
+          <logicalFolder name="f3" displayName="spi" projectFiles="true">
+            <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
+              <itemPath>../../../../framework/driver/spi/src/dynamic/drv_spi.c</itemPath>
+            </logicalFolder>
+            <itemPath>../../../../framework/driver/spi/src/drv_spi_sys_queue_fifo.c</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f4" displayName="tmr" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
                 <itemPath>../../../../framework/driver/tmr/src/dynamic/drv_tmr.c</itemPath>
               </logicalFolder>
             </logicalFolder>
           </logicalFolder>
+          <logicalFolder name="f5" displayName="wifi" projectFiles="true">
+            <logicalFolder name="f1" displayName="mrf24w" projectFiles="true">
+              <logicalFolder name="f1" displayName="src" projectFiles="true">
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_com.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_commands.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_config.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_connection_algorithm.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_connection_manager.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_connection_profile.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_context_loader.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_debug_output.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_eint.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_events.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_event_handler.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_init.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_iwpriv.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_mac.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_main.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_mgmt_msg.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_param_msg.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_pbkdf2.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_power_save.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_raw.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_scan.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_scan_helper.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_softap_client_cache.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_spi.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_tx_power.c</itemPath>
+                <itemPath>../../../../framework/driver/wifi/mrf24w/src/drv_wifi_rtos_wrapper.c</itemPath>
+              </logicalFolder>
+            </logicalFolder>
+          </logicalFolder>
         </logicalFolder>
-        <logicalFolder name="f2" displayName="net" projectFiles="true">
+        <logicalFolder name="f3" displayName="net" projectFiles="true">
           <logicalFolder name="f1" displayName="pres" projectFiles="true">
             <itemPath>../../../../framework/net/pres/src/net_pres.c</itemPath>
           </logicalFolder>
         </logicalFolder>
-        <logicalFolder name="f3" displayName="osal" projectFiles="true">
+        <logicalFolder name="f4" displayName="osal" projectFiles="true">
           <logicalFolder name="f1" displayName="src" projectFiles="true">
             <itemPath>../../../../framework/osal/src/osal_freertos.c</itemPath>
           </logicalFolder>
         </logicalFolder>
-        <logicalFolder name="f4" displayName="system" projectFiles="true">
+        <logicalFolder name="f5" displayName="system" projectFiles="true">
           <logicalFolder name="f1" displayName="devcon" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../framework/system/devcon/src/sys_devcon.c</itemPath>
@@ -451,7 +623,7 @@
             </logicalFolder>
           </logicalFolder>
         </logicalFolder>
-        <logicalFolder name="f5" displayName="tcpip" projectFiles="true">
+        <logicalFolder name="f6" displayName="tcpip" projectFiles="true">
           <logicalFolder name="f1" displayName="src" projectFiles="true">
             <logicalFolder name="f1" displayName="common" projectFiles="true">
               <itemPath>../../../../framework/tcpip/src/common/helpers.c</itemPath>
