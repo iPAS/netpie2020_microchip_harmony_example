@@ -193,6 +193,8 @@ extern "C" {
 #define DRV_WIFI_SPI_INDEX 0
 #define DRV_WIFI_SPI_INSTANCE sysObj.spiObjectIdx0
 
+#define DRV_WIFI_USE_SPI_DMA
+
 #define DRV_WIFI_USE_FREERTOS
 
 #define DRV_WIFI_RTOS_INIT_TASK_SIZE 512u
@@ -284,12 +286,15 @@ extern "C" {
 #define DRV_SPI_8BIT 				1
 #define DRV_SPI_16BIT 				0
 #define DRV_SPI_32BIT 				0
-#define DRV_SPI_DMA 				0
+#define DRV_SPI_DMA 				1
 
 /*** SPI Driver Static Allocation Options ***/
 #define DRV_SPI_INSTANCES_NUMBER 		1
 #define DRV_SPI_CLIENTS_NUMBER 			1
 #define DRV_SPI_ELEMENTS_PER_QUEUE 		10
+/*** SPI Driver DMA Options ***/
+#define DRV_SPI_DMA_TXFER_SIZE 			512
+#define DRV_SPI_DMA_DUMMY_BUFFER_SIZE 	512
 /* SPI Driver Instance 0 Configuration */
 #define DRV_SPI_SPI_ID_IDX0 				SPI_ID_1
 #define DRV_SPI_TASK_MODE_IDX0 				DRV_SPI_TASK_MODE_ISR
@@ -316,6 +321,10 @@ extern "C" {
 #define DRV_SPI_ERROR_INT_SUB_PRIORITY_IDX0 INT_SUBPRIORITY_LEVEL0
 #define DRV_SPI_QUEUE_SIZE_IDX0 			10
 #define DRV_SPI_RESERVED_JOB_IDX0 			1
+#define DRV_SPI_TX_DMA_CHANNEL_IDX0 		DMA_CHANNEL_1
+#define DRV_SPI_TX_DMA_THRESHOLD_IDX0 		16
+#define DRV_SPI_RX_DMA_CHANNEL_IDX0 		DMA_CHANNEL_0
+#define DRV_SPI_RX_DMA_THRESHOLD_IDX0 		16
 
 // *****************************************************************************
 // *****************************************************************************

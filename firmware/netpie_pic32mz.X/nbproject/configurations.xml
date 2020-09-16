@@ -229,33 +229,39 @@
             </logicalFolder>
             <itemPath>../../../../framework/system/devcon/sys_devcon.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f10" displayName="fs" projectFiles="true">
+          <logicalFolder name="f5" displayName="dma" projectFiles="true">
+            <logicalFolder name="f1" displayName="src" projectFiles="true">
+              <itemPath>../../../../framework/system/dma/src/sys_dma_local.h</itemPath>
+            </logicalFolder>
+            <itemPath>../../../../framework/system/dma/sys_dma.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f11" displayName="fs" projectFiles="true">
             <itemPath>../../../../framework/system/fs/sys_fs.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f5" displayName="int" projectFiles="true">
+          <logicalFolder name="f6" displayName="int" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../framework/system/int/src/sys_int_private.h</itemPath>
             </logicalFolder>
             <itemPath>../../../../framework/system/int/sys_int.h</itemPath>
             <itemPath>../../../../framework/system/int/sys_int_mapping.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f6" displayName="ports" projectFiles="true">
+          <logicalFolder name="f7" displayName="ports" projectFiles="true">
             <itemPath>../../../../framework/system/ports/sys_ports.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f7" displayName="random" projectFiles="true">
+          <logicalFolder name="f8" displayName="random" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../framework/system/random/src/sys_random_local.h</itemPath>
             </logicalFolder>
             <itemPath>../../../../framework/system/random/sys_random.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f8" displayName="reset" projectFiles="true">
+          <logicalFolder name="f9" displayName="reset" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../framework/system/reset/src/sys_reset_local.h</itemPath>
               <itemPath>../../../../framework/system/reset/src/sys_reset_mapping.h</itemPath>
             </logicalFolder>
             <itemPath>../../../../framework/system/reset/sys_reset.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f9" displayName="tmr" projectFiles="true">
+          <logicalFolder name="f10" displayName="tmr" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../framework/system/tmr/src/sys_tmr_local.h</itemPath>
             </logicalFolder>
@@ -442,6 +448,7 @@
                     <itemPath>../src/system_config/default/framework/driver/spi/dynamic/drv_spi_tasks.c</itemPath>
                     <itemPath>../src/system_config/default/framework/driver/spi/dynamic/drv_spi_api.c</itemPath>
                     <itemPath>../src/system_config/default/framework/driver/spi/dynamic/drv_spi_master_ebm_tasks.c</itemPath>
+                    <itemPath>../src/system_config/default/framework/driver/spi/dynamic/drv_spi_master_dma_tasks.c</itemPath>
                   </logicalFolder>
                 </logicalFolder>
                 <logicalFolder name="f2" displayName="usart" projectFiles="true">
@@ -602,22 +609,25 @@
               <itemPath>../../../../framework/system/devcon/src/sys_devcon_cache.h</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f2" displayName="int" projectFiles="true">
+          <logicalFolder name="f2" displayName="dma" projectFiles="true">
+            <itemPath>../../../../framework/system/dma/src/sys_dma.c</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f3" displayName="int" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../framework/system/int/src/sys_int_pic32.c</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f3" displayName="random" projectFiles="true">
+          <logicalFolder name="f4" displayName="random" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../framework/system/random/src/sys_random.c</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f4" displayName="reset" projectFiles="true">
+          <logicalFolder name="f5" displayName="reset" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../framework/system/reset/src/sys_reset.c</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f5" displayName="tmr" projectFiles="true">
+          <logicalFolder name="f6" displayName="tmr" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../framework/system/tmr/src/sys_tmr.c</itemPath>
             </logicalFolder>

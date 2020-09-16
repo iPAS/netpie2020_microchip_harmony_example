@@ -261,6 +261,10 @@
         <Path>Header Files/framework/net/pres</Path>
       </File>
       <File>
+        <Name>sys_dma_local.h</Name>
+        <Path>Header Files/framework/system/dma/src</Path>
+      </File>
+      <File>
         <Name>internal.h</Name>
         <Path>Header Files/framework/crypto/src</Path>
       </File>
@@ -945,6 +949,10 @@
         <Path>Header Files/framework/driver/spi/src</Path>
       </File>
       <File>
+        <Name>sys_dma.c</Name>
+        <Path>Source Files/framework/system/dma</Path>
+      </File>
+      <File>
         <Name>net_pres.c</Name>
         <Path>Source Files/framework/net/pres</Path>
       </File>
@@ -995,6 +1003,10 @@
       <File>
         <Name>sys_random_local.h</Name>
         <Path>Header Files/framework/system/random/src</Path>
+      </File>
+      <File>
+        <Name>sys_dma.h</Name>
+        <Path>Header Files/framework/system/dma</Path>
       </File>
       <File>
         <Name>sys_reset.c</Name>
@@ -1538,7 +1550,7 @@
       <Template>
         <Name>system_interrupt_a.S</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>81B591B6BB2F247826CBA6B08035680B</Checksum>
+        <Checksum>51AB436A447EDB0F057B8DE2B1827A89</Checksum>
       </Template>
       <Template>
         <Name>app_netpie.h</Name>
@@ -1565,7 +1577,7 @@
       <Template>
         <Name>drv_spi_tasks.c</Name>
         <Path>Source Files/app/system_config/default/framework/driver/spi/dynamic</Path>
-        <Checksum>0468A6AC4EF824897AA5C22F6EAFBB43</Checksum>
+        <Checksum>C7AA845601099A9721FE6AD0080828C1</Checksum>
       </Template>
       <Template>
         <Name>app_logger.h</Name>
@@ -1596,7 +1608,7 @@
       <Template>
         <Name>system_interrupt.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>738514A6463E6729750AA84EE7B975C9</Checksum>
+        <Checksum>35355712C331F0A8B0D31E28609228F3</Checksum>
       </Template>
       <Template>
         <Name>sys_clk_static.c</Name>
@@ -1606,7 +1618,7 @@
       <Template>
         <Name>drv_spi_api.c</Name>
         <Path>Source Files/app/system_config/default/framework/driver/spi/dynamic</Path>
-        <Checksum>B3A91E83D97E20F2E6AE74F22B6F32E1</Checksum>
+        <Checksum>4FF988138085F1E9771E88FD07FB9B64</Checksum>
       </Template>
       <Template>
         <Name>app_uart_term.c</Name>
@@ -1622,7 +1634,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>93859B91945A06D238EB1BA6799D4747</Checksum>
+        <Checksum>FA7288A64139B41F7AA0910841A5BE17</Checksum>
         <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
@@ -1644,12 +1656,17 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>71083204FBE2B760DC7B123ADE3B4203</Checksum>
+        <Checksum>69E4CCCF1C89EA2A67965D2D366DDC9A</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
         <Path>Source Files/app/system_config/default</Path>
         <Checksum>C111969CA43D6CEA1E9E33A6164E7AE0</Checksum>
+      </Template>
+      <Template>
+        <Name>drv_spi_master_dma_tasks.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/spi/dynamic</Path>
+        <Checksum>CD5585903D9F71AEE640D8DFD0179BB7</Checksum>
       </Template>
       <Template>
         <Name>app_pubsub.h</Name>
@@ -1670,7 +1687,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>48186BC7B05A21058C373B5DEA81AE60</Checksum>
+        <Checksum>19E5AA545E0399E2C94C1345C2A1F546</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>
