@@ -293,6 +293,10 @@
         <Path>Source Files/framework/crypto/src</Path>
       </File>
       <File>
+        <Name>dhcps.c</Name>
+        <Path>Source Files/framework/tcpip/src</Path>
+      </File>
+      <File>
         <Name>hash.c</Name>
         <Path>Source Files/framework/crypto/src</Path>
       </File>
@@ -1618,7 +1622,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>15BA73CCD52F7D64A20E0558806289B5</Checksum>
+        <Checksum>93859B91945A06D238EB1BA6799D4747</Checksum>
         <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
@@ -1666,7 +1670,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>776196C57C07C0E116D226CFF013A3B9</Checksum>
+        <Checksum>48186BC7B05A21058C373B5DEA81AE60</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>

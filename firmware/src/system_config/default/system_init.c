@@ -346,6 +346,27 @@ const TCPIP_MODULE_MAC_MRF24W_CONFIG macMRF24WConfigData ={
 
 
 
+/*** DHCP server initialization data ***/
+TCPIP_DHCPS_ADDRESS_CONFIG DHCP_POOL_CONFIG[]=
+{
+    {
+        .interfaceIndex     = TCPIP_DHCP_SERVER_INTERFACE_INDEX_IDX1,
+        .serverIPAddress    = TCPIP_DHCPS_DEFAULT_SERVER_IP_ADDRESS_IDX1,
+        .startIPAddRange    = TCPIP_DHCPS_DEFAULT_IP_ADDRESS_RANGE_START_IDX1,
+        .ipMaskAddress      = TCPIP_DHCPS_DEFAULT_SERVER_NETMASK_ADDRESS_IDX1,
+        .priDNS             = TCPIP_DHCPS_DEFAULT_SERVER_PRIMARY_DNS_ADDRESS_IDX1,
+        .secondDNS          = TCPIP_DHCPS_DEFAULT_SERVER_SECONDARY_DNS_ADDRESS_IDX1,
+        .poolEnabled        = TCPIP_DHCP_SERVER_POOL_ENABLED_IDX1,
+    },
+};
+const TCPIP_DHCPS_MODULE_CONFIG tcpipDHCPSInitData =
+{
+    .enabled            = true,
+    .deleteOldLease     = TCPIP_DHCP_SERVER_DELETE_OLD_ENTRIES,
+    .leaseEntries       = TCPIP_DHCPS_LEASE_ENTRIES_DEFAULT,
+    .entrySolvedTmo     = TCPIP_DHCPS_LEASE_SOLVED_ENTRY_TMO,
+    .dhcpServer         = (TCPIP_DHCPS_ADDRESS_CONFIG*)DHCP_POOL_CONFIG,
+};
 
 
 /*** DNS Client Initialization Data ***/
@@ -389,6 +410,20 @@ const TCPIP_NETWORK_CONFIG __attribute__((unused))  TCPIP_HOSTS_CONFIGURATION[] 
         TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS,      // startFlags
        &TCPIP_NETWORK_DEFAULT_MAC_DRIVER,           // pMacObject
     },
+/*** Network Configuration Index 1 ***/
+    {
+        TCPIP_NETWORK_DEFAULT_INTERFACE_NAME_IDX1,       // interface
+        TCPIP_NETWORK_DEFAULT_HOST_NAME_IDX1,            // hostName
+        TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX1,             // macAddr
+        TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX1,           // ipAddr
+        TCPIP_NETWORK_DEFAULT_IP_MASK_IDX1,              // ipMask
+        TCPIP_NETWORK_DEFAULT_GATEWAY_IDX1,              // gateway
+        TCPIP_NETWORK_DEFAULT_DNS_IDX1,                  // priDNS
+        TCPIP_NETWORK_DEFAULT_SECOND_DNS_IDX1,           // secondDNS
+        TCPIP_NETWORK_DEFAULT_POWER_MODE_IDX1,           // powerMode
+        TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS_IDX1,      // startFlags
+       &TCPIP_NETWORK_DEFAULT_MAC_DRIVER_IDX1,           // pMacObject
+    },
 };
 
 const TCPIP_STACK_MODULE_CONFIG TCPIP_STACK_MODULE_CONFIG_TBL [] =
@@ -398,11 +433,13 @@ const TCPIP_STACK_MODULE_CONFIG TCPIP_STACK_MODULE_CONFIG_TBL [] =
     {TCPIP_MODULE_ARP,           &tcpipARPInitData},              // TCPIP_MODULE_ARP
     {TCPIP_MODULE_UDP,           &tcpipUDPInitData},              // TCPIP_MODULE_UDP,
     {TCPIP_MODULE_TCP,           &tcpipTCPInitData},              // TCPIP_MODULE_TCP,
+    {TCPIP_MODULE_DHCP_SERVER,   &tcpipDHCPSInitData},                           // TCPIP_MODULE_DHCP_SERVER,
     {TCPIP_MODULE_DNS_CLIENT,&tcpipDNSClientInitData}, // TCPIP_MODULE_DNS_CLIENT,
 
     { TCPIP_MODULE_MANAGER,    & tcpipHeapConfig },          // TCPIP_MODULE_MANAGER
     // MAC modules
     {TCPIP_MODULE_MAC_PIC32INT, &tcpipMACPIC32INTInitData},     // TCPIP_MODULE_MAC_PIC32INT
+    {TCPIP_MODULE_MAC_MRF24W, &macMRF24WConfigData},        // TCPIP_MODULE_MAC_MRF24W
 
 };
 
