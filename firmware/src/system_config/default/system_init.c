@@ -120,6 +120,33 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // Section: Driver Initialization Data
 // *****************************************************************************
 // *****************************************************************************
+// <editor-fold defaultstate="collapsed" desc="DRV_SPI Initialization Data"> 
+ /*** SPI Driver Initialization Data ***/
+  /*** Index 0  ***/
+ DRV_SPI_INIT drvSpi0InitData =
+ {
+    .spiId = DRV_SPI_SPI_ID_IDX0,
+    .taskMode = DRV_SPI_TASK_MODE_IDX0,
+    .spiMode = DRV_SPI_SPI_MODE_IDX0,
+    .allowIdleRun = DRV_SPI_ALLOW_IDLE_RUN_IDX0,
+    .spiProtocolType = DRV_SPI_SPI_PROTOCOL_TYPE_IDX0,
+    .commWidth = DRV_SPI_COMM_WIDTH_IDX0,
+    .spiClk = DRV_SPI_SPI_CLOCK_IDX0,
+    .baudRate = DRV_SPI_BAUD_RATE_IDX0,
+    .bufferType = DRV_SPI_BUFFER_TYPE_IDX0,
+    .clockMode = DRV_SPI_CLOCK_MODE_IDX0,
+    .inputSamplePhase = DRV_SPI_INPUT_PHASE_IDX0,
+    .txInterruptSource = DRV_SPI_TX_INT_SOURCE_IDX0,
+    .rxInterruptSource = DRV_SPI_RX_INT_SOURCE_IDX0,
+    .errInterruptSource = DRV_SPI_ERROR_INT_SOURCE_IDX0,
+    .txDmaChannel =         DRV_SPI_TX_DMA_CHANNEL_IDX0,
+    .txDmaThreshold =       DRV_SPI_TX_DMA_THRESHOLD_IDX0,
+    .rxDmaChannel =         DRV_SPI_RX_DMA_CHANNEL_IDX0,
+    .rxDmaThreshold =       DRV_SPI_RX_DMA_THRESHOLD_IDX0,
+    .queueSize = DRV_SPI_QUEUE_SIZE_IDX0,
+    .jobQueueReserveSize = DRV_SPI_RESERVED_JOB_IDX0,
+ };
+// </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="DRV_Timer Initialization Data">
 /*** TMR Driver Initialization Data ***/
 
@@ -230,6 +257,15 @@ const SYS_DEVCON_INIT sysDevconInit =
 };
 
 // </editor-fold>
+//<editor-fold defaultstate="collapsed" desc="SYS_DMA Initialization Data">
+/*** System DMA Initialization Data ***/
+
+const SYS_DMA_INIT sysDmaInit =
+{
+	.sidl = SYS_DMA_SIDL_DISABLE,
+
+};
+// </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="SYS_TMR Initialization Data">
 /*** TMR Service Initialization Data ***/
 const SYS_TMR_INIT sysTmrInitData =
@@ -316,10 +352,34 @@ const TCPIP_MODULE_MAC_PIC32INT_CONFIG tcpipMACPIC32INTInitData =
     .pPhyBase               = &DRV_ETHPHY_OBJECT_BASE_Default,
 };
 
+/*** Wi-Fi Interface MRF24W Initialization Data ***/
+const TCPIP_MODULE_MAC_MRF24W_CONFIG macMRF24WConfigData ={
+};
 
 
 
 
+/*** DHCP server initialization data ***/
+TCPIP_DHCPS_ADDRESS_CONFIG DHCP_POOL_CONFIG[]=
+{
+    {
+        .interfaceIndex     = TCPIP_DHCP_SERVER_INTERFACE_INDEX_IDX1,
+        .serverIPAddress    = TCPIP_DHCPS_DEFAULT_SERVER_IP_ADDRESS_IDX1,
+        .startIPAddRange    = TCPIP_DHCPS_DEFAULT_IP_ADDRESS_RANGE_START_IDX1,
+        .ipMaskAddress      = TCPIP_DHCPS_DEFAULT_SERVER_NETMASK_ADDRESS_IDX1,
+        .priDNS             = TCPIP_DHCPS_DEFAULT_SERVER_PRIMARY_DNS_ADDRESS_IDX1,
+        .secondDNS          = TCPIP_DHCPS_DEFAULT_SERVER_SECONDARY_DNS_ADDRESS_IDX1,
+        .poolEnabled        = TCPIP_DHCP_SERVER_POOL_ENABLED_IDX1,
+    },
+};
+const TCPIP_DHCPS_MODULE_CONFIG tcpipDHCPSInitData =
+{
+    .enabled            = true,
+    .deleteOldLease     = TCPIP_DHCP_SERVER_DELETE_OLD_ENTRIES,
+    .leaseEntries       = TCPIP_DHCPS_LEASE_ENTRIES_DEFAULT,
+    .entrySolvedTmo     = TCPIP_DHCPS_LEASE_SOLVED_ENTRY_TMO,
+    .dhcpServer         = (TCPIP_DHCPS_ADDRESS_CONFIG*)DHCP_POOL_CONFIG,
+};
 
 
 /*** DNS Client Initialization Data ***/
@@ -363,6 +423,20 @@ const TCPIP_NETWORK_CONFIG __attribute__((unused))  TCPIP_HOSTS_CONFIGURATION[] 
         TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS,      // startFlags
        &TCPIP_NETWORK_DEFAULT_MAC_DRIVER,           // pMacObject
     },
+/*** Network Configuration Index 1 ***/
+    {
+        TCPIP_NETWORK_DEFAULT_INTERFACE_NAME_IDX1,       // interface
+        TCPIP_NETWORK_DEFAULT_HOST_NAME_IDX1,            // hostName
+        TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX1,             // macAddr
+        TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX1,           // ipAddr
+        TCPIP_NETWORK_DEFAULT_IP_MASK_IDX1,              // ipMask
+        TCPIP_NETWORK_DEFAULT_GATEWAY_IDX1,              // gateway
+        TCPIP_NETWORK_DEFAULT_DNS_IDX1,                  // priDNS
+        TCPIP_NETWORK_DEFAULT_SECOND_DNS_IDX1,           // secondDNS
+        TCPIP_NETWORK_DEFAULT_POWER_MODE_IDX1,           // powerMode
+        TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS_IDX1,      // startFlags
+       &TCPIP_NETWORK_DEFAULT_MAC_DRIVER_IDX1,           // pMacObject
+    },
 };
 
 const TCPIP_STACK_MODULE_CONFIG TCPIP_STACK_MODULE_CONFIG_TBL [] =
@@ -372,11 +446,13 @@ const TCPIP_STACK_MODULE_CONFIG TCPIP_STACK_MODULE_CONFIG_TBL [] =
     {TCPIP_MODULE_ARP,           &tcpipARPInitData},              // TCPIP_MODULE_ARP
     {TCPIP_MODULE_UDP,           &tcpipUDPInitData},              // TCPIP_MODULE_UDP,
     {TCPIP_MODULE_TCP,           &tcpipTCPInitData},              // TCPIP_MODULE_TCP,
+    {TCPIP_MODULE_DHCP_SERVER,   &tcpipDHCPSInitData},                           // TCPIP_MODULE_DHCP_SERVER,
     {TCPIP_MODULE_DNS_CLIENT,&tcpipDNSClientInitData}, // TCPIP_MODULE_DNS_CLIENT,
 
     { TCPIP_MODULE_MANAGER,    & tcpipHeapConfig },          // TCPIP_MODULE_MANAGER
     // MAC modules
     {TCPIP_MODULE_MAC_PIC32INT, &tcpipMACPIC32INTInitData},     // TCPIP_MODULE_MAC_PIC32INT
+    {TCPIP_MODULE_MAC_MRF24W, &macMRF24WConfigData},        // TCPIP_MODULE_MAC_MRF24W
 
 };
 
@@ -452,6 +528,26 @@ void SYS_Initialize ( void* data )
 
     /* Initialize Drivers */
 
+    /*** SPI Driver Index 0 initialization***/
+
+    SYS_INT_VectorPrioritySet(DRV_SPI_TX_INT_VECTOR_IDX0, DRV_SPI_TX_INT_PRIORITY_IDX0);
+    SYS_INT_VectorSubprioritySet(DRV_SPI_TX_INT_VECTOR_IDX0, DRV_SPI_TX_INT_SUB_PRIORITY_IDX0);
+    SYS_INT_VectorPrioritySet(DRV_SPI_RX_INT_VECTOR_IDX0, DRV_SPI_RX_INT_PRIORITY_IDX0);
+    SYS_INT_VectorSubprioritySet(DRV_SPI_RX_INT_VECTOR_IDX0, DRV_SPI_RX_INT_SUB_PRIORITY_IDX0);
+    SYS_INT_VectorPrioritySet(DRV_DRV_SPI_ERROR_INT_VECTOR_IDX0, DRV_SPI_ERROR_INT_PRIORITY_IDX0);
+    SYS_INT_VectorSubprioritySet(DRV_DRV_SPI_ERROR_INT_VECTOR_IDX0, DRV_SPI_ERROR_INT_SUB_PRIORITY_IDX0);
+    sysObj.spiObjectIdx0 = DRV_SPI_Initialize(DRV_SPI_INDEX_0, (const SYS_MODULE_INIT  * const)&drvSpi0InitData);
+    sysObj.sysDma = SYS_DMA_Initialize((SYS_MODULE_INIT *)&sysDmaInit);
+    SYS_INT_VectorPrioritySet(INT_VECTOR_DMA0, INT_PRIORITY_LEVEL2);
+    SYS_INT_VectorSubprioritySet(INT_VECTOR_DMA0, INT_SUBPRIORITY_LEVEL0);
+    SYS_INT_VectorPrioritySet(INT_VECTOR_DMA1, INT_PRIORITY_LEVEL2);
+    SYS_INT_VectorSubprioritySet(INT_VECTOR_DMA1, INT_SUBPRIORITY_LEVEL0);
+
+    SYS_INT_SourceEnable(INT_SOURCE_DMA_0);
+    SYS_INT_SourceEnable(INT_SOURCE_DMA_1);
+
+
+
     sysObj.drvTmr0 = DRV_TMR_Initialize(DRV_TMR_INDEX_0, (SYS_MODULE_INIT *)&drvTmr0InitData);
 
     SYS_INT_VectorPrioritySet(INT_VECTOR_T2, INT_PRIORITY_LEVEL1);
@@ -482,6 +578,17 @@ void SYS_Initialize ( void* data )
 
     /*** Interrupt Service Initialization Code ***/
     SYS_INT_Initialize();
+
+    /*Setup the INT_SOURCE_EXTERNAL_1 and Enable it*/
+    SYS_INT_VectorPrioritySet(INT_VECTOR_INT1, INT_PRIORITY_LEVEL1);
+    SYS_INT_VectorSubprioritySet(INT_VECTOR_INT1, INT_SUBPRIORITY_LEVEL0);
+    SYS_INT_ExternalInterruptTriggerSet(INT_EXTERNAL_INT_SOURCE1,INT_EDGE_TRIGGER_FALLING);
+    SYS_INT_SourceEnable(INT_SOURCE_EXTERNAL_1);
+
+
+
+
+
 
     /*** Random Service Initialization Code ***/
     SYS_RANDOM_Initialize(0, 0);
