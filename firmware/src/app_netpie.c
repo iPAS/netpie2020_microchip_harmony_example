@@ -54,7 +54,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "app_netpie.h"
-#include "aux/parson.h"
+#include "parson/parson.h"
 
 #if defined(DO_TRACE)
 #include "app_uart_term.h"
@@ -540,21 +540,22 @@ void APP_NETPIE_Tasks ( void )
                 for (i = 0; i < nNets; i++) 
                 {
                     netH = TCPIP_STACK_IndexToNet(i);
-
                     TCPIP_STACK_NetNameGet(netH);
                     TCPIP_STACK_NetBIOSName(netH);
 
                     // Retrieve MAC Address to store and convert to string
-                    TCPIP_NET_HANDLE netH = TCPIP_STACK_NetHandleGet("PIC32INT");
                     TCPIP_MAC_ADDR* pAddr = (TCPIP_MAC_ADDR *)TCPIP_STACK_NetAddressMac(netH);
                     sprintf(appNetpieData.macAddress, "%02x%02x%02x%02x%02x%02x",
                             pAddr->v[0], pAddr->v[1], pAddr->v[2], pAddr->v[3], pAddr->v[4], pAddr->v[5]);
+                    
+                    // Show interface's MAC
+                    char ifname[10];
+                    ifname[ TCPIP_STACK_NetAliasNameGet(netH, ifname, sizeof(ifname)) ] = '\0';
+                    TRACE_LOG("[%d] '%s' MAC: %s\n\r", __LINE__, ifname, appNetpieData.macAddress);  // DEBUG: iPAS
                 }
 
                 APP_timerSet(&appNetpieData.genericUseTimer);
                 appNetpieData.state = APP_NETPIE_STATE_TCPIP_WAIT_FOR_IP;
-
-                TRACE_LOG("[%d] MAC: %s\n\r", __LINE__, appNetpieData.macAddress);  // DEBUG: iPAS
             }
             break;
         }
@@ -576,15 +577,26 @@ void APP_NETPIE_Tasks ( void )
 
                 IPV4_ADDR ipAddr;
                 ipAddr.Val = TCPIP_STACK_NetAddress(netH);
-                if (0 != ipAddr.Val)
+                if (ipAddr.Val != 0)
                 {
                     if (ipAddr.v[0] != 0 && ipAddr.v[0] != 169) // Wait for a Valid IP
                     {
-                        appNetpieData.board_ipAddr.v4Add.Val = ipAddr.Val;  // saved for debugging
-                        appNetpieData.state = APP_NETPIE_STATE_MQTT_INIT;
-
-                        TRACE_LOG("[%d] IP: %d.%d.%d.%d\n\r", __LINE__,
+                        char ifname[10];
+                        ifname[ TCPIP_STACK_NetAliasNameGet(netH, ifname, sizeof(ifname)) ] = '\0';
+                        TRACE_LOG("[%d] '%s' IP: %d.%d.%d.%d\n\r", __LINE__, ifname,
                             ipAddr.v[0], ipAddr.v[1], ipAddr.v[2], ipAddr.v[3]);  // DEBUG: iPAS
+
+                        //const char *ifnames[] = {"PIC32INT", "MRF24W"};
+                        //const char *ifnames[] = {"eth0", "wlan0"};
+                        if (strcmp(ifname, "wlan0") == 0)  // Waiting for the WiFi interface to get DHCP done
+                        {
+                            appNetpieData.board_ipAddr.v4Add.Val = ipAddr.Val;  // saved for debugging
+                            appNetpieData.state = APP_NETPIE_STATE_MQTT_INIT;
+                        }
+                        else
+                        {
+                            vTaskDelay(1000 / portTICK_PERIOD_MS);
+                        }
                     }
                 }
             }

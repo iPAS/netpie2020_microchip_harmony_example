@@ -223,6 +223,10 @@ void APP_UART_TERM_Initialize ( void )
     }
     xQueueReset(app_Data.q_tx);
     xQueueReset(app_Data.q_rx);
+    
+    
+    /*** Set the RS485 to tx mode ***/
+    //SYS_PORTS_PinSet (PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5);  // XXX: iPAS, still make the RTU hang, why?
 }
 
 

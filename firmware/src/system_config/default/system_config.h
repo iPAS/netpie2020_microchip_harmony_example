@@ -104,8 +104,8 @@ extern "C" {
 #define SYS_PORT_A_CNPD         0x0
 #define SYS_PORT_A_CNEN         0x0
 
-#define SYS_PORT_B_ANSEL        0xc65b
-#define SYS_PORT_B_TRIS         0xfd77
+#define SYS_PORT_B_ANSEL        0xc67b
+#define SYS_PORT_B_TRIS         0xfd57
 #define SYS_PORT_B_LAT          0x280
 #define SYS_PORT_B_ODC          0x0
 #define SYS_PORT_B_CNPU         0x0
@@ -113,7 +113,7 @@ extern "C" {
 #define SYS_PORT_B_CNEN         0x0
 
 #define SYS_PORT_C_ANSEL        0x6000
-#define SYS_PORT_C_TRIS         0xf00c
+#define SYS_PORT_C_TRIS         0xf00e
 #define SYS_PORT_C_LAT          0x10
 #define SYS_PORT_C_ODC          0x0
 #define SYS_PORT_C_CNPU         0x8000
@@ -123,12 +123,12 @@ extern "C" {
 #define SYS_PORT_D_ANSEL        0xc000
 #define SYS_PORT_D_TRIS         0xfc3f
 #define SYS_PORT_D_LAT          0x200
-#define SYS_PORT_D_ODC          0x0
+#define SYS_PORT_D_ODC          0x200
 #define SYS_PORT_D_CNPU         0x0
 #define SYS_PORT_D_CNPD         0x0
 #define SYS_PORT_D_CNEN         0x0
 
-#define SYS_PORT_E_ANSEL        0x1f0
+#define SYS_PORT_E_ANSEL        0x1d0
 #define SYS_PORT_E_TRIS         0x3f9
 #define SYS_PORT_E_LAT          0x6
 #define SYS_PORT_E_ODC          0x0
@@ -173,6 +173,72 @@ extern "C" {
 // Section: Driver Configuration
 // *****************************************************************************
 // *****************************************************************************
+/*** Wi-Fi Driver Configuration ***/
+// I/O mappings for general control pins, including CS, HIBERNATE, RESET and INTERRUPT.
+#define WF_CS_PORT_CHANNEL          PORT_CHANNEL_D
+#define WF_CS_BIT_POS               13
+
+#define WF_HIBERNATE_PORT_CHANNEL   PORT_CHANNEL_E
+#define WF_HIBERNATE_BIT_POS        7
+
+#define WF_RESET_PORT_CHANNEL       PORT_CHANNEL_E
+#define WF_RESET_BIT_POS            4
+
+#define WF_INT_PORT_CHANNEL         PORT_CHANNEL_F
+#define WF_INT_BIT_POS              3
+
+#define MRF_INT_SOURCE INT_SOURCE_EXTERNAL_1
+#define MRF_INT_VECTOR INT_VECTOR_INT1
+
+#define DRV_WIFI_SPI_INDEX 0
+#define DRV_WIFI_SPI_INSTANCE sysObj.spiObjectIdx0
+
+#define DRV_WIFI_USE_SPI_DMA
+
+#define DRV_WIFI_USE_FREERTOS
+
+#define DRV_WIFI_RTOS_INIT_TASK_SIZE 512u
+#define DRV_WIFI_RTOS_INIT_TASK_PRIORITY 3u
+#define DRV_WIFI_RTOS_DEFERRED_ISR_SIZE 1024u
+#define DRV_WIFI_RTOS_DEFERRED_ISR_PRIORITY 7u
+#define DRV_WIFI_RTOS_MAC_TASK_SIZE 1024u
+#define DRV_WIFI_RTOS_MAC_TASK_PRIORITY 3u
+
+#define DRV_WIFI_DEFAULT_NETWORK_TYPE       DRV_WIFI_NETWORK_TYPE_INFRASTRUCTURE
+#define DRV_WIFI_DEFAULT_CHANNEL_LIST       {} /* Channel list in domain - use default in module */
+#define DRV_WIFI_DEFAULT_LIST_RETRY_COUNT   (DRV_WIFI_RETRY_FOREVER) /* Number (1..255) of times to try to connect to AP when using Infrastructure network type */
+#define DRV_WIFI_DEFAULT_SSID               "***WIFI_SSID***"
+
+#define DRV_WIFI_DEFAULT_SECURITY_MODE      DRV_WIFI_SECURITY_WPA2_WITH_PASS_PHRASE
+#define DRV_WIFI_DEFAULT_WEP_PHRASE         "WEP Phrase" // default WEP passphrase
+#define DRV_WIFI_DEFAULT_WEP_KEY_40         "5AFB6C8E77" // default WEP40 key
+#define DRV_WIFI_DEFAULT_WEP_KEY_104        "90E96780C739409DA50034FCAA" // default WEP104 key
+#define DRV_WIFI_DEFAULT_PSK_PHRASE         "***WIFI_PASSWORD***" // customized WPA passphrase
+#define DRV_WIFI_DEFAULT_WPS_PIN            "12390212" // default WPS PIN
+
+#define DRV_WIFI_SAVE_WPS_CREDENTIALS       DRV_WIFI_DISABLED
+
+#define DRV_WIFI_CHECK_LINK_STATUS          DRV_WIFI_DISABLED /* Gets the MRF to check the link status relying on Tx failures. */
+#define DRV_WIFI_LINK_LOST_THRESHOLD        40 /* Consecutive Tx transmission failures to be considered the AP is gone away. */
+
+#define DRV_WIFI_DEFAULT_POWER_SAVE         DRV_WIFI_DISABLED /* DRV_WIFI_ENABLED or DRV_WIFI_DISABLED */
+
+/*
+ * MRF24W FW has a built-in connection manager, and it is enabled by default.
+ * If you want to run your own connection manager in host side, you should
+ * disable the FW connection manager to avoid possible conflict between the two.
+ * Especially these two APIs can be affected if you do not disable it.
+ * A) uint16_t DRV_WIFI_Disconnect(void)
+ * B) uint16_t DRV_WIFI_Scan(bool scanAll)
+ * These APIs will return failure when the conflict occurs.
+ */
+#define DRV_WIFI_MODULE_CONNECTION_MANAGER  DRV_WIFI_ENABLED
+
+#define DRV_WIFI_SOFTWARE_MULTICAST_FILTER  DRV_WIFI_ENABLED
+
+#define DRV_WIFI_CONFIG_MHC
+
+#define DRV_WIFI_ASSERT(condition, msg) DRV_WIFI_Assert(condition, msg, __FILE__, __LINE__)
 /*** Timer Driver Configuration ***/
 #define DRV_TMR_INTERRUPT_MODE             true
 #define DRV_TMR_INSTANCES_NUMBER           1
@@ -202,6 +268,59 @@ extern "C" {
 #define DRV_USART_BUFFER_QUEUE_SUPPORT              false
 #define DRV_USART_SUPPORT_TRANSMIT_DMA              false
 #define DRV_USART_SUPPORT_RECEIVE_DMA               false
+
+/*** SPI Driver Configuration ***/
+#define DRV_SPI_NUMBER_OF_MODULES		6
+/*** Driver Compilation and static configuration options. ***/
+/*** Select SPI compilation units.***/
+#define DRV_SPI_POLLED 				0
+#define DRV_SPI_ISR 				1
+#define DRV_SPI_MASTER 				1
+#define DRV_SPI_SLAVE 				0
+#define DRV_SPI_RM 					0
+#define DRV_SPI_EBM 				1
+#define DRV_SPI_8BIT 				1
+#define DRV_SPI_16BIT 				0
+#define DRV_SPI_32BIT 				0
+#define DRV_SPI_DMA 				1
+
+/*** SPI Driver Static Allocation Options ***/
+#define DRV_SPI_INSTANCES_NUMBER 		1
+#define DRV_SPI_CLIENTS_NUMBER 			1
+#define DRV_SPI_ELEMENTS_PER_QUEUE 		10
+/*** SPI Driver DMA Options ***/
+#define DRV_SPI_DMA_TXFER_SIZE 			512
+#define DRV_SPI_DMA_DUMMY_BUFFER_SIZE 	512
+/* SPI Driver Instance 0 Configuration */
+#define DRV_SPI_SPI_ID_IDX0 				SPI_ID_1
+#define DRV_SPI_TASK_MODE_IDX0 				DRV_SPI_TASK_MODE_ISR
+#define DRV_SPI_SPI_MODE_IDX0				DRV_SPI_MODE_MASTER
+#define DRV_SPI_ALLOW_IDLE_RUN_IDX0			false
+#define DRV_SPI_SPI_PROTOCOL_TYPE_IDX0 		DRV_SPI_PROTOCOL_TYPE_STANDARD
+#define DRV_SPI_COMM_WIDTH_IDX0 			SPI_COMMUNICATION_WIDTH_8BITS
+#define DRV_SPI_SPI_CLOCK_IDX0 				CLK_BUS_PERIPHERAL_2
+#define DRV_SPI_BAUD_RATE_IDX0 				8000000
+#define DRV_SPI_BUFFER_TYPE_IDX0 			DRV_SPI_BUFFER_TYPE_ENHANCED
+#define DRV_SPI_CLOCK_MODE_IDX0 			DRV_SPI_CLOCK_MODE_IDLE_HIGH_EDGE_FALL
+#define DRV_SPI_INPUT_PHASE_IDX0 			SPI_INPUT_SAMPLING_PHASE_AT_END
+#define DRV_SPI_TX_INT_SOURCE_IDX0 			INT_SOURCE_SPI_1_TRANSMIT
+#define DRV_SPI_RX_INT_SOURCE_IDX0 			INT_SOURCE_SPI_1_RECEIVE
+#define DRV_SPI_ERROR_INT_SOURCE_IDX0 		INT_SOURCE_SPI_1_ERROR
+#define DRV_SPI_TX_INT_VECTOR_IDX0			INT_VECTOR_SPI1_TX
+#define DRV_SPI_RX_INT_VECTOR_IDX0			INT_VECTOR_SPI1_RX
+#define DRV_DRV_SPI_ERROR_INT_VECTOR_IDX0	INT_VECTOR_SPI1_FAULT
+#define DRV_SPI_TX_INT_PRIORITY_IDX0 		INT_PRIORITY_LEVEL1
+#define DRV_SPI_TX_INT_SUB_PRIORITY_IDX0 	INT_SUBPRIORITY_LEVEL0
+#define DRV_SPI_RX_INT_PRIORITY_IDX0 		INT_PRIORITY_LEVEL1
+#define DRV_SPI_RX_INT_SUB_PRIORITY_IDX0 	INT_SUBPRIORITY_LEVEL0
+#define DRV_SPI_ERROR_INT_PRIORITY_IDX0 	INT_PRIORITY_LEVEL1
+#define DRV_SPI_ERROR_INT_SUB_PRIORITY_IDX0 INT_SUBPRIORITY_LEVEL0
+#define DRV_SPI_QUEUE_SIZE_IDX0 			10
+#define DRV_SPI_RESERVED_JOB_IDX0 			1
+#define DRV_SPI_TX_DMA_CHANNEL_IDX0 		DMA_CHANNEL_1
+#define DRV_SPI_TX_DMA_THRESHOLD_IDX0 		16
+#define DRV_SPI_RX_DMA_CHANNEL_IDX0 		DMA_CHANNEL_0
+#define DRV_SPI_RX_DMA_THRESHOLD_IDX0 		16
 
 // *****************************************************************************
 // *****************************************************************************
@@ -261,6 +380,15 @@ extern "C" {
 #define TCPIP_ARP_CACHE_ENTRY_RETRIES		    		3
 #define TCPIP_ARP_GRATUITOUS_PROBE_COUNT			1
 #define TCPIP_ARP_TASK_PROCESS_RATE		        	2
+
+/*** DHCP Configuration ***/
+#define TCPIP_STACK_USE_DHCP_CLIENT
+#define TCPIP_DHCP_TIMEOUT		        		10
+#define TCPIP_DHCP_TASK_TICK_RATE	    			5
+#define TCPIP_DHCP_HOST_NAME_SIZE	    			20
+#define TCPIP_DHCP_CLIENT_CONNECT_PORT  			68
+#define TCPIP_DHCP_SERVER_LISTEN_PORT				67
+#define TCPIP_DHCP_CLIENT_ENABLED             			true
 
 
 
@@ -395,7 +523,6 @@ extern "C" {
 #define TCPIP_NETWORK_DEFAULT_SECOND_DNS 			"8.8.4.4"
 #define TCPIP_NETWORK_DEFAULT_POWER_MODE 			"full"
 #define TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS                       \
-                                                    TCPIP_NETWORK_CONFIG_DHCP_CLIENT_ON |\
                                                     TCPIP_NETWORK_CONFIG_DNS_CLIENT_ON |\
                                                     TCPIP_NETWORK_CONFIG_IP_STATIC
 #define TCPIP_NETWORK_DEFAULT_MAC_DRIVER 		    DRV_ETHMAC_PIC32MACObject
@@ -403,8 +530,38 @@ extern "C" {
 #define TCPIP_NETWORK_DEFAULT_IPV6_PREFIX_LENGTH    0
 #define TCPIP_NETWORK_DEFAULT_IPV6_GATEWAY 		    0
 
+/*** Network Configuration Index 0 ***/
+#define TCPIP_NETWORK_DEFAULT_INTERFACE_NAME_IDX1 		"MRF24W"
+#define TCPIP_IF_MRF24W
+#define TCPIP_NETWORK_DEFAULT_HOST_NAME_IDX1 			"MCHPBOARD_W"
+#define TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX1 			"00:04:a3:11:22:55"
+#define TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX1 			"192.168.0.70"
+#define TCPIP_NETWORK_DEFAULT_IP_MASK_IDX1 			"255.255.255.0"
+#define TCPIP_NETWORK_DEFAULT_GATEWAY_IDX1 			"192.168.0.1"
+#define TCPIP_NETWORK_DEFAULT_DNS_IDX1 				"8.8.8.8"
+#define TCPIP_NETWORK_DEFAULT_SECOND_DNS_IDX1 			"8.8.4.4"
+#define TCPIP_NETWORK_DEFAULT_POWER_MODE_IDX1 			"full"
+#define TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS_IDX1      \
+                                                    TCPIP_NETWORK_CONFIG_DHCP_CLIENT_ON |\
+                                                    TCPIP_NETWORK_CONFIG_DNS_CLIENT_ON |\
+                                                    TCPIP_NETWORK_CONFIG_IP_STATIC
+#define TCPIP_NETWORK_DEFAULT_MAC_DRIVER_IDX1 		DRV_MRF24W_MACObject
+#define TCPIP_NETWORK_DEFAULT_IPV6_ADDRESS_IDX1     0
+#define TCPIP_NETWORK_DEFAULT_IPV6_PREFIX_LENGTH_IDX1    0
+#define TCPIP_NETWORK_DEFAULT_IPV6_GATEWAY_IDX1 		0
+
 
 /*** IPv4 Configuration ***/
+
+/*** Crypto Library Configuration ***/
+
+#define HAVE_MCAPI
+#define NO_CERTS
+#define NO_PWDBASED
+#define NO_OLD_TLS
+#define NO_AES
+#define NO_ASN
+#define NO_RSA
 
 /*** OSAL Configuration ***/
 #define OSAL_USE_RTOS          9

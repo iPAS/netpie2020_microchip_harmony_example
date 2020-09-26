@@ -48,6 +48,28 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "ISR_Support.h"
 
 
+/* External Interrupt Instance 0 Interrupt */
+   .extern  IntHandlerExternalInterruptInstance0
+
+   .section	.vector_8,code, keep
+   .equ     __vector_dispatch_8, IntVectorExternalInterruptInstance0
+   .global  __vector_dispatch_8
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVectorExternalInterruptInstance0
+
+IntVectorExternalInterruptInstance0:
+    portSAVE_CONTEXT
+    la    s6,  IntHandlerExternalInterruptInstance0
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end	IntVectorExternalInterruptInstance0
+
+
+
 /* TMR Instance 0 Interrupt */
    .extern  IntHandlerDrvTmrInstance0
 
@@ -75,9 +97,9 @@ IntVectorDrvTmrInstance0:
 
    .extern  IntHandlerDrvUsartReceiveInstance0
 
-   .section	.vector_146,code, keep
-   .equ     __vector_dispatch_146, IntVectorDrvUsartReceiveInstance0
-   .global  __vector_dispatch_146
+   .section	.vector_189,code, keep
+   .equ     __vector_dispatch_189, IntVectorDrvUsartReceiveInstance0
+   .global  __vector_dispatch_189
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -95,9 +117,9 @@ IntVectorDrvUsartReceiveInstance0:
 
    .extern  IntHandlerDrvUsartTransmitInstance0
 
-   .section	.vector_147,code, keep
-   .equ     __vector_dispatch_147, IntVectorDrvUsartTransmitInstance0
-   .global  __vector_dispatch_147
+   .section	.vector_190,code, keep
+   .equ     __vector_dispatch_190, IntVectorDrvUsartTransmitInstance0
+   .global  __vector_dispatch_190
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -115,9 +137,9 @@ IntVectorDrvUsartTransmitInstance0:
 
    .extern  IntHandlerDrvUsartErrorInstance0
 
-   .section	.vector_145,code, keep
-   .equ     __vector_dispatch_145, IntVectorDrvUsartErrorInstance0
-   .global  __vector_dispatch_145
+   .section	.vector_188,code, keep
+   .equ     __vector_dispatch_188, IntVectorDrvUsartErrorInstance0
+   .global  __vector_dispatch_188
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -138,9 +160,9 @@ IntVectorDrvUsartErrorInstance0:
 
    .extern  IntHandlerDrvUsartReceiveInstance1
 
-   .section	.vector_189,code, keep
-   .equ     __vector_dispatch_189, IntVectorDrvUsartReceiveInstance1
-   .global  __vector_dispatch_189
+   .section	.vector_146,code, keep
+   .equ     __vector_dispatch_146, IntVectorDrvUsartReceiveInstance1
+   .global  __vector_dispatch_146
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -158,9 +180,9 @@ IntVectorDrvUsartReceiveInstance1:
 
    .extern  IntHandlerDrvUsartTransmitInstance1
 
-   .section	.vector_190,code, keep
-   .equ     __vector_dispatch_190, IntVectorDrvUsartTransmitInstance1
-   .global  __vector_dispatch_190
+   .section	.vector_147,code, keep
+   .equ     __vector_dispatch_147, IntVectorDrvUsartTransmitInstance1
+   .global  __vector_dispatch_147
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -178,9 +200,9 @@ IntVectorDrvUsartTransmitInstance1:
 
    .extern  IntHandlerDrvUsartErrorInstance1
 
-   .section	.vector_188,code, keep
-   .equ     __vector_dispatch_188, IntVectorDrvUsartErrorInstance1
-   .global  __vector_dispatch_188
+   .section	.vector_145,code, keep
+   .equ     __vector_dispatch_145, IntVectorDrvUsartErrorInstance1
+   .global  __vector_dispatch_145
    .set     nomicromips
    .set     noreorder
    .set     nomips16
@@ -194,6 +216,111 @@ IntVectorDrvUsartErrorInstance1:
     nop
     portRESTORE_CONTEXT
     .end	IntVectorDrvUsartErrorInstance1
+
+
+
+/* SPI Instance 0 Interrupt */
+   .extern  IntHandlerSPIRxInstance0
+
+   .section	.vector_110,code, keep
+   .equ     __vector_dispatch_110, IntVectorSPIRxInstance0
+   .global  __vector_dispatch_110
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVectorSPIRxInstance0
+
+IntVectorSPIRxInstance0:
+    portSAVE_CONTEXT
+    la    s6,  IntHandlerSPIRxInstance0
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end	IntVectorSPIRxInstance0
+
+
+   .extern  IntHandlerSPITxInstance0
+
+   .section	.vector_111,code, keep
+   .equ     __vector_dispatch_111, IntVectorSPITxInstance0
+   .global  __vector_dispatch_111
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVectorSPITxInstance0
+
+IntVectorSPITxInstance0:
+    portSAVE_CONTEXT
+    la    s6,  IntHandlerSPITxInstance0
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end	IntVectorSPITxInstance0
+
+
+   .extern  IntHandlerSPIFaultInstance0
+
+   .section	.vector_109,code, keep
+   .equ     __vector_dispatch_109, IntVectorSPIFaultInstance0
+   .global  __vector_dispatch_109
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVectorSPIFaultInstance0
+
+IntVectorSPIFaultInstance0:
+    portSAVE_CONTEXT
+    la    s6,  IntHandlerSPIFaultInstance0
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end	IntVectorSPIFaultInstance0
+
+
+
+/* Sytem DMA Instance 0 Interrupt */
+   .extern  IntHandlerSysDmaInstance0
+
+   .section	.vector_134,code, keep
+   .equ     __vector_dispatch_134, IntVectorSysDmaInstance0
+   .global  __vector_dispatch_134
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVectorSysDmaInstance0
+
+IntVectorSysDmaInstance0:
+    portSAVE_CONTEXT
+    la    s6,  IntHandlerSysDmaInstance0
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end	IntVectorSysDmaInstance0
+
+
+/* Sytem DMA Instance 1 Interrupt */
+   .extern  IntHandlerSysDmaInstance1
+
+   .section	.vector_135,code, keep
+   .equ     __vector_dispatch_135, IntVectorSysDmaInstance1
+   .global  __vector_dispatch_135
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVectorSysDmaInstance1
+
+IntVectorSysDmaInstance1:
+    portSAVE_CONTEXT
+    la    s6,  IntHandlerSysDmaInstance1
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end	IntVectorSysDmaInstance1
 
 
 /* ETHMAC Interrupt */

@@ -18,9 +18,8 @@
 #include "register_mapping.h"
 
 
-static float fM1downCh[8],    fM2upCh[8],    fM2downCh[8],    fM3upCh[8],    fM3downCh[8]; 
-static float fM1downChRaw[8], fM2upChRaw[8], fM2downChRaw[8], fM3upChRaw[8], fM3downChRaw[8];
-
+extern float fM1downCh[8],    fM2upCh[8],    fM2downCh[8],    fM3upCh[8],    fM3downCh[8], 
+             fM1downChRaw[8], fM2upChRaw[8], fM2downChRaw[8], fM3upChRaw[8], fM3downChRaw[8];
 
 st_register_t st_registers[] =
 {
