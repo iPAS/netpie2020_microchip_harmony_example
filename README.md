@@ -1,5 +1,5 @@
 
-# NETPIE-2020 Interfacing Example
+# NETPIE-2020 Interfacing Example on Universal Remote Terminal Unit (uRTU)
 
 This is an example for [NETPIE-2020](https://netpie.io/) application 
     developed under PIC32MZ plus Microchip's Harmony  platform.
@@ -8,6 +8,9 @@ You can find the original version of this source code at
     where the WolfMQTT library plays on top of the Network Presentation Layer (NET_PRES).
 For further information, they could be found at the 
     [Microchip's Harmony v1 website](https://www.microchip.com/mplab/mplab-harmony/mplab-harmony-1.0).
+Additionally, the device under test is named Universal Remote Terminal Unit, also called uRTU,
+    which is a product of R&D lab inside [NECTEC](https://www.nectec.or.th) -- 
+    [Intelligent SCADA Technology laboratory](https://www.nectec.or.th/research/research-unit/insrg-ist.html).
 
 
 ## Quick Setup
