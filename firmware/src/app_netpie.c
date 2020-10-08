@@ -248,13 +248,13 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
     {
         if(APP_timerExpired_ms(&timeout, timeout_ms))
         {
-            TRACE_LOG("[%d] TCPIP_DNS_IsResolve() timeout\n\r", __LINE__);  // DEBUG: iPAS
+            TRACE_LOG("[%d] TCPIP_DNS_IsResolve() timeout in %d ms\n\r", __LINE__, timeout_ms);  // DEBUG: iPAS
             return APP_CODE_ERROR_CMD_TIMEOUT;
         }
     }
     if(dnsResult != (TCPIP_DNS_RES_OK))
     {
-        TRACE_LOG("[%d] TCPIP_DNS_IsResolve() fail\n\r", __LINE__);  // DEBUG: iPAS
+        TRACE_LOG("[%d] TCPIP_DNS_IsResolve() fail code %d\n\r", __LINE__, dnsResult);  // DEBUG: iPAS
         return APP_CODE_ERROR_DNS_FAILED;
     }
 
@@ -595,7 +595,7 @@ void APP_NETPIE_Tasks ( void )
                         }
                         else
                         {
-                            vTaskDelay(1000 / portTICK_PERIOD_MS);
+                            vTaskDelay(5000 / portTICK_PERIOD_MS);
                         }
                     }
                 }
