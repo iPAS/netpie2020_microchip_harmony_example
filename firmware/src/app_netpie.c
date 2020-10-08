@@ -235,11 +235,11 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
     timeout = SYS_TMR_TickCountGet();
 
     appNetpieData.socket_connected = false;
-
+    
     TCPIP_DNS_RESULT dnsResult = TCPIP_DNS_Resolve((const char *)appNetpieData.host, TCPIP_DNS_TYPE_A);
     if(dnsResult < 0)
     {
-        TRACE_LOG("[%d] TCPIP_DNS_Resolve() fail\n\r", __LINE__);  // DEBUG: iPAS
+        TRACE_LOG("[%d] TCPIP_DNS_Resolve() fail code %d\n\r", __LINE__, dnsResult);  // DEBUG: iPAS
         return APP_CODE_ERROR_FAILED_TO_BEGIN_DNS_RESOLUTION;  // DNS resolving problem
     }
 
@@ -586,12 +586,19 @@ void APP_NETPIE_Tasks ( void )
                         TRACE_LOG("[%d] '%s' IP: %d.%d.%d.%d\n\r", __LINE__, ifname,
                             ipAddr.v[0], ipAddr.v[1], ipAddr.v[2], ipAddr.v[3]);  // DEBUG: iPAS
 
-                        //const char *ifnames[] = {"PIC32INT", "MRF24W"};
+                        //const char *handlers[] = {"PIC32INT", "MRF24W"};
+                        //TCPIP_NET_HANDLE netH = TCPIP_STACK_NetHandleGet("PIC32INT");
+                        
                         //const char *ifnames[] = {"eth0", "wlan0"};
                         if (strcmp(ifname, "wlan0") == 0)  // Waiting for the WiFi interface to get DHCP done
                         {
                             appNetpieData.board_ipAddr.v4Add.Val = ipAddr.Val;  // saved for debugging
                             appNetpieData.state = APP_NETPIE_STATE_MQTT_INIT;
+                            
+                            struct in_addr dns_ip;
+                            dns_ip.S_un.S_addr = TCPIP_STACK_NetAddressDnsPrimary(netH);
+                            TRACE_LOG("[%d] '%s' DNS: %d.%d.%d.%d\n\r", __LINE__, ifname,
+                                    dns_ip.S_un.S_un_b.s_b1, dns_ip.S_un.S_un_b.s_b2, dns_ip.S_un.S_un_b.s_b3, dns_ip.S_un.S_un_b.s_b4);  // DEBUG: iPAS
                         }
                         else
                         {
