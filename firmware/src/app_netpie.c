@@ -116,6 +116,7 @@ uint8_t txBuffer[MAX_BUFFER_SIZE];
 uint8_t rxBuffer[MAX_BUFFER_SIZE];
 
 #define MQTT_PREF_IFACE "wlan0"
+#define MQTT_WAIT_IFACE 5000
 #define MQTT_DEFAULT_CMD_TIMEOUT_MS 30000
 #define MQTT_KEEP_ALIVE_TIMEOUT 900
 #define MQTT_UPDATE_STATUS_TIMEOUT 15
@@ -552,7 +553,7 @@ void APP_NETPIE_Tasks ( void )
                     // Show interface's MAC
                     char ifname[10];
                     ifname[ TCPIP_STACK_NetAliasNameGet(netH, ifname, sizeof(ifname)) ] = '\0';
-                    TRACE_LOG("[NETPIE:%d] '%s'=%s MAC: %s\n\r", __LINE__, ifname, net_name, appNetpieData.macAddress);  // DEBUG: iPAS
+                    TRACE_LOG("[NETPIE:%d] '%s'->%s MAC: %s\n\r", __LINE__, ifname, net_name, appNetpieData.macAddress);  // DEBUG: iPAS
                 }
 
                 APP_timerSet(&appNetpieData.genericUseTimer);
@@ -596,14 +597,14 @@ void APP_NETPIE_Tasks ( void )
                             appNetpieData.board_ipAddr.v4Add.Val = ipAddr.Val;  // saved for debugging
                             appNetpieData.state = APP_NETPIE_STATE_MQTT_INIT;
                             
-                            struct in_addr dns_ip;
-                            dns_ip.S_un.S_addr = TCPIP_STACK_NetAddressDnsPrimary(netH);
+                            IPV4_ADDR ipDNS;
+                            ipDNS.Val = TCPIP_STACK_NetAddressDnsPrimary(netH);
                             TRACE_LOG("[NETPIE:%d] '%s' DNS: %d.%d.%d.%d\n\r", __LINE__, ifname,
-                                    dns_ip.S_un.S_un_b.s_b1, dns_ip.S_un.S_un_b.s_b2, dns_ip.S_un.S_un_b.s_b3, dns_ip.S_un.S_un_b.s_b4);  // DEBUG: iPAS
+                                    ipDNS.v[0], ipDNS.v[1], ipDNS.v[2], ipDNS.v[3]);  // DEBUG: iPAS
                         }
                         else
                         {
-                            vTaskDelay(5000 / portTICK_PERIOD_MS);
+                            vTaskDelay(MQTT_WAIT_IFACE / portTICK_PERIOD_MS);
                         }
                     }
                 }
@@ -651,7 +652,7 @@ void APP_NETPIE_Tasks ( void )
                 while (!APP_timerExpired(&appNetpieData.genericUseTimer, 5));  // Delay 5 seconds before trying next
                 APP_timerSet(&appNetpieData.genericUseTimer);
 
-                TRACE_LOG("[NETPIE:%d] MQTT connect network %s fail (rc=%d)\n\r", __LINE__, appNetpieData.host, rc);  // DEBUG: iPAS
+                TRACE_LOG("[NETPIE:%d] MQTT connect server %s fail (rc=%d)\n\r", __LINE__, appNetpieData.host, rc);  // DEBUG: iPAS
                 break;
             }
             appNetpieData.state = APP_NETPIE_STATE_MQTT_PROTOCOL_CONNECT;

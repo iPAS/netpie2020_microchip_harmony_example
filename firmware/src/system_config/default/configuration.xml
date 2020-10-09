@@ -1546,7 +1546,7 @@
       <Template>
         <Name>system_interrupt_a.S</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>51AB436A447EDB0F057B8DE2B1827A89</Checksum>
+        <Checksum>1CE33ACB73D7080F3E93D3F754D30228</Checksum>
       </Template>
       <Template>
         <Name>app_netpie.h</Name>
@@ -1584,7 +1584,7 @@
       <Template>
         <Name>FreeRTOSConfig.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>A9B4E5F61BF804D5A302295DB25FDC77</Checksum>
+        <Checksum>8C07CB199C46A7CFEA0395BE7FD2B38F</Checksum>
       </Template>
       <Template>
         <Name>drv_usart_static_byte_model.c</Name>
@@ -1630,7 +1630,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>5F938653785573E22EF588A63CCD6169</Checksum>
+        <Checksum>76C0B14DBA8A4D3452C27B111B18E8AC</Checksum>
         <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
@@ -1683,7 +1683,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>A0B41A33BE2F091567735912BB57005D</Checksum>
+        <Checksum>BD23A87B3908AB578AA2A97AC077ED24</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>

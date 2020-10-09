@@ -84,8 +84,8 @@
 #define configUSE_PREEMPTION                    1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 1
 #define configUSE_TICKLESS_IDLE                 0
-#define configCPU_CLOCK_HZ                      ( 100000000UL )
-#define configPERIPHERAL_CLOCK_HZ               ( 50000000UL )
+#define configCPU_CLOCK_HZ                      ( 200000000UL )
+#define configPERIPHERAL_CLOCK_HZ               ( 100000000UL )
 #define configTICK_RATE_HZ                      ( ( TickType_t ) 1000 )
 #define configMAX_PRIORITIES                    ( 5UL )
 #define configMINIMAL_STACK_SIZE                ( 512 )
