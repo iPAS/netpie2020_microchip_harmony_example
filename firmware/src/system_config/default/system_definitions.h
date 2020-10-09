@@ -63,7 +63,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "driver/tmr/drv_tmr.h"
 #include "driver/usart/drv_usart_static.h"
 #include "system/ports/sys_ports.h"
-#include "driver/spi/drv_spi.h"
+#include "driver/spi/static/drv_spi_static.h"
 
 
 

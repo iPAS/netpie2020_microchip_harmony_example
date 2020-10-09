@@ -89,10 +89,6 @@
         <Path>Header Files/framework/crypto/src</Path>
       </File>
       <File>
-        <Name>drv_spi.h</Name>
-        <Path>Header Files/framework/driver/spi</Path>
-      </File>
-      <File>
         <Name>list.h</Name>
         <Path>Header Files/FreeRTOS</Path>
       </File>
@@ -327,10 +323,6 @@
       <File>
         <Name>logging.h</Name>
         <Path>Header Files/framework/crypto/src</Path>
-      </File>
-      <File>
-        <Name>drv_spi_sys_queue_local_fifo.h</Name>
-        <Path>Header Files/framework/driver/spi/private</Path>
       </File>
       <File>
         <Name>tcpip_reboot.h</Name>
@@ -657,10 +649,6 @@
         <Path>Source Files/framework/crypto/src</Path>
       </File>
       <File>
-        <Name>drv_spi_internal.h</Name>
-        <Path>Header Files/framework/driver/spi/private/dynamic</Path>
-      </File>
-      <File>
         <Name>tcpip_heap_alloc.h</Name>
         <Path>Header Files/framework/tcpip/src</Path>
       </File>
@@ -671,10 +659,6 @@
       <File>
         <Name>rabbit.h</Name>
         <Path>Header Files/framework/crypto/src</Path>
-      </File>
-      <File>
-        <Name>drv_spi_sys_queue.h</Name>
-        <Path>Header Files/framework/driver/spi/private</Path>
       </File>
       <File>
         <Name>arp_manager.h</Name>
@@ -939,10 +923,6 @@
       <File>
         <Name>drv_wifi_mgmt_msg.h</Name>
         <Path>Header Files/framework/driver/wifi/mrf24w/src</Path>
-      </File>
-      <File>
-        <Name>drv_spi_variant_mapping.h</Name>
-        <Path>Header Files/framework/driver/spi/src</Path>
       </File>
       <File>
         <Name>sys_dma.c</Name>
@@ -1265,10 +1245,6 @@
         <Path>Header Files/framework/crypto/src</Path>
       </File>
       <File>
-        <Name>drv_spi_sys_queue_fifo.c</Name>
-        <Path>Source Files/framework/driver/spi</Path>
-      </File>
-      <File>
         <Name>hmac.h</Name>
         <Path>Header Files/framework/crypto/src</Path>
       </File>
@@ -1457,10 +1433,6 @@
         <Path>Header Files/FreeRTOS</Path>
       </File>
       <File>
-        <Name>drv_spi.c</Name>
-        <Path>Source Files/framework/driver/spi/dynamic</Path>
-      </File>
-      <File>
         <Name>drv_wifi_connection_algorithm.c</Name>
         <Path>Source Files/framework/driver/wifi/mrf24w/src</Path>
       </File>
@@ -1560,6 +1532,11 @@
         <Checksum>E9CAC33A51432E13895C3950315DC5F5</Checksum>
       </Template>
       <Template>
+        <Name>drv_spi_static_tasks.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/spi/static/src</Path>
+        <Checksum>53B5FB8121C682EDF7BE6587525B06DE</Checksum>
+      </Template>
+      <Template>
         <Name>app_netpie.c</Name>
         <Path>Source Files/app</Path>
         <Checksum>C48AFB4A95B8EF6A71AD0DFD64C27E51</Checksum>
@@ -1569,11 +1546,6 @@
         <Name>drv_usart_mapping.c</Name>
         <Path>Source Files/app/system_config/default/framework/driver/usart/src</Path>
         <Checksum>F7AA7FC04CBAD5FE7D390C8D3ABE0994</Checksum>
-      </Template>
-      <Template>
-        <Name>drv_spi_tasks.c</Name>
-        <Path>Source Files/app/system_config/default/framework/driver/spi/dynamic</Path>
-        <Checksum>C7AA845601099A9721FE6AD0080828C1</Checksum>
       </Template>
       <Template>
         <Name>app_logger.h</Name>
@@ -1612,9 +1584,9 @@
         <Checksum>6C07E4984368F52244D6790084A8ED66</Checksum>
       </Template>
       <Template>
-        <Name>drv_spi_api.c</Name>
-        <Path>Source Files/app/system_config/default/framework/driver/spi/dynamic</Path>
-        <Checksum>4FF988138085F1E9771E88FD07FB9B64</Checksum>
+        <Name>drv_spi_static_local.h</Name>
+        <Path>Header Files/app/system_config/default/framework/driver/spi/static/src</Path>
+        <Checksum>EE501F8EFB54C4AAF25718E3FDD5E12B</Checksum>
       </Template>
       <Template>
         <Name>app_uart_term.c</Name>
@@ -1630,7 +1602,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>76C0B14DBA8A4D3452C27B111B18E8AC</Checksum>
+        <Checksum>1155CF04291100F2FC36955A656FAA22</Checksum>
         <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
@@ -1645,6 +1617,11 @@
         <ProjectFileChecksum>7F120E5572567979253085345BAD1A64</ProjectFileChecksum>
       </Template>
       <Template>
+        <Name>drv_spi_static.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/spi/static/src</Path>
+        <Checksum>E91CA69A77D1ADC43009D472FDC71E8E</Checksum>
+      </Template>
+      <Template>
         <Name>config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
         <Checksum>ED931FDA1689E9DB908AEAD2EE14A045</Checksum>
@@ -1652,7 +1629,7 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>69E4CCCF1C89EA2A67965D2D366DDC9A</Checksum>
+        <Checksum>79A765FE1E90B6872F06EFCB5BC94A5D</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
@@ -1660,15 +1637,35 @@
         <Checksum>C111969CA43D6CEA1E9E33A6164E7AE0</Checksum>
       </Template>
       <Template>
-        <Name>drv_spi_master_dma_tasks.c</Name>
-        <Path>Source Files/app/system_config/default/framework/driver/spi/dynamic</Path>
-        <Checksum>CD5585903D9F71AEE640D8DFD0179BB7</Checksum>
+        <Name>drv_spi_static_sys_queue.h</Name>
+        <Path>Header Files/app/system_config/default/framework/driver/spi/static/src</Path>
+        <Checksum>32D70B57A6221EB9D00D0A410A1A462C</Checksum>
+      </Template>
+      <Template>
+        <Name>drv_spi_mapping.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/spi/static/src</Path>
+        <Checksum>ADEEE2519E932B46D44C41B8F44E1F19</Checksum>
+      </Template>
+      <Template>
+        <Name>drv_spi_static_dma_tasks.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/spi/static/src</Path>
+        <Checksum>390B9D71CF973EEE964B3B239DE47A45</Checksum>
+      </Template>
+      <Template>
+        <Name>drv_spi_static.h</Name>
+        <Path>Header Files/app/system_config/default/framework/driver/spi/static</Path>
+        <Checksum>68B5BA023AB90B18D229B6E7CBF0850C</Checksum>
       </Template>
       <Template>
         <Name>app_pubsub.h</Name>
         <Path>Header Files/app</Path>
         <Checksum>84C24ADF6CA5ECCCB11B385C06821286</Checksum>
         <ProjectFileChecksum>1D4BF2DA1B83F140F892A87E8B88BF1C</ProjectFileChecksum>
+      </Template>
+      <Template>
+        <Name>drv_spi_static_ebm_tasks.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/spi/static/src</Path>
+        <Checksum>15C5F63C6B8165926924EB1A2341E178</Checksum>
       </Template>
       <Template>
         <Name>drv_usart_static.h</Name>
@@ -1683,7 +1680,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>BD23A87B3908AB578AA2A97AC077ED24</Checksum>
+        <Checksum>D2CCB6CF5BCB3085D071D7A74AA6C9F3</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>
@@ -1691,9 +1688,9 @@
         <Checksum>FA52743264536E5207D2ADBE57B48D05</Checksum>
       </Template>
       <Template>
-        <Name>drv_spi_master_ebm_tasks.c</Name>
-        <Path>Source Files/app/system_config/default/framework/driver/spi/dynamic</Path>
-        <Checksum>4C2C868738FD74E2D6A3C8A8FD6B1381</Checksum>
+        <Name>drv_spi_static_sys_queue.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/spi/static/src</Path>
+        <Checksum>DE115100E56FC4681073203ACC1C321C</Checksum>
       </Template>
       <Template>
         <Name>drv_usart_static_local.h</Name>
