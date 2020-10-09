@@ -604,6 +604,22 @@ void APP_NETPIE_Tasks ( void )
                         }
                         else
                         {
+                            if (TCPIP_DNS_IsEnabled(netH))
+                            {
+                                TCPIP_STACK_NetDown(netH);  // XXX: quick fix DNS-request-timeout on multiple interfaces
+                                TCPIP_DNS_Disable(netH, true);  // XXX: quick fix DNS-request-timeout on multiple interfaces
+                                
+                                /*
+                                uint8_t cfg_buf[100];
+                                size_t needed_size;
+                                size_t result = TCPIP_STACK_NetConfigGet(netH, cfg_buf, sizeof(cfg_buf), &needed_size);
+                                if(result > 0)
+                                {
+                                    TCPIP_STACK_NetUp(netH, (const TCPIP_NETWORK_CONFIG *)cfg_buf);  // XXX: quick fix DNS-request-timeout on multiple interfaces
+                                }
+                                */
+                            }
+                            
                             vTaskDelay(MQTT_WAIT_IFACE / portTICK_PERIOD_MS);
                         }
                     }
