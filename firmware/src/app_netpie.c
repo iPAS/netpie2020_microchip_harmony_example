@@ -588,7 +588,7 @@ void APP_NETPIE_Tasks ( void )
                         TRACE_LOG("[NETPIE:%d] '%s' IP: %d.%d.%d.%d\n\r", __LINE__, ifname,
                             ipAddr.v[0], ipAddr.v[1], ipAddr.v[2], ipAddr.v[3]);  // DEBUG: iPAS
 
-                        //const char *handlers[] = {"PIC32INT", "MRF24W"};
+                        //const char *handlers[] = {"PIC32INT", "MRF24W"};  TCPIP_STACK_IF_NAME_PIC32INT  TCPIP_STACK_IF_NAME_MRF24W
                         //TCPIP_NET_HANDLE netH = TCPIP_STACK_NetHandleGet("PIC32INT");
                         
                         //const char *ifnames[] = {"eth0", "wlan0"};
@@ -601,13 +601,15 @@ void APP_NETPIE_Tasks ( void )
                             ipDNS.Val = TCPIP_STACK_NetAddressDnsPrimary(netH);
                             TRACE_LOG("[NETPIE:%d] '%s' DNS: %d.%d.%d.%d\n\r", __LINE__, ifname,
                                     ipDNS.v[0], ipDNS.v[1], ipDNS.v[2], ipDNS.v[3]);  // DEBUG: iPAS
+                            
+                            TCPIP_STACK_NetDefaultSet(netH);  // Set default network interface
                         }
                         else
                         {
                             if (TCPIP_DNS_IsEnabled(netH))
                             {
-                                TCPIP_STACK_NetDown(netH);  // XXX: quick fix DNS-request-timeout on multiple interfaces
-                                TCPIP_DNS_Disable(netH, true);  // XXX: quick fix DNS-request-timeout on multiple interfaces
+//                                TCPIP_STACK_NetDown(netH);  // XXX: quick fix DNS-request-timeout on multiple interfaces
+//                                TCPIP_DNS_Disable(netH, true);  // XXX: quick fix DNS-request-timeout on multiple interfaces
                                 
                                 /*
                                 uint8_t cfg_buf[100];
