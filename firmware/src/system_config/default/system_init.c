@@ -607,11 +607,6 @@ void SYS_Initialize ( void* data )
 
     /* Initialize System Services */
     
-    
-    /*** Release the reset pin on LAN8740 by setting ETH_RES=1 ***/
-    SYS_PORTS_PinSet (PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_15);  // XXX: iPAS
-
-
     /*** Interrupt Service Initialization Code ***/
     SYS_INT_Initialize();
 

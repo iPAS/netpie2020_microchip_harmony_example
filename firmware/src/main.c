@@ -59,6 +59,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "system/common/sys_module.h"   // SYS function prototypes
+#include "system_definitions.h"
 
 
 // *****************************************************************************
@@ -69,6 +70,17 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 int main ( void )
 {
+    /* To reset the Ethernet transceiver,   */
+    PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_15);
+    PLIB_PORTS_PinDirectionOutputSet(PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_15);
+    PLIB_PORTS_PinModePerPortSelect(PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_15, PORTS_PIN_MODE_DIGITAL);
+    unsigned int us = 25000;            // t_purstd --> 5.6.2 POWER-ON nRST & CONFIGURATION STRAP TIMING
+    us *= SYS_CLK_FREQ / 1000000 / 2;   // Core Timer updates every 2 ticks
+    _CP0_SET_COUNT(0);                  // Set Core Timer count to 0
+    while (us > _CP0_GET_COUNT());      // Wait until Core Timer count reaches the number we calculated earlier               
+    PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_15);
+
+    
     /* Initialize all MPLAB Harmony modules, including application(s). */
     SYS_Initialize ( NULL );
 
