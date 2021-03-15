@@ -11,4 +11,4 @@
 **/*.X/dist
 **/*.X/build
 
-/firmware/test_uart_ping_tcp_mqtt.X/nbproject/private/
+**/.generated_files

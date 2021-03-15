@@ -67,6 +67,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define TRACE_LOG(...)
 #endif
 
+#if ! defined(RANDOM_TEST)
+#define RANDOM_TEST 1
+#endif
 
 // *****************************************************************************
 // *****************************************************************************
@@ -91,7 +94,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 APP_PUBSUB_DATA app_pubsubData;
 
-
+#define PUBSUB_WAIT_TIME 3000
+#define PUBSUB_WAIT_MAX 20
 #define REGISTER_PUBLISH_INTERVAL_MS 500 
 
 st_register_t *st_prev_registers;  // Allocated for keeping previous values of registers
@@ -225,7 +229,6 @@ void APP_PUBSUB_Tasks ( void )
         {
             static uint8_t retry_count = 0;
 
-            vTaskDelay(3000 / portTICK_PERIOD_MS);
             if (netpie_ready())
             {
                 app_pubsubData.state = APP_PUBSUB_STATE_REGISTER_UPDATE;
@@ -233,13 +236,21 @@ void APP_PUBSUB_Tasks ( void )
             }
             else
             {
-                TRACE_LOG("[PubSub] Wait MQTT ready ...\n\r");  // DEBUG: iPAS                
-                if (retry_count >= 10)
+                if (retry_count >= PUBSUB_WAIT_MAX)
                 {
+                    #if defined(DO_RESET) && (DO_RESET != 0)
                     SYS_RESET_SoftwareReset();  // Reset after tried for a while
+                    #else
+                    retry_count = 0;
+                    TRACE_LOG("[PubSub] Timeout MQTT waiting ... sleep for %d ms\n\r", PUBSUB_WAIT_TIME*10);  // DEBUG: iPAS
+                    vTaskDelay(PUBSUB_WAIT_TIME * 10 / portTICK_PERIOD_MS);
+                    #endif
                 }
                 else
-                    retry_count++;                
+                    retry_count++;
+                
+                TRACE_LOG("[PubSub] Wait MQTT ready ... %d/%d\n\r", retry_count, PUBSUB_WAIT_MAX);  // DEBUG: iPAS
+                vTaskDelay(PUBSUB_WAIT_TIME / portTICK_PERIOD_MS);
             }
             break;
         }
@@ -281,7 +292,7 @@ void APP_PUBSUB_Tasks ( void )
                     p_reg = st_registers;
                     
                     
-                    
+                    #if RANDOM_TEST == 1
                     // -------------------------------
                     // --- For testing only ----------
                     // --- Randomly changing value ---
@@ -289,7 +300,7 @@ void APP_PUBSUB_Tasks ( void )
                     float val = rand() % 100;
                     *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
                     TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
-
+                    #endif
                     
                     
                 }
