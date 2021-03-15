@@ -67,6 +67,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define TRACE_LOG(...)
 #endif
 
+#if ! defined(RANDOM_TEST)
+#define RANDOM_TEST 1
+#endif
 
 // *****************************************************************************
 // *****************************************************************************
@@ -235,7 +238,13 @@ void APP_PUBSUB_Tasks ( void )
             {
                 if (retry_count >= PUBSUB_WAIT_MAX)
                 {
+                    #if defined(DO_RESET) && (DO_RESET != 0)
                     SYS_RESET_SoftwareReset();  // Reset after tried for a while
+                    #else
+                    retry_count = 0;
+                    TRACE_LOG("[PubSub] Timeout MQTT waiting ... sleep for %d ms\n\r", PUBSUB_WAIT_TIME*10);  // DEBUG: iPAS
+                    vTaskDelay(PUBSUB_WAIT_TIME * 10 / portTICK_PERIOD_MS);
+                    #endif
                 }
                 else
                     retry_count++;
@@ -283,7 +292,7 @@ void APP_PUBSUB_Tasks ( void )
                     p_reg = st_registers;
                     
                     
-                    
+                    #if RANDOM_TEST == 1
                     // -------------------------------
                     // --- For testing only ----------
                     // --- Randomly changing value ---
@@ -291,7 +300,7 @@ void APP_PUBSUB_Tasks ( void )
                     float val = rand() % 100;
                     *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
                     TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
-
+                    #endif
                     
                     
                 }

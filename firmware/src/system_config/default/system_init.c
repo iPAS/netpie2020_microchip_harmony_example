@@ -603,15 +603,10 @@ void SYS_Initialize ( void* data )
     SYS_INT_VectorPrioritySet(INT_VECTOR_UART2_RX, INT_PRIORITY_LEVEL1);
     SYS_INT_VectorSubprioritySet(INT_VECTOR_UART2_RX, INT_SUBPRIORITY_LEVEL0);
     SYS_INT_VectorPrioritySet(INT_VECTOR_UART2_FAULT, INT_PRIORITY_LEVEL1);
-    SYS_INT_VectorSubprioritySet(INT_VECTOR_UART2_FAULT, INT_SUBPRIORITY_LEVEL0);    
+    SYS_INT_VectorSubprioritySet(INT_VECTOR_UART2_FAULT, INT_SUBPRIORITY_LEVEL0);
 
     /* Initialize System Services */
     
-    
-    /*** Release the reset pin on LAN8740 by setting ETH_RES=1 ***/
-    SYS_PORTS_PinSet (PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_15);  // XXX: iPAS
-
-
     /*** Interrupt Service Initialization Code ***/
     SYS_INT_Initialize();
 

@@ -81,7 +81,8 @@ static APP_LOGGER_DATA app_Data;
 static enum 
 {
     USART_BM_INIT,
-    USART_BM_WORKING,
+    USART_BM_TX,
+    USART_BM_RX,
     USART_BM_DONE,
 } usartBMState;
 
@@ -90,6 +91,9 @@ typedef struct
     uint8_t buffer[LOGGER_QUEUE_ITEM_SIZE];
     uint8_t length;
 } logger_queue_item_t;
+
+#define DIR485_RX() SYS_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
+#define DIR485_TX() SYS_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
 
 
 // *****************************************************************************
@@ -118,10 +122,11 @@ BaseType_t logger_send_tx_queue(const char *fmt, ... )
     uint16_t len;
 
     va_start(args, fmt);
-    len = vsnprintf(q_item.buffer, LOGGER_QUEUE_ITEM_SIZE, fmt, args);
+    len = vsnprintf((char *)q_item.buffer, LOGGER_QUEUE_ITEM_SIZE, fmt, args);
     va_end(args);
 
-    q_item.length = strlen(q_item.buffer);
+    q_item.length = len;
+    //q_item.length = strlen(q_item.buffer);
     return xQueueSendToBack(app_Data.q_tx, &q_item, 0);
 }
 
@@ -143,42 +148,52 @@ static void USART_Task (void)
         default:
         case USART_BM_INIT:
         {            
-            usartBMState = USART_BM_WORKING;
+            usartBMState = USART_BM_TX;
             break;
         }
 
-        case USART_BM_WORKING:
+        case USART_BM_TX:
         {
             // ******
             // * TX *
-            while (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
-            {
-                static uint8_t index = 0;
-                static logger_queue_item_t q_item;
-                bool do_send = true;
+            
+            logger_queue_item_t q_item;
+            bool do_send = xQueueReceive(app_Data.q_tx, &q_item, 0);
 
-                if (index == 0)
+            if (do_send)
+            {      
+                DIR485_TX();
+    
+                uint8_t index = 0;
+                while (index < q_item.length)
                 {
-                    //uxQueueMessagesWaiting();
-                    do_send = xQueueReceive(app_Data.q_tx, &q_item, 0);
+                    if (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
+                    {
+                        DRV_USART_WriteByte(app_Data.handleUSART, q_item.buffer[index++]);
+                    }
+                    vTaskDelay(1 / portTICK_PERIOD_MS);
                 }
-
-                if (do_send)
-                {
-                    DRV_USART_WriteByte(app_Data.handleUSART, q_item.buffer[index]);
-                    index = (index == q_item.length-1)? 0 : index+1;
-                }
+                
+                DIR485_RX();            
             }
 
+            usartBMState = USART_BM_RX;
+            break;
+        }
+        
+        case USART_BM_RX:
+        {    
             // ******
             // * RX *
-            while (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
-            {
-                if (uxQueueSpacesAvailable(app_Data.q_rx) > 0)
-                {
-                    uint8_t c_rx = DRV_USART_ReadByte(app_Data.handleUSART);
-                }
-            }
+//            while (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
+//            {
+//                
+//            }
+//
+//            if (uxQueueSpacesAvailable(app_Data.q_rx) > 0)
+//            {
+//                uint8_t c_rx = DRV_USART_ReadByte(app_Data.handleUSART);
+//            }
 
             usartBMState = USART_BM_DONE;
             break;
@@ -186,8 +201,7 @@ static void USART_Task (void)
 
         case USART_BM_DONE:
         {
-            //vTaskDelay(100 / portTICK_PERIOD_MS);
-            usartBMState = USART_BM_WORKING;
+            usartBMState = USART_BM_TX;
             break;
         }
     }
@@ -223,6 +237,10 @@ void APP_LOGGER_Initialize ( void )
     }
     xQueueReset(app_Data.q_tx);
     xQueueReset(app_Data.q_rx);
+    
+        
+    DIR485_RX();
+    logger_send_tx_queue(".\n\r");
 }
 
 

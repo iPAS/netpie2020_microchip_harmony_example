@@ -115,7 +115,15 @@ uint16_t packet_id = 0;
 uint8_t txBuffer[MAX_BUFFER_SIZE];
 uint8_t rxBuffer[MAX_BUFFER_SIZE];
 
-#define MQTT_PREF_IFACE "wlan0"
+#if ! defined(MAIN_IFACE)
+//#define PREF_IFACE "eth0"
+#define PREF_IFACE "wlan0"
+#else
+#define STRINGIZE(x) #x
+#define STRINGIZE_VALUE_OF(x) STRINGIZE(x)
+#define PREF_IFACE STRINGIZE_VALUE_OF(MAIN_IFACE)
+#endif
+
 #define MQTT_WAIT_IFACE 5000
 #define MQTT_DEFAULT_CMD_TIMEOUT_MS 30000
 #define MQTT_KEEP_ALIVE_TIMEOUT 900
@@ -537,6 +545,8 @@ void APP_NETPIE_Tasks ( void )
             else
             if (tcpipStatus == SYS_STATUS_READY)
             {
+                TRACE_LOG("[NETPIE:%d] TCPIP ready!\n\r", __LINE__);
+                
                 // Now the stack is ready, we can check the available interfaces
                 nNets = TCPIP_STACK_NumberOfNetworksGet();
                 for (i = 0; i < nNets; i++) 
@@ -553,7 +563,7 @@ void APP_NETPIE_Tasks ( void )
                     // Show interface's MAC
                     char ifname[10];
                     ifname[ TCPIP_STACK_NetAliasNameGet(netH, ifname, sizeof(ifname)) ] = '\0';
-                    TRACE_LOG("[NETPIE:%d] '%s'->%s MAC: %s\n\r", __LINE__, ifname, net_name, appNetpieData.macAddress);  // DEBUG: iPAS
+                    TRACE_LOG("[NETPIE:%d] '%s':%s MAC:%s\n\r", __LINE__, ifname, net_name, appNetpieData.macAddress);  // DEBUG: iPAS
                 }
 
                 APP_timerSet(&appNetpieData.genericUseTimer);
@@ -572,6 +582,8 @@ void APP_NETPIE_Tasks ( void )
                 APP_timerSet(&appNetpieData.genericUseTimer);
             }
 
+            vTaskDelay(MQTT_WAIT_IFACE / portTICK_PERIOD_MS);
+            
             nNets = TCPIP_STACK_NumberOfNetworksGet();
             for (i = 0; i < nNets; i++)
             {
@@ -584,43 +596,39 @@ void APP_NETPIE_Tasks ( void )
                     if (ipAddr.v[0] != 0 && ipAddr.v[0] != 169) // Wait for a Valid IP
                     {
                         char ifname[10];
-                        ifname[ TCPIP_STACK_NetAliasNameGet(netH, ifname, sizeof(ifname)) ] = '\0';
-                        TRACE_LOG("[NETPIE:%d] '%s' IP: %d.%d.%d.%d\n\r", __LINE__, ifname,
-                            ipAddr.v[0], ipAddr.v[1], ipAddr.v[2], ipAddr.v[3]);  // DEBUG: iPAS
-
-                        //const char *handlers[] = {"PIC32INT", "MRF24W"};
+                        uint8_t ifname_len = TCPIP_STACK_NetAliasNameGet(netH, ifname, sizeof(ifname));
+                        ifname[ ifname_len ] = '\0';
+                        
+                        //const char *handlers[] = {"PIC32INT", "MRF24W"};  TCPIP_STACK_IF_NAME_PIC32INT  TCPIP_STACK_IF_NAME_MRF24W
                         //TCPIP_NET_HANDLE netH = TCPIP_STACK_NetHandleGet("PIC32INT");
                         
                         //const char *ifnames[] = {"eth0", "wlan0"};
-                        if (strcmp(ifname, MQTT_PREF_IFACE) == 0)  // Waiting for the WiFi interface to get DHCP done
-                        {
+                        if (strcmp(ifname, PREF_IFACE) == 0)  // Waiting for the preferred default interface
+                        {                            
                             appNetpieData.board_ipAddr.v4Add.Val = ipAddr.Val;  // saved for debugging
-                            appNetpieData.state = APP_NETPIE_STATE_MQTT_INIT;
                             
                             IPV4_ADDR ipDNS;
-                            ipDNS.Val = TCPIP_STACK_NetAddressDnsPrimary(netH);
-                            TRACE_LOG("[NETPIE:%d] '%s' DNS: %d.%d.%d.%d\n\r", __LINE__, ifname,
+                            ipDNS.Val = TCPIP_STACK_NetAddressDnsPrimary(netH);  // DNS
+                            TCPIP_STACK_NetDefaultSet(netH);  // Set default network interface
+                            
+                            appNetpieData.state = APP_NETPIE_STATE_MQTT_INIT;
+
+                            TRACE_LOG("[NETPIE:%d] Preferred '%s' found! IP:%d.%d.%d.%d DNS:%d.%d.%d.%d\n\r", __LINE__, ifname,
+                                    ipAddr.v[0], ipAddr.v[1], ipAddr.v[2], ipAddr.v[3],
                                     ipDNS.v[0], ipDNS.v[1], ipDNS.v[2], ipDNS.v[3]);  // DEBUG: iPAS
                         }
                         else
                         {
+                            /* -- useful code --
                             if (TCPIP_DNS_IsEnabled(netH))
                             {
                                 TCPIP_STACK_NetDown(netH);  // XXX: quick fix DNS-request-timeout on multiple interfaces
                                 TCPIP_DNS_Disable(netH, true);  // XXX: quick fix DNS-request-timeout on multiple interfaces
-                                
-                                /*
-                                uint8_t cfg_buf[100];
-                                size_t needed_size;
-                                size_t result = TCPIP_STACK_NetConfigGet(netH, cfg_buf, sizeof(cfg_buf), &needed_size);
-                                if(result > 0)
-                                {
-                                    TCPIP_STACK_NetUp(netH, (const TCPIP_NETWORK_CONFIG *)cfg_buf);  // XXX: quick fix DNS-request-timeout on multiple interfaces
-                                }
-                                */
                             }
-                            
-                            vTaskDelay(MQTT_WAIT_IFACE / portTICK_PERIOD_MS);
+                            */ 
+
+                            TRACE_LOG("[NETPIE:%d] '%s' IP:%d.%d.%d.%d\n\r", __LINE__, ifname, 
+                                    ipAddr.v[0], ipAddr.v[1], ipAddr.v[2], ipAddr.v[3]);  // DEBUG: iPAS
                         }
                     }
                 }

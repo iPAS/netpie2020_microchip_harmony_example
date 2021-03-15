@@ -146,7 +146,7 @@ extern "C" {
 
 #define SYS_PORT_G_ANSEL        0xc0
 #define SYS_PORT_G_TRIS         0x43c2
-#define SYS_PORT_G_LAT          0x3000
+#define SYS_PORT_G_LAT          0xb000
 #define SYS_PORT_G_ODC          0x0
 #define SYS_PORT_G_CNPU         0x0
 #define SYS_PORT_G_CNPD         0x0

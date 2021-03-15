@@ -1683,7 +1683,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>BD23A87B3908AB578AA2A97AC077ED24</Checksum>
+        <Checksum>E2E6BBD1A6C715951F55CD799123F37C</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>
