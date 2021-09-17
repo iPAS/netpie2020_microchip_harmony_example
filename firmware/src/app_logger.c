@@ -240,7 +240,7 @@ void APP_LOGGER_Initialize ( void )
     
         
     DIR485_RX();
-    logger_send_tx_queue(".\n\r");
+    logger_send_tx_queue(".\n\r");  // DEBUG: iPAS
 }
 
 

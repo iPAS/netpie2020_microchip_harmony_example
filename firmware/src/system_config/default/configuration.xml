@@ -1631,12 +1631,12 @@
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
         <Checksum>76C0B14DBA8A4D3452C27B111B18E8AC</Checksum>
-        <ProjectFileChecksum>A77F70BC1D5B0079FE8F8538011102A4</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>main.c</Name>
         <Path>Source Files/app</Path>
         <Checksum>81A51474D8A80D41AD749DEAE4C1A7A3</Checksum>
+        <ProjectFileChecksum>40C0EDFCD3650170CE866B922E95F7D8</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>app_uart_term.h</Name>
@@ -1683,7 +1683,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>E2E6BBD1A6C715951F55CD799123F37C</Checksum>
+        <Checksum>7DB501D0F958018F9CD91226E5E12B67</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>

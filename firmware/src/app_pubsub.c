@@ -286,10 +286,10 @@ void APP_PUBSUB_Tasks ( void )
                 }
                 
                 p_reg++;  // Next register
-                if (p_reg->sub_topic == NULL)
+                if (p_reg->sub_topic == NULL)  // The last item
                 {
                     first_time = false;
-                    p_reg = st_registers;
+                    p_reg = st_registers;  // Goto the first one
                     
                     
                     #if RANDOM_TEST == 1
