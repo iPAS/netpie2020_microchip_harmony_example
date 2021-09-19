@@ -148,6 +148,8 @@ const char mqtt_topic_log[]      = "@msg/" NETPIE_DEVICE_NAME "/log";     // log
 
 static netpie_callback_t subscription_callback = NULL;
 
+TaskHandle_t xTaskHandleNetpie;
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -473,6 +475,33 @@ int netpie_publish_register(const char *sub_topic, const char *message)
 void netpie_set_callback(netpie_callback_t cb)
 {
     subscription_callback = cb;
+}
+
+
+/**
+ * Set running status
+ * @param sts
+ * @return 
+ */
+bool netpie_set_running(bool sts)
+{
+    switch (sts) {
+    case true:
+        // Start it
+        APP_NETPIE_Initialize();
+        vTaskResume(xTaskHandleNetpie);
+        break;
+
+    case false:
+        // Stop it
+        vTaskSuspend(xTaskHandleNetpie);
+        MqttClient_Disconnect(&appNetpieData.mqttClient);
+        appNetpieData.socket_connected = false;  // netpie_ready() => false
+        appNetpieData.mqtt_connected   = false;
+        break;
+    }
+
+    return sts;
 }
 
 

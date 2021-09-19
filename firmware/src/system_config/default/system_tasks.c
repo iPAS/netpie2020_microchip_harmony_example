@@ -104,7 +104,7 @@ void SYS_Tasks ( void )
     /* Create OS Thread for APP_NETPIE Tasks. */
     xTaskCreate((TaskFunction_t) _APP_NETPIE_Tasks,
                 "APP_NETPIE Tasks",
-                1024, NULL, 1, NULL);
+                1024, NULL, 1, &xTaskHandleNetpie);
 
     /* Create OS Thread for APP_PUBSUB Tasks. */
     xTaskCreate((TaskFunction_t) _APP_PUBSUB_Tasks,

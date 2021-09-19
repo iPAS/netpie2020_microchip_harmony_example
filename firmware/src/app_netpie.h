@@ -248,6 +248,7 @@ extern int  netpie_publish_log(const char *message);  // Publish message to logg
 extern int  netpie_publish_register(const char *sub_topic, const char *message);  // Publish the update of register at address.
 extern void netpie_set_callback(netpie_callback_t cb);  // Set the callback function for updating register as request.
 
+extern TaskHandle_t xTaskHandleNetpie;
 
 #endif /* _APP_NETPIE_H */
 
