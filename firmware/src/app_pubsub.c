@@ -247,10 +247,11 @@ void APP_PUBSUB_Tasks ( void )
                     #endif
                 }
                 else
+                {
                     retry_count++;
-                
-                TRACE_LOG("[PubSub] Wait MQTT ready ... %d/%d\n\r", retry_count, PUBSUB_WAIT_MAX);  // DEBUG: iPAS
-                vTaskDelay(PUBSUB_WAIT_TIME / portTICK_PERIOD_MS);
+                    TRACE_LOG("[PubSub] Wait MQTT ready ... %d/%d\n\r", retry_count, PUBSUB_WAIT_MAX);  // DEBUG: iPAS
+                    vTaskDelay(PUBSUB_WAIT_TIME / portTICK_PERIOD_MS);
+                }
             }
             break;
         }
