@@ -588,6 +588,8 @@ extern "C" {
 /*** Application Instance 3 Configuration ***/
 #define APP_LOGGER_DRV_USART                     1
 
+/*** Application Instance 4 Configuration ***/
+
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
 }

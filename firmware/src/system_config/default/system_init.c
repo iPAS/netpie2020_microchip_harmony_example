@@ -647,6 +647,7 @@ void SYS_Initialize ( void* data )
     APP_NETPIE_Initialize();
     APP_PUBSUB_Initialize();
     APP_LOGGER_Initialize();
+    APP_TESTER_Initialize();
 }
 
 
