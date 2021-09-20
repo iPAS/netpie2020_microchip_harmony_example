@@ -243,10 +243,11 @@ void APP_NETPIE_Tasks( void );
 // *****************************************************************************
 // *****************************************************************************
 
-extern bool netpie_ready(void);
-extern int  netpie_publish_log(const char *message);  // Publish message to logging channel
-extern int  netpie_publish_register(const char *sub_topic, const char *message);  // Publish the update of register at address.
-extern void netpie_set_callback(netpie_callback_t cb);  // Set the callback function for updating register as request.
+bool netpie_ready(void);
+int  netpie_publish_log(const char *message);  // Publish message to logging channel
+int  netpie_publish_register(const char *sub_topic, const char *message);  // Publish the update of register at address.
+void netpie_set_callback(netpie_callback_t cb);  // Set the callback function for updating register as request.
+bool netpie_set_running(bool sts);
 
 extern TaskHandle_t xTaskHandleNetpie;
 

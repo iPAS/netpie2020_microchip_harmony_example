@@ -104,7 +104,7 @@ void SYS_Tasks ( void )
     /* Create OS Thread for APP_NETPIE Tasks. */
     xTaskCreate((TaskFunction_t) _APP_NETPIE_Tasks,
                 "APP_NETPIE Tasks",
-                1024, NULL, 1, &xTaskHandleNetpie);
+                1024, NULL, 1, &xTaskHandleNetpie);  // <-- iPAS
 
     /* Create OS Thread for APP_PUBSUB Tasks. */
     xTaskCreate((TaskFunction_t) _APP_PUBSUB_Tasks,
@@ -114,7 +114,7 @@ void SYS_Tasks ( void )
     /* Create OS Thread for APP_LOGGER Tasks. */
     xTaskCreate((TaskFunction_t) _APP_LOGGER_Tasks,
                 "APP_LOGGER Tasks",
-                1024, NULL, 1, NULL);
+                1024, NULL, 1, &xTaskHandleLogger);  // <-- iPAS
 
     /**************
      * Start RTOS * 
