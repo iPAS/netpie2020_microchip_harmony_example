@@ -496,6 +496,7 @@ bool netpie_set_running(bool sts)
         // Stop it
         vTaskSuspend(xTaskHandleNetpie);
         MqttClient_Disconnect(&appNetpieData.mqttClient);
+        MqttClient_NetDisconnect(&appNetpieData.mqttClient);
         appNetpieData.socket_connected = false;  // netpie_ready() => false
         appNetpieData.mqtt_connected   = false;
         break;

@@ -89,7 +89,10 @@ typedef enum
 	/* Application's state machine's initial state. */
 	APP_TESTER_STATE_INIT=0,
 	APP_TESTER_STATE_SERVICE_TASKS,
-
+    APP_TESTER_STATE_TURN_NETPIE_OFF_ON,
+    APP_TESTER_STATE_TURN_LOGGER_OFF_ON,
+    APP_TESTER_STATE_FINISH,
+    
 	/* TODO: Define states used by the application state machine. */
 
 } APP_TESTER_STATES;

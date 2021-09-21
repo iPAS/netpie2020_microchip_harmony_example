@@ -126,6 +126,8 @@ TaskHandle_t xTaskHandleLogger;
  */
 BaseType_t logger_send_tx_queue(const char *fmt, ... )
 {
+    if (app_Data.q_tx == NULL) return pdFAIL;
+
     va_list args;
     logger_queue_item_t q_item;
     uint16_t len;
@@ -285,6 +287,8 @@ void APP_LOGGER_Deinitialize ( void )
     /* Message queue */
     vQueueDelete(app_Data.q_tx);
     vQueueDelete(app_Data.q_rx);
+    app_Data.q_tx = NULL;
+    app_Data.q_rx = NULL;
 
     DIR485_RX();
 }

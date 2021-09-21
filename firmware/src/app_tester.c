@@ -154,12 +154,67 @@ void APP_TESTER_Tasks ( void )
 
         case APP_TESTER_STATE_SERVICE_TASKS:
         {
-        
+            int i;
+            for (i = 2; i > 0; i--)
+            {
+                logger_send_tx_queue(">>> %d min. to start testing\n\r", i);
+                vTaskDelay(60000 / portTICK_PERIOD_MS);
+            }
+
+            app_testerData.state = APP_TESTER_STATE_TURN_NETPIE_OFF_ON;
             break;
         }
 
         /* TODO: implement your application state machine.*/
-        
+        case APP_TESTER_STATE_TURN_NETPIE_OFF_ON:
+        {   
+            int i;
+
+            logger_send_tx_queue(">>> Disable the Netpie module\n\r");
+            netpie_set_running(false);
+            for (i = 2; i > 0; i--)
+            {
+                logger_send_tx_queue(">>> %d min. before enable\n\r", i);
+                vTaskDelay(60000 / portTICK_PERIOD_MS);
+            }
+
+            logger_send_tx_queue(">>> Enable the Netpie module\n\r");
+            netpie_set_running(true);
+            for (i = 2; i > 0; i--)
+            {
+                logger_send_tx_queue(">>> %d min. before next test\n\r", i);
+                vTaskDelay(60000 / portTICK_PERIOD_MS);
+            }
+
+            app_testerData.state = APP_TESTER_STATE_TURN_LOGGER_OFF_ON;
+            break;
+        }        
+
+        case APP_TESTER_STATE_TURN_LOGGER_OFF_ON:
+        {
+            logger_send_tx_queue(">>> Disable the Logger module\n\r");
+            vTaskDelay(10000 / portTICK_PERIOD_MS);
+            logger_set_running(false);
+            
+            vTaskDelay(10000 / portTICK_PERIOD_MS); 
+            logger_send_tx_queue(">>> Never see me!!\n\r");
+
+            vTaskDelay(10000 / portTICK_PERIOD_MS);
+            logger_set_running(true);
+
+            vTaskDelay(10000 / portTICK_PERIOD_MS);
+            logger_send_tx_queue(">>> Hello I am back!!\n\r");
+
+            app_testerData.state = APP_TESTER_STATE_FINISH;
+            break;
+        }
+
+        case APP_TESTER_STATE_FINISH:
+        {
+            app_testerData.state = APP_TESTER_STATE_INIT;
+            vTaskSuspend(NULL);  // Suspend itself
+            break;
+        }
 
         /* The default state should never be executed. */
         default:
