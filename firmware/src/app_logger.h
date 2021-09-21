@@ -217,6 +217,9 @@ void APP_LOGGER_Tasks( void );
  * Enqueue a message to UART Tx
  */
 BaseType_t logger_send_tx_queue(const char *fmt, ... );
+bool logger_set_running(bool sts);
+
+extern TaskHandle_t xTaskHandleLogger;
 
 
 #endif /* _APP_LOGGER_H */

@@ -244,13 +244,21 @@ void APP_PUBSUB_Tasks ( void )
                     retry_count = 0;
                     TRACE_LOG("[PubSub] Timeout MQTT waiting ... sleep for %d ms\n\r", PUBSUB_WAIT_TIME*10);  // DEBUG: iPAS
                     vTaskDelay(PUBSUB_WAIT_TIME * 10 / portTICK_PERIOD_MS);
+
+                    /* XXX: to be try
+                    netpie_set_running(false);
+                    vTaskDelay(10000 / portTICK_PERIOD_MS);
+                    netpie_set_running(true);
+                    vTaskDelay(10000 / portTICK_PERIOD_MS);
+                    */
                     #endif
                 }
                 else
+                {
                     retry_count++;
-                
-                TRACE_LOG("[PubSub] Wait MQTT ready ... %d/%d\n\r", retry_count, PUBSUB_WAIT_MAX);  // DEBUG: iPAS
-                vTaskDelay(PUBSUB_WAIT_TIME / portTICK_PERIOD_MS);
+                    TRACE_LOG("[PubSub] Wait MQTT ready ... %d/%d\n\r", retry_count, PUBSUB_WAIT_MAX);  // DEBUG: iPAS
+                    vTaskDelay(PUBSUB_WAIT_TIME / portTICK_PERIOD_MS);
+                }
             }
             break;
         }
@@ -286,10 +294,10 @@ void APP_PUBSUB_Tasks ( void )
                 }
                 
                 p_reg++;  // Next register
-                if (p_reg->sub_topic == NULL)
+                if (p_reg->sub_topic == NULL)  // The last item
                 {
                     first_time = false;
-                    p_reg = st_registers;
+                    p_reg = st_registers;  // Goto the first one
                     
                     
                     #if RANDOM_TEST == 1

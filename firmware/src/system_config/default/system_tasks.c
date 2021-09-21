@@ -58,6 +58,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "app_netpie.h"
 #include "app_pubsub.h"
 #include "app_logger.h"
+#include "app_tester.h"
 
 
 // *****************************************************************************
@@ -73,6 +74,7 @@ static void _APP_UART_TERM_Tasks(void);
 static void _APP_NETPIE_Tasks(void);
 static void _APP_PUBSUB_Tasks(void);
 static void _APP_LOGGER_Tasks(void);
+static void _APP_TESTER_Tasks(void);
 
 
 // *****************************************************************************
@@ -104,7 +106,7 @@ void SYS_Tasks ( void )
     /* Create OS Thread for APP_NETPIE Tasks. */
     xTaskCreate((TaskFunction_t) _APP_NETPIE_Tasks,
                 "APP_NETPIE Tasks",
-                1024, NULL, 1, NULL);
+                1024, NULL, 1, &xTaskHandleNetpie);  // <-- iPAS
 
     /* Create OS Thread for APP_PUBSUB Tasks. */
     xTaskCreate((TaskFunction_t) _APP_PUBSUB_Tasks,
@@ -114,6 +116,11 @@ void SYS_Tasks ( void )
     /* Create OS Thread for APP_LOGGER Tasks. */
     xTaskCreate((TaskFunction_t) _APP_LOGGER_Tasks,
                 "APP_LOGGER Tasks",
+                1024, NULL, 1, &xTaskHandleLogger);  // <-- iPAS
+
+    /* Create OS Thread for APP_TESTER Tasks. */
+    xTaskCreate((TaskFunction_t) _APP_TESTER_Tasks,
+                "APP_TESTER Tasks",
                 1024, NULL, 1, NULL);
 
     /**************
@@ -216,6 +223,24 @@ static void _APP_LOGGER_Tasks(void)
     while(1)
     {
         APP_LOGGER_Tasks();
+    }
+}
+
+
+/*******************************************************************************
+  Function:
+    void _APP_TESTER_Tasks ( void )
+
+  Summary:
+    Maintains state machine of APP_TESTER.
+*/
+
+static void _APP_TESTER_Tasks(void)
+{
+    while(1)
+    {
+        APP_TESTER_Tasks();
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
 

@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app_netpie.h
+    app_tester.h
 
   Summary:
     This header file provides prototypes and definitions for the application.
@@ -43,9 +43,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  *******************************************************************************/
 //DOM-IGNORE-END
 
-
-#ifndef _APP_NETPIE_H
-#define _APP_NETPIE_H
+#ifndef _APP_TESTER_H
+#define _APP_TESTER_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -60,17 +59,14 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_config.h"
 #include "system_definitions.h"
 
-#include <wolfmqtt/mqtt_client.h>
-
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
 
 extern "C" {
 
 #endif
-// DOM-IGNORE-END
+// DOM-IGNORE-END 
 
-    
 // *****************************************************************************
 // *****************************************************************************
 // Section: Type Definitions
@@ -87,24 +83,19 @@ extern "C" {
     This enumeration defines the valid application states.  These states
     determine the behavior of the application at various times.
 */
+
 typedef enum
 {
 	/* Application's state machine's initial state. */
-    APP_NETPIE_STATE_INIT = 0,
+	APP_TESTER_STATE_INIT=0,
+	APP_TESTER_STATE_SERVICE_TASKS,
+    APP_TESTER_STATE_TURN_NETPIE_OFF_ON,
+    APP_TESTER_STATE_TURN_LOGGER_OFF_ON,
+    APP_TESTER_STATE_FINISH,
+    
+	/* TODO: Define states used by the application state machine. */
 
-    APP_NETPIE_STATE_TCPIP_WAIT_INIT,
-    APP_NETPIE_STATE_TCPIP_WAIT_FOR_IP,
-
-    APP_NETPIE_STATE_MQTT_INIT,
-    APP_NETPIE_STATE_MQTT_NET_CONNECT,
-    APP_NETPIE_STATE_MQTT_PROTOCOL_CONNECT,
-    APP_NETPIE_STATE_MQTT_SUBSCRIBE,
-    APP_NETPIE_STATE_MQTT_LOOP,
-
-    APP_NETPIE_STATE_TCPIP_ERROR,
-    APP_NETPIE_STATE_FATAL_ERROR,
-
-} APP_NETPIE_STATES;
+} APP_TESTER_STATES;
 
 
 // *****************************************************************************
@@ -119,41 +110,15 @@ typedef enum
   Remarks:
     Application strings and buffers are be defined outside this structure.
  */
+
 typedef struct
 {
     /* The application's current state */
-    APP_NETPIE_STATES state;
+    APP_TESTER_STATES state;
 
-    // Timers
-    uint32_t genericUseTimer;
-    uint32_t mqttKeepAlive;
-    uint32_t mqttUpdateStatus;
+    /* TODO: Define any additional data used by the application. */
 
-    /* TCPIP & MQTT */
-    char macAddress[12 + 1];
-    //__attribute__ ((aligned(4))) 
-    char host[30];  // The endpoint to access the broker.
-    IP_MULTI_ADDRESS host_ipv4;  // The endpoint IP address location.
-    TCP_PORT         port;
-
-    NET_PRES_SKT_HANDLE_T socket;
-    NET_PRES_SKT_ERROR_T  error;
-
-    MqttClient mqttClient;
-    MqttNet    mqttNet;
-
-    /* Debug Variables */
-    bool socket_connected;
-    bool mqtt_connected;
-    IP_MULTI_ADDRESS board_ipAddr;
-
-} APP_NETPIE_DATA;
-
-
-// *****************************************************************************
-/* Callback functions
- */
-typedef void (*netpie_callback_t)(const char *sub_topic, const char *message);
+} APP_TESTER_DATA;
 
 
 // *****************************************************************************
@@ -161,11 +126,9 @@ typedef void (*netpie_callback_t)(const char *sub_topic, const char *message);
 // Section: Application Callback Routines
 // *****************************************************************************
 // *****************************************************************************
-
 /* These routines are called by drivers when certain events occur.
 */
-
-
+	
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Initialization and State Machine Functions
@@ -174,7 +137,7 @@ typedef void (*netpie_callback_t)(const char *sub_topic, const char *message);
 
 /*******************************************************************************
   Function:
-    void APP_NETPIE_Initialize ( void )
+    void APP_TESTER_Initialize ( void )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -196,18 +159,19 @@ typedef void (*netpie_callback_t)(const char *sub_topic, const char *message);
 
   Example:
     <code>
-    APP_NETPIE_Initialize();
+    APP_TESTER_Initialize();
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
-void APP_NETPIE_Initialize ( void );
+
+void APP_TESTER_Initialize ( void );
 
 
 /*******************************************************************************
   Function:
-    void APP_NETPIE_Tasks ( void )
+    void APP_TESTER_Tasks ( void )
 
   Summary:
     MPLAB Harmony Demo application tasks function
@@ -228,30 +192,17 @@ void APP_NETPIE_Initialize ( void );
 
   Example:
     <code>
-    APP_NETPIE_Tasks();
+    APP_TESTER_Tasks();
     </code>
 
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
-void APP_NETPIE_Tasks( void );
+
+void APP_TESTER_Tasks( void );
 
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Global Functions for other module
-// *****************************************************************************
-// *****************************************************************************
-
-bool netpie_ready(void);
-int  netpie_publish_log(const char *message);  // Publish message to logging channel
-int  netpie_publish_register(const char *sub_topic, const char *message);  // Publish the update of register at address.
-void netpie_set_callback(netpie_callback_t cb);  // Set the callback function for updating register as request.
-bool netpie_set_running(bool sts);
-
-extern TaskHandle_t xTaskHandleNetpie;
-
-#endif /* _APP_NETPIE_H */
+#endif /* _APP_TESTER_H */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

@@ -518,7 +518,7 @@ extern "C" {
 #define TCPIP_NETWORK_DEFAULT_MAC_ADDR 				"00:04:a3:11:22:33"
 #define TCPIP_NETWORK_DEFAULT_IP_ADDRESS 			"192.168.1.1"
 #define TCPIP_NETWORK_DEFAULT_IP_MASK 				"255.255.255.0"
-#define TCPIP_NETWORK_DEFAULT_GATEWAY	 			"192.168.1.1"
+#define TCPIP_NETWORK_DEFAULT_GATEWAY	 			"192.168.1.2"
 #define TCPIP_NETWORK_DEFAULT_DNS 				"8.8.8.8"
 #define TCPIP_NETWORK_DEFAULT_SECOND_DNS 			"8.8.4.4"
 #define TCPIP_NETWORK_DEFAULT_POWER_MODE 			"full"
@@ -587,6 +587,8 @@ extern "C" {
 
 /*** Application Instance 3 Configuration ***/
 #define APP_LOGGER_DRV_USART                     1
+
+/*** Application Instance 4 Configuration ***/
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

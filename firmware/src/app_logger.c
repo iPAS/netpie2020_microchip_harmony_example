@@ -95,6 +95,8 @@ typedef struct
 #define DIR485_RX() SYS_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
 #define DIR485_TX() SYS_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
 
+TaskHandle_t xTaskHandleLogger;
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -112,11 +114,20 @@ typedef struct
 // *****************************************************************************
 // *****************************************************************************
 
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Global Functions
+// *****************************************************************************
+// *****************************************************************************
+
 /**
  * Enqueue a message to UART Tx
  */
 BaseType_t logger_send_tx_queue(const char *fmt, ... )
 {
+    if (app_Data.q_tx == NULL) return pdFAIL;
+
     va_list args;
     logger_queue_item_t q_item;
     uint16_t len;
@@ -128,6 +139,29 @@ BaseType_t logger_send_tx_queue(const char *fmt, ... )
     q_item.length = len;
     //q_item.length = strlen(q_item.buffer);
     return xQueueSendToBack(app_Data.q_tx, &q_item, 0);
+}
+
+
+/**
+ * Set running status
+ */
+bool logger_set_running(bool sts)
+{
+    switch (sts) {
+    case true:
+        // Start it
+        APP_LOGGER_Initialize();
+        vTaskResume(xTaskHandleLogger);
+        break;
+
+    case false:
+        // Stop it
+        vTaskSuspend(xTaskHandleLogger);
+        APP_LOGGER_Deinitialize();
+        break;
+    }
+
+    return sts;
 }
 
 
@@ -237,10 +271,26 @@ void APP_LOGGER_Initialize ( void )
     }
     xQueueReset(app_Data.q_tx);
     xQueueReset(app_Data.q_rx);
-    
-        
+
     DIR485_RX();
-    logger_send_tx_queue(".\n\r");
+    logger_send_tx_queue(".\n\r");  // DEBUG: iPAS
+}
+
+
+void APP_LOGGER_Deinitialize ( void )
+{
+    /* Place the App state machine in its initial state. */
+    app_Data.state = APP_LOGGER_STATE_INIT;
+
+    DRV_USART_Close(app_Data.handleUSART);
+
+    /* Message queue */
+    vQueueDelete(app_Data.q_tx);
+    vQueueDelete(app_Data.q_rx);
+    app_Data.q_tx = NULL;
+    app_Data.q_rx = NULL;
+
+    DIR485_RX();
 }
 
 
@@ -277,7 +327,7 @@ void APP_LOGGER_Tasks ( void )
             
                 app_Data.state = APP_LOGGER_STATE_SERVICE_TASKS;
             
-                DRV_USART_WriteByte(app_Data.handleUSART, '.');  // DEBUG: iPAS
+                DRV_USART_WriteByte(app_Data.handleUSART, '>');  // DEBUG: iPAS
             }
             break;
         }

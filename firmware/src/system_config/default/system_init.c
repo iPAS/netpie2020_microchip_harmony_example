@@ -606,7 +606,7 @@ void SYS_Initialize ( void* data )
     SYS_INT_VectorSubprioritySet(INT_VECTOR_UART2_FAULT, INT_SUBPRIORITY_LEVEL0);
 
     /* Initialize System Services */
-    
+
     /*** Interrupt Service Initialization Code ***/
     SYS_INT_Initialize();
 
@@ -647,6 +647,7 @@ void SYS_Initialize ( void* data )
     APP_NETPIE_Initialize();
     APP_PUBSUB_Initialize();
     APP_LOGGER_Initialize();
+    APP_TESTER_Initialize();
 }
 
 
