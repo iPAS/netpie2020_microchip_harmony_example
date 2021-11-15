@@ -57,19 +57,16 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "app_netpie.h"
 #include "register_mapping.h"
 
-#if defined(DO_TRACE)
+#if defined(DO_TRACE) && (DO_TRACE != 0)
 #include "app_uart_term.h"
 #define TRACE_LOG(...) uart_send_tx_queue(__VA_ARGS__)
-#elif defined(DO_LOG)
+#elif defined(DO_LOG) && (DO_LOG != 0)
 #include "app_logger.h"
 #define TRACE_LOG(...) logger_send_tx_queue(__VA_ARGS__)
 #else
 #define TRACE_LOG(...)
 #endif
 
-#if ! defined(RANDOM_TEST)
-#define RANDOM_TEST 1
-#endif
 
 // *****************************************************************************
 // *****************************************************************************
@@ -300,7 +297,7 @@ void APP_PUBSUB_Tasks ( void )
                     p_reg = st_registers;  // Goto the first one
                     
                     
-                    #if RANDOM_TEST == 1
+                    #if defined(RANDOM_TEST) && (RANDOM_TEST != 0)
                     // -------------------------------
                     // --- For testing only ----------
                     // --- Randomly changing value ---

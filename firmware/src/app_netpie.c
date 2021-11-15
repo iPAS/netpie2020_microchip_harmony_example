@@ -56,10 +56,10 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "app_netpie.h"
 #include "parson/parson.h"
 
-#if defined(DO_TRACE)
+#if defined(DO_TRACE) && (DO_TRACE != 0)
 #include "app_uart_term.h"
 #define TRACE_LOG(...) uart_send_tx_queue(__VA_ARGS__)
-#elif defined(DO_LOG)
+#elif defined(DO_LOG) && (DO_LOG != 0)
 #include "app_logger.h"
 #define TRACE_LOG(...) logger_send_tx_queue(__VA_ARGS__)
 #else
