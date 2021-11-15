@@ -92,7 +92,7 @@ SYS_MODULE_OBJ DRV_USART0_Initialize(void)
     PLIB_USART_InitializeModeGeneral(USART_ID_6,
             false,  /*Auto baud*/
             false,  /*LoopBack mode*/
-            false,  /*Auto wakeup on start*/
+            true,  /*Auto wakeup on start*/
             false,  /*IRDA mode*/
             false);  /*Stop In Idle mode*/
 
@@ -411,7 +411,7 @@ SYS_MODULE_OBJ DRV_USART1_Initialize(void)
     PLIB_USART_InitializeModeGeneral(USART_ID_2,
             false,  /*Auto baud*/
             false,  /*LoopBack mode*/
-            false,  /*Auto wakeup on start*/
+            true,  /*Auto wakeup on start*/
             false,  /*IRDA mode*/
             false);  /*Stop In Idle mode*/
 

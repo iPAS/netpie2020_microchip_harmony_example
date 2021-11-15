@@ -1626,11 +1626,12 @@
         <Name>app_tester.h</Name>
         <Path>Header Files/app</Path>
         <Checksum>7255362B865F14F5C8196C8EF48EC2B1</Checksum>
+        <ProjectFileChecksum>CA4FA241039A6CE609F568355617C2A1</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>drv_usart_static.c</Name>
         <Path>Source Files/app/system_config/default/framework/driver/usart/src</Path>
-        <Checksum>EC74C63A923C8CFD8E2F7AD851C2B700</Checksum>
+        <Checksum>9AC53FB5BA3F4011E0B545C0BAADA9CD</Checksum>
       </Template>
       <Template>
         <Name>system_init.c</Name>
@@ -1679,6 +1680,7 @@
         <Name>app_tester.c</Name>
         <Path>Source Files/app</Path>
         <Checksum>D6EF9AE1A25D56C60BEA116993D6EA89</Checksum>
+        <ProjectFileChecksum>65AF1E758F995BF8CCC315270EFEA70B</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>drv_usart_static.h</Name>
