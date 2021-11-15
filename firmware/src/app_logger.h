@@ -174,6 +174,8 @@ typedef struct
 */
 void APP_LOGGER_Initialize ( void );
 
+void APP_LOGGER_Deinitialize ( void );
+
 
 /*******************************************************************************
   Function:

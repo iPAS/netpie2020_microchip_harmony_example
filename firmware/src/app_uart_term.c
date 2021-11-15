@@ -227,6 +227,8 @@ void APP_UART_TERM_Initialize ( void )
     
     /*** Set the RS485 to tx mode ***/
     //SYS_PORTS_PinSet (PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5);  // XXX: iPAS, still make the RTU hang, why?
+    
+    uart_send_tx_queue(".\n\r");  // DEBUG: iPAS
 }
 
 
@@ -263,7 +265,7 @@ void APP_UART_TERM_Tasks ( void )
             
                 app_Data.state = APP_UART_TERM_STATE_SERVICE_TASKS;
                 
-                DRV_USART_WriteByte(app_Data.handleUSART, '.');  // DEBUG: iPAS
+                DRV_USART_WriteByte(app_Data.handleUSART, '$');  // DEBUG: iPAS
             }
             break;
         }
