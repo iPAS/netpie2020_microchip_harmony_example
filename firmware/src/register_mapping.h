@@ -33,7 +33,7 @@ typedef
 struct 
 {
     const char * const sub_topic;
-    float * p_value;
+    volatile float * p_value;
 } st_register_t;
 
 extern st_register_t st_registers[];

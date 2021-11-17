@@ -141,10 +141,10 @@ const char mqtt_password[]  = NETPIE_SECRET;
 // -- MQTT topics for updating register --
 #define MQTT_TOPIC_FILTER "@msg/" NETPIE_DEVICE_NAME "/#"
 //const char mqtt_topic_status[]   = "@msg/" NETPIE_DEVICE_NAME "/status";  // Publish the device status
-const char mqtt_topic_status[]   = "@shadow/data/update";                 // Publish the device status	
-const char mqtt_topic_update[]   = "@msg/" NETPIE_DEVICE_NAME "/update";  // Get request for updating the register/%d
+const char mqtt_topic_status[]   = "@shadow/data/update";                   // Publish the device status on the 'shadow'
+const char mqtt_topic_update[]   = "@msg/" NETPIE_DEVICE_NAME "/update";    // Get request for updating the register/%d
 const char mqtt_topic_register[] = "@msg/" NETPIE_DEVICE_NAME "/register";  // Publish an update for register/%d
-const char mqtt_topic_log[]      = "@msg/" NETPIE_DEVICE_NAME "/log";     // log
+const char mqtt_topic_log[]      = "@msg/" NETPIE_DEVICE_NAME "/log";       // log
 
 static netpie_callback_t subscription_callback = NULL;
 
