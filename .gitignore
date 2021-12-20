@@ -12,3 +12,5 @@
 **/*.X/build
 
 **/.generated_files
+
+**/__pycache__/
