@@ -394,7 +394,7 @@ int APP_mqttMessage_cb(MqttClient *client, MqttMessage *msg, byte msg_new, byte 
     topic[msg->topic_name_len] = '\0';  // Requite for using as string
 
 
-    TRACE_LOG("--- received #%d from topic:%s msg:'%s'\n\r", msg->packet_id, topic, message);  // DEBUG: iPAS
+    TRACE_LOG("[NETPIE:%d] recv #%d topic:%s msg:'%s'\n\r", __LINE__, msg->packet_id, topic, message);  // DEBUG: iPAS
     
 
     /**

@@ -148,7 +148,7 @@ static void mqttclient_callback(const char *sub_topic, const char *message)
     
     char msg[50];
     
-    if (p_reg->sub_topic == NULL)  // Reference error
+    if (p_reg->sub_topic == NULL)  // Reference error, no mentioned register
     {
         snprintf(msg, sizeof(msg), "Unknown sub_topic:'%s'", sub_topic);
         netpie_publish_log(msg);
