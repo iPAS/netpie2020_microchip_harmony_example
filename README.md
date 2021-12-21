@@ -53,8 +53,33 @@ Additionally, the device under test is named Universal Remote Terminal Unit, als
 * [JSON parsing library](http://kgabis.github.com/parson/)
 
 
-## Notes
+
+## Libraries
+
+### Installation
+
+1. WolfMQTT
+
+    * third-party/tcpip/wolfmqtt -> 2.06
+
+2. WolfSSL
+
+    * framework/crypto -> 2.06 
+
+    ![](fig/revise_framework-crypto.png)
+
+    * third-party/tcpip/config -> revised 2.06
+    * third-party/tcpip/wolfssl -> revised 2.06 
+
+    ![](fig/revise_thirdparty-tcpip-wolfssl.png)
+
+3. Harmony v1.11 Configuration
+    * Crypto
+    * WolfMQTT
+    * WolfSSL
+
+
+### Notes
 
 * [SSL vs TLS - What's the Difference?](https://www.globalsign.com/en/blog/ssl-vs-tls-difference)
 * [ความแตกต่างของ TLS กับ SSL](https://netway.co.th/kb/ssl-certificate/%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5%E0%B8%97%E0%B8%B1%E0%B9%88%E0%B8%A7%E0%B9%84%E0%B8%9B/%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%81%E0%B8%95%E0%B8%81%E0%B8%95%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B8%82%E0%B8%AD%E0%B8%87-tls-%E0%B8%81%E0%B8%B1%E0%B8%9A-ssl)
-
