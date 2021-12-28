@@ -131,8 +131,10 @@ uint8_t rxBuffer[MAX_BUFFER_SIZE];
 
 // -- NEXPIE2020 --
 // server: broker.netpie.io 1883 (mqtt)
-const char mqtt_broker[] = "broker.netpie.io";
-const TCP_PORT mqtt_port = MQTT_DEFAULT_PORT;
+//const char mqtt_broker[] = "broker.netpie.io";
+//const TCP_PORT mqtt_port = MQTT_DEFAULT_PORT;
+const char mqtt_broker[] = "mqtt.netpie.io";
+const TCP_PORT mqtt_port = 1884;  // MQTTS of NETPIE 2020
 
 const char mqtt_client_id[] = NETPIE_CLIENT_ID;
 const char mqtt_user[]      = NETPIE_TOKEN;
@@ -270,10 +272,14 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
         return APP_CODE_ERROR_DNS_FAILED;
     }
 
-    appNetpieData.socket = NET_PRES_SocketOpen(0, NET_PRES_SKT_UNENCRYPTED_STREAM_CLIENT, IP_ADDRESS_TYPE_IPV4,
-                                         (NET_PRES_SKT_PORT_T)port,
-                                         (NET_PRES_ADDRESS *)&appNetpieData.host_ipv4,
-                                         (NET_PRES_SKT_ERROR_T*)&appNetpieData.error);
+    appNetpieData.socket = NET_PRES_SocketOpen(
+            0,
+            //NET_PRES_SKT_UNENCRYPTED_STREAM_CLIENT, 
+            NET_PRES_SKT_ENCRYPTED_STREAM_CLIENT,
+            IP_ADDRESS_TYPE_IPV4, 
+            (NET_PRES_SKT_PORT_T)port,
+            (NET_PRES_ADDRESS *)&appNetpieData.host_ipv4,
+            (NET_PRES_SKT_ERROR_T*)&appNetpieData.error);
     NET_PRES_SocketWasReset(appNetpieData.socket);
 
     if (appNetpieData.socket == INVALID_SOCKET)
@@ -302,12 +308,12 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
         }
     }
 
-    // if (!NET_PRES_SKT_IsSecure(appData.socket))
-    // {
-    //     TRACE_LOG("[NETPIE:%d] NET_PRES_SKT_IsSecure() fail\n\r", __LINE__);  // DEBUG: iPAS
-    //     NET_PRES_SocketClose(appData.socket);
-    //     return APP_CODE_ERROR_FAILED_SSL_NEGOTIATION;
-    // }
+    if (!NET_PRES_SKT_IsSecure(appNetpieData.socket))
+    {
+        TRACE_LOG("[NETPIE:%d] NET_PRES_SKT_IsSecure() is false\n\r", __LINE__);  // DEBUG: iPAS
+        NET_PRES_SocketClose(appNetpieData.socket);
+        return APP_CODE_ERROR_FAILED_SSL_NEGOTIATION;
+    }
 
     appNetpieData.socket_connected = true;
     return 0;  //Success
@@ -319,6 +325,7 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
 
 int APP_tcpipDisconnect_cb(void *context)
 {
+    TRACE_LOG("[NETPIE:%d] APP_tcpipDisconnect_cb()\n\r", __LINE__);  // DEBUG: iPAS
     int ret = 0;
     appNetpieData.socket_connected = false;
     NET_PRES_SKT_Close(appNetpieData.socket);
@@ -338,11 +345,13 @@ int APP_tcpipRead_cb(void *context, byte* buf, int buf_len, int timeout_ms)
     {
         if (NET_PRES_SocketWasReset(appNetpieData.socket))
         {
+            TRACE_LOG("[NETPIE:%d] APP_tcpipRead_cb() socket was reset\n\r", __LINE__);  // DEBUG: iPAS
             ret = APP_CODE_ERROR_SSL_FATAL;
             return ret;
         }
         if (APP_timerExpired_ms(&timeout, (uint32_t)timeout_ms))
         {
+            TRACE_LOG("[NETPIE:%d] APP_tcpipRead_cb() timer is expired\n\r", __LINE__);  // DEBUG: iPAS
             ret = APP_CODE_ERROR_CMD_TIMEOUT;
             return ret;
         }
@@ -364,11 +373,13 @@ int APP_tcpipWrite_cb(void *context, const byte* buf, int buf_len, int timeout_m
     {
         if (NET_PRES_SocketWasReset(appNetpieData.socket))
         {
+            TRACE_LOG("[NETPIE:%d] APP_tcpipWrite_cb() socket was reset\n\r", __LINE__);  // DEBUG: iPAS
             ret = APP_CODE_ERROR_SSL_FATAL;
             return ret;
         }
         if (APP_timerExpired_ms(&timeout, (uint32_t)timeout_ms))
         {
+            TRACE_LOG("[NETPIE:%d] APP_tcpipWrite_cb() timer is expired\n\r", __LINE__);  // DEBUG: iPAS
             ret = APP_CODE_ERROR_CMD_TIMEOUT;
             return ret;
         }
@@ -677,6 +688,8 @@ void APP_NETPIE_Tasks ( void )
             if (rc != MQTT_CODE_SUCCESS)
             {
                 appNetpieData.state = APP_NETPIE_STATE_FATAL_ERROR;
+
+                TRACE_LOG("[NETPIE:%d] MqttClient_Init() fail %d\n\r", __LINE__, rc);  // DEBUG: iPAS
                 break;
             }
             APP_timerSet(&appNetpieData.genericUseTimer);
@@ -691,7 +704,7 @@ void APP_NETPIE_Tasks ( void )
             int rc = MqttClient_NetConnect(&appNetpieData.mqttClient,
                                            (const char *)appNetpieData.host, appNetpieData.port,
                                            MQTT_DEFAULT_CMD_TIMEOUT_MS,
-                                           NULL,    // TLS disable
+                                           0,       // non-zero: TLS for encryption of data
                                            NULL);   // TLS callback
 
             //
@@ -874,6 +887,7 @@ void APP_NETPIE_Tasks ( void )
             appNetpieData.state = APP_NETPIE_STATE_MQTT_NET_CONNECT;
 
             TRACE_LOG("[NETPIE:%d] APP_TCPIP_ERROR, going to APP_STATE_MQTT_NET_CONNECT\n\r", __LINE__);  // DEBUG: iPAS
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
             break;
         }
 
@@ -881,6 +895,7 @@ void APP_NETPIE_Tasks ( void )
         case APP_NETPIE_STATE_FATAL_ERROR:
         {
             TRACE_LOG("[NETPIE:%d] APP_FATAL_ERROR\n\r", __LINE__);  // DEBUG: iPAS
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
             break;
         }
 
@@ -888,6 +903,7 @@ void APP_NETPIE_Tasks ( void )
         default:
         {
             TRACE_LOG("--- APP MQTT Client lost its state machine ---\n\r");  // DEBUG: iPAS
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
             break;
         }
     }
