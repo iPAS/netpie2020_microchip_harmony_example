@@ -78,13 +78,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 */
 
 static APP_LOGGER_DATA app_Data;
-static enum 
-{
-    USART_BM_INIT,
-    USART_BM_TX,
-    USART_BM_RX,
-    USART_BM_DONE,
-} usartBMState;
 
 typedef struct
 {
@@ -126,7 +119,7 @@ TaskHandle_t xTaskHandleLogger;
  */
 BaseType_t logger_send_tx_queue(const char *fmt, ... )
 {
-    if (app_Data.q_tx == NULL) return pdFAIL;
+    if (app_Data.q_tx == NULL || app_Data.do_suspend) return pdFAIL;
 
     va_list args;
     logger_queue_item_t q_item;
@@ -149,96 +142,15 @@ bool logger_set_running(bool sts)
 {
     switch (sts) {
     case true:
-        // Start it
-        APP_LOGGER_Initialize();
         vTaskResume(xTaskHandleLogger);
         break;
 
     case false:
-        // Stop it
-        vTaskSuspend(xTaskHandleLogger);
-        APP_LOGGER_Deinitialize();
+        app_Data.do_suspend = true;
         break;
     }
 
     return sts;
-}
-
-
-/******************************************************************************
-  Function:
-    static void USART_Task (void)
-    
-   Remarks:
-    Feeds the USART transmitter by reading characters from a specified pipe.  The pipeRead function is a 
-    standard interface that allows data to be exchanged between different automatically 
-    generated application modules.  Typically, the pipe is connected to the application's
-    USART receive function, but could be any other Harmony module which supports the pipe interface. 
-*/
-static void USART_Task (void)
-{
-    switch (usartBMState)
-    {
-        default:
-        case USART_BM_INIT:
-        {            
-            usartBMState = USART_BM_TX;
-            break;
-        }
-
-        case USART_BM_TX:
-        {
-            // ******
-            // * TX *
-            
-            logger_queue_item_t q_item;
-            bool do_send = xQueueReceive(app_Data.q_tx, &q_item, 0);
-
-            if (do_send)
-            {      
-                DIR485_TX();
-    
-                uint8_t index = 0;
-                while (index < q_item.length)
-                {
-                    if (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
-                    {
-                        DRV_USART_WriteByte(app_Data.handleUSART, q_item.buffer[index++]);
-                    }
-                    vTaskDelay(1 / portTICK_PERIOD_MS);
-                }
-                
-                DIR485_RX();            
-            }
-
-            usartBMState = USART_BM_RX;
-            break;
-        }
-        
-        case USART_BM_RX:
-        {    
-            // ******
-            // * RX *
-//            while (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
-//            {
-//                
-//            }
-//
-//            if (uxQueueSpacesAvailable(app_Data.q_rx) > 0)
-//            {
-//                uint8_t c_rx = DRV_USART_ReadByte(app_Data.handleUSART);
-//            }
-
-            usartBMState = USART_BM_DONE;
-            break;
-        }
-
-        case USART_BM_DONE:
-        {
-            usartBMState = USART_BM_TX;
-            break;
-        }
-    }
 }
 
 
@@ -258,6 +170,7 @@ static void USART_Task (void)
 void APP_LOGGER_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
+    app_Data.do_suspend = false;
     app_Data.state = APP_LOGGER_STATE_INIT;
 
     app_Data.handleUSART = DRV_HANDLE_INVALID;
@@ -269,28 +182,9 @@ void APP_LOGGER_Initialize ( void )
     {
         // Some error
     }
-    xQueueReset(app_Data.q_tx);
-    xQueueReset(app_Data.q_rx);
 
     DIR485_RX();
     logger_send_tx_queue(".\n\r");  // DEBUG: iPAS
-}
-
-
-void APP_LOGGER_Deinitialize ( void )
-{
-    /* Place the App state machine in its initial state. */
-    app_Data.state = APP_LOGGER_STATE_INIT;
-
-    DRV_USART_Close(app_Data.handleUSART);
-
-    /* Message queue */
-    vQueueDelete(app_Data.q_tx);
-    vQueueDelete(app_Data.q_rx);
-    app_Data.q_tx = NULL;
-    app_Data.q_rx = NULL;
-
-    DIR485_RX();
 }
 
 
@@ -303,6 +197,23 @@ void APP_LOGGER_Deinitialize ( void )
  */
 void APP_LOGGER_Tasks ( void )
 {
+    /* To stop and continue the task */
+    if (app_Data.do_suspend) {
+        xQueueReset(app_Data.q_tx);
+        xQueueReset(app_Data.q_rx);
+        
+        DRV_USART_Close(app_Data.handleUSART);
+        vTaskSuspend(NULL);
+        // ... Long deep sleep ...
+        
+        app_Data.do_suspend = false;
+        app_Data.state = APP_LOGGER_STATE_INIT;
+        app_Data.handleUSART = DRV_HANDLE_INVALID;
+        
+        DIR485_RX();
+        logger_send_tx_queue(".\n\r");  // DEBUG: iPAS
+    }
+    
 
     /* Check the application's current state. */
     switch ( app_Data.state )
@@ -321,21 +232,12 @@ void APP_LOGGER_Tasks ( void )
             }
         
             if (appInitialized)
-            {
-                /* initialize the USART state machine */
-                usartBMState = USART_BM_INIT;
-            
-                app_Data.state = APP_LOGGER_STATE_SERVICE_TASKS;
+            {            
+                app_Data.state = APP_LOGGER_STATE_USART_BM_INIT;
             
                 DRV_USART_WriteByte(app_Data.handleUSART, '>');  // DEBUG: iPAS
             }
             break;
-        }
-
-        case APP_LOGGER_STATE_SERVICE_TASKS:
-        {
-			//USART_Task();
-            //break;  // XXX: pass through
         }
 
         case APP_LOGGER_STATE_USART_BM_INIT:
@@ -396,18 +298,6 @@ void APP_LOGGER_Tasks ( void )
             app_Data.state = APP_LOGGER_STATE_USART_BM_TX;
             break;
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         /* The default state should never be executed. */
         default:

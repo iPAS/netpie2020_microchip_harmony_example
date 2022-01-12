@@ -88,7 +88,6 @@ typedef enum
 {
 	/* Application's state machine's initial state. */
 	APP_LOGGER_STATE_INIT=0,
-	APP_LOGGER_STATE_SERVICE_TASKS,
             
     APP_LOGGER_STATE_USART_BM_INIT,
     APP_LOGGER_STATE_USART_BM_TX,
@@ -120,6 +119,9 @@ typedef struct
     /* RTOS Queues */
     QueueHandle_t q_tx;
     QueueHandle_t q_rx;
+    
+    /* ETC */
+    bool do_suspend;
     
 } APP_LOGGER_DATA;
 
