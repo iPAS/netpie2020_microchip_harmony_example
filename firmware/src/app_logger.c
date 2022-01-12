@@ -334,11 +334,81 @@ void APP_LOGGER_Tasks ( void )
 
         case APP_LOGGER_STATE_SERVICE_TASKS:
         {
-			USART_Task();
-        
+			//USART_Task();
+            //break;  // XXX: pass through
+        }
+
+        case APP_LOGGER_STATE_USART_BM_INIT:
+        {            
+            app_Data.state = APP_LOGGER_STATE_USART_BM_TX;
             break;
         }
 
+        case APP_LOGGER_STATE_USART_BM_TX:
+        {
+            // ******
+            // * TX *
+            
+            logger_queue_item_t q_item;
+            bool do_send = xQueueReceive(app_Data.q_tx, &q_item, 0);
+
+            if (do_send)
+            {      
+                DIR485_TX();
+    
+                uint8_t index = 0;
+                while (index < q_item.length)
+                {
+                    if (!DRV_USART_TransmitBufferIsFull(app_Data.handleUSART))
+                    {
+                        DRV_USART_WriteByte(app_Data.handleUSART, q_item.buffer[index++]);
+                    }
+                    vTaskDelay(1 / portTICK_PERIOD_MS);
+                }
+                
+                DIR485_RX();            
+            }
+
+            app_Data.state = APP_LOGGER_STATE_USART_BM_RX;
+            break;
+        }
+        
+        case APP_LOGGER_STATE_USART_BM_RX:
+        {    
+            // ******
+            // * RX *
+//            while (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
+//            {
+//                
+//            }
+//
+//            if (uxQueueSpacesAvailable(app_Data.q_rx) > 0)
+//            {
+//                uint8_t c_rx = DRV_USART_ReadByte(app_Data.handleUSART);
+//            }
+
+            app_Data.state = APP_LOGGER_STATE_USART_BM_DONE;
+            break;
+        }
+
+        case APP_LOGGER_STATE_USART_BM_DONE:
+        {
+            app_Data.state = APP_LOGGER_STATE_USART_BM_TX;
+            break;
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         /* The default state should never be executed. */
         default:
         {
