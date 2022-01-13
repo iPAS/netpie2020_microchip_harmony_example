@@ -216,8 +216,23 @@ void APP_TESTER_Tasks ( void )
 
         case APP_TESTER_STATE_FINISH:
         {
+            //app_testerData.state = APP_TESTER_STATE_INIT;
+            //vTaskSuspend(NULL);  // Suspend itself
+            
+            app_testerData.state = APP_TESTER_STATE_WAIT_BEFORE_NEXT;
+            break;
+        }
+        
+        case APP_TESTER_STATE_WAIT_BEFORE_NEXT:
+        {
+            int i;
+            for (i = 5; i > 0; i--)
+            {
+                logger_send_tx_queue(">>> %d min. to restart all testing again\n\r", i);
+                vTaskDelay(60000 / portTICK_PERIOD_MS);
+            }
+
             app_testerData.state = APP_TESTER_STATE_INIT;
-            vTaskSuspend(NULL);  // Suspend itself
             break;
         }
 

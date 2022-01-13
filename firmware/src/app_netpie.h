@@ -146,6 +146,9 @@ typedef struct
     bool socket_connected;
     bool mqtt_connected;
     IP_MULTI_ADDRESS board_ipAddr;
+    
+    /* ETC */
+    bool do_suspend;
 
 } APP_NETPIE_DATA;
 
