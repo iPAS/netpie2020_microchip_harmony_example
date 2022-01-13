@@ -169,8 +169,9 @@ bool logger_set_running(bool sts)
  */
 void APP_LOGGER_Initialize ( void )
 {
-    /* Place the App state machine in its initial state. */
     app_Data.do_suspend = false;
+    
+    /* Place the App state machine in its initial state. */
     app_Data.state = APP_LOGGER_STATE_INIT;
 
     app_Data.handleUSART = DRV_HANDLE_INVALID;

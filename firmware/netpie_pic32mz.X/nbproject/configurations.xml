@@ -881,7 +881,8 @@
         <property key="save-temps" value="false"/>
         <property key="stack-smashing" value=""/>
         <property key="wpo-lto" value="false"/>
-        <appendMe value="-DDO_TEST=0 -DNECTEC_ACE_TEST=1 -DDO_LOG=1 -DDO_RESET=0 -DMAIN_IFACE=eth0 -DRANDOM_TEST=1"/>
+        <appendMe value="-DDO_TEST=1 -DNECTEC_ACE_TEST=1 -DRANDOM_TEST=1 -DDO_LOG=1 -DDO_RESET=0 -DMAIN_IFACE=eth0"/>
+        <userComments value="DO_TEST NECTEC_ACE_TEST  RANDOM_TEST DO_LOG DO_RESET MAIN_IFACE=eth0 || wlan0"/>
       </C32Global>
       <PICkit3PlatformTool>
         <property key="ADC" value="true"/>
@@ -1068,6 +1069,8 @@
                   value="${communication.interface.default}"/>
         <property key="communication.interface.jtag" value="2wire"/>
         <property key="communication.speed" value="${communication.speed.default}"/>
+        <property key="debugoptions.debug-startup" value="Use system settings"/>
+        <property key="debugoptions.reset-behaviour" value="Use system settings"/>
         <property key="debugoptions.simultaneous.debug" value="false"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
         <property key="freeze.timers" value="false"/>
@@ -1106,6 +1109,7 @@
         <property key="programoptions.preserveprogram.ranges" value=""/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.program.otpconfig" value="false"/>
         <property key="programoptions.programcalmem" value="false"/>
         <property key="programoptions.programuserotp" value="false"/>
         <property key="programoptions.testmodeentrymethod" value="VDDFirst"/>
@@ -1197,6 +1201,8 @@
                   value="${communication.interface.default}"/>
         <property key="communication.interface.jtag" value="2wire"/>
         <property key="communication.speed" value="${communication.speed.default}"/>
+        <property key="debugoptions.debug-startup" value="Use system settings"/>
+        <property key="debugoptions.reset-behaviour" value="Use system settings"/>
         <property key="debugoptions.simultaneous.debug" value="false"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
         <property key="freeze.timers" value="false"/>
@@ -1213,7 +1219,6 @@
                   value="${memories.instruction.ram.ranges}"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="1d000000-1d1fffff"/>
-        <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmerToGoImageName" value="netpie_pic32mz_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
@@ -1233,6 +1238,7 @@
         <property key="programoptions.preserveprogram.ranges" value=""/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.program.otpconfig" value="false"/>
         <property key="programoptions.programcalmem" value="false"/>
         <property key="programoptions.programuserotp" value="false"/>
         <property key="programoptions.testmodeentrymethod" value="VDDFirst"/>

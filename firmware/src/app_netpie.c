@@ -487,18 +487,11 @@ bool netpie_set_running(bool sts)
 {
     switch (sts) {
     case true:
-        // Start it
-        APP_NETPIE_Initialize();
         vTaskResume(xTaskHandleNetpie);
         break;
 
     case false:
-        // Stop it
-        vTaskSuspend(xTaskHandleNetpie);
-        MqttClient_Disconnect(&appNetpieData.mqttClient);
-        MqttClient_NetDisconnect(&appNetpieData.mqttClient);
-        appNetpieData.socket_connected = false;  // netpie_ready() => false
-        appNetpieData.mqtt_connected   = false;
+        appNetpieData.do_suspend = true;
         break;
     }
 
@@ -521,6 +514,8 @@ bool netpie_set_running(bool sts)
  */
 void APP_NETPIE_Initialize ( void )
 {
+    appNetpieData.do_suspend = false;
+    
     /* Place the App state machine in its initial state. */
     appNetpieData.state = APP_NETPIE_STATE_INIT;
 
@@ -549,6 +544,20 @@ void APP_NETPIE_Initialize ( void )
  */
 void APP_NETPIE_Tasks ( void )
 {
+    if (appNetpieData.do_suspend) {
+        MqttClient_Disconnect(&appNetpieData.mqttClient);  // FIXME: disable for fix a crash, don't know why
+        MqttClient_NetDisconnect(&appNetpieData.mqttClient);
+        appNetpieData.socket_connected = false;  // netpie_ready() => false
+        appNetpieData.mqtt_connected   = false;
+
+        vTaskSuspend(NULL);
+        // ... Long deep sleep ...
+
+        appNetpieData.do_suspend = false;
+        appNetpieData.state = APP_NETPIE_STATE_INIT;        
+    }
+
+
     /* Check the application's current state. */
     switch ( appNetpieData.state )
     {
