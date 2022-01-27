@@ -38,4 +38,23 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "net/pres/net_pres_transportapi.h"
 #include "net/pres/net_pres_certstore.h"
 
+#include "config.h"
+#include "wolfssl/ssl.h"
+#include "wolfssl/wolfcrypt/logging.h"
+#include "wolfssl/wolfcrypt/random.h"
+
+static uint8_t _net_pres_wolfsslUsers = 0;
+typedef struct 
+{
+    WOLFSSL_CTX* context;
+    NET_PRES_TransportObject * transObject;
+    bool isInited;
+}net_pres_wolfsslInfo;
+
+// Temporary fix till crypto library is upgraded to recent wolfssl versions.
+int  InitRng(RNG* rng)
+{
+    return wc_InitRng(rng);
+}
+
 

@@ -327,6 +327,13 @@ extern "C" {
 // Section: Middleware & Other Library Configuration
 // *****************************************************************************
 // *****************************************************************************
+/*** Crypto Library Configuration ***/
+
+#define WC_NO_HARDEN
+#define MICROCHIP_MPLAB_HARMONY
+#define HAVE_MCAPI
+#define MICROCHIP_PIC32
+
 /*** OSAL Configuration ***/
 #define OSAL_USE_RTOS          9
 
@@ -421,6 +428,21 @@ extern "C" {
 
 
 
+/*** SNTP Configuration ***/
+#define TCPIP_STACK_USE_SNTP_CLIENT
+#define TCPIP_NTP_DEFAULT_IF		        		"PIC32INT"
+#define TCPIP_NTP_VERSION             			    	4
+#define TCPIP_NTP_DEFAULT_CONNECTION_TYPE   			IP_ADDRESS_TYPE_IPV4
+#define TCPIP_NTP_EPOCH		                		2208988800ul
+#define TCPIP_NTP_REPLY_TIMEOUT		        		6
+#define TCPIP_NTP_MAX_STRATUM		        		15
+#define TCPIP_NTP_TIME_STAMP_TMO				660
+#define TCPIP_NTP_SERVER		        		"pool.ntp.org"
+#define TCPIP_NTP_SERVER_MAX_LENGTH				30
+#define TCPIP_NTP_QUERY_INTERVAL				600
+#define TCPIP_NTP_FAST_QUERY_INTERVAL	    			14
+#define TCPIP_NTP_TASK_TICK_RATE				1100
+#define TCPIP_NTP_RX_QUEUE_LIMIT				2
 
 
 
@@ -552,16 +574,6 @@ extern "C" {
 
 
 /*** IPv4 Configuration ***/
-
-/*** Crypto Library Configuration ***/
-
-#define HAVE_MCAPI
-#define NO_CERTS
-#define NO_PWDBASED
-#define NO_OLD_TLS
-#define NO_AES
-#define NO_ASN
-#define NO_RSA
 
 /*** OSAL Configuration ***/
 #define OSAL_USE_RTOS          9
