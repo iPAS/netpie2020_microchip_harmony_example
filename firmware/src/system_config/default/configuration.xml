@@ -2425,7 +2425,7 @@
       <Template>
         <Name>net_pres_enc_glue.h</Name>
         <Path>Header Files/app/system_config/default/framework/net/pres</Path>
-        <Checksum>E9CAC33A51432E13895C3950315DC5F5</Checksum>
+        <Checksum>21CACBE21278186169030B5730941E3F</Checksum>
       </Template>
       <Template>
         <Name>app_netpie.c</Name>
@@ -2462,7 +2462,7 @@
       <Template>
         <Name>net_pres_enc_glue.c</Name>
         <Path>Source Files/app/system_config/default/framework/net/pres</Path>
-        <Checksum>55E30EA7D4F2F3E990F9BF6632FE9134</Checksum>
+        <Checksum>1E2631455852A4F9D1A62E2191F1426F</Checksum>
       </Template>
       <Template>
         <Name>sys_clk_static.h</Name>
@@ -2504,7 +2504,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>8C298F732CDFA7F08472B4C1E9BF7590</Checksum>
+        <Checksum>7B29420DB99C3E63165E2C57F56CC714</Checksum>
       </Template>
       <Template>
         <Name>main.c</Name>
@@ -2521,7 +2521,8 @@
       <Template>
         <Name>config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>FFCFAB1F6251654BFE466F56D91AD076</Checksum>
+        <Checksum>96071F043D58584C0D5B8308E3B82593</Checksum>
+        <ProjectFileChecksum>E535DC01FBE2B42478A61D86648162EC</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>system_definitions.h</Name>
@@ -2554,6 +2555,12 @@
         <Name>drv_usart_static.h</Name>
         <Path>Header Files/app/system_config/default/framework/driver/usart</Path>
         <Checksum>D7DEB7C41F1E91D0B9D0727439F58319</Checksum>
+      </Template>
+      <Template>
+        <Name>net_pres_cert_store.c</Name>
+        <Path>Source Files/app/system_config/default/framework/net/pres</Path>
+        <Checksum>B45A3A3E0B5D2DB06EF8769789FF27FE</Checksum>
+        <ProjectFileChecksum>CACC9B6FB5DBD05E116702C0EC504D9D</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>system_tasks.c</Name>

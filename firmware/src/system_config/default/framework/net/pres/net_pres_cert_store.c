@@ -35,14 +35,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 *******************************************************************************/
 #include "net/pres/net_pres_certstore.h"
 #define USE_CERT_BUFFERS_2048
-#include "wolfssl/certs_test.h"
-#include "wolfssl/certs_test.h"
+#include "ca-certs.h"
 
-bool NET_PRES_CertStoreGetServerCert(const uint8_t ** serverCertPtr, int32_t * serverCertSize, const uint8_t ** serverKeyPtr, int32_t * serverKeySize, uint8_t certIndex)
+bool NET_PRES_CertStoreGetCACerts(const uint8_t ** certPtr, int32_t * certSize, uint8_t certIndex)
 {
-    *serverCertPtr = server_cert_der_2048;
-    *serverCertSize = sizeof_server_cert_der_2048;
-    *serverKeyPtr = server_key_der_2048;
-    *serverKeySize = sizeof_server_key_der_2048;
+    *certPtr = caCert;
+    *certSize = sizeof_caCert;
     return true;
 }

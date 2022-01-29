@@ -70,6 +70,7 @@ extern "C" {
 #define SINGLE_THREADED
 
 #define TFM_TIMING_RESISTANT
+#define NO_WOLFSSL_SERVER
 #define NO_SESSION_CACHE
 
 
