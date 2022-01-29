@@ -132,7 +132,14 @@ uint8_t rxBuffer[MAX_BUFFER_SIZE];
 // -- NEXPIE2020 --
 // server: broker.netpie.io 1883 (mqtt)
 const char mqtt_broker[] = "broker.netpie.io";
-const TCP_PORT mqtt_port = MQTT_DEFAULT_PORT;
+
+#if defined(USE_MQTTS) && (USE_MQTTS != 0)
+#define NETPIE_TCP_PORT 1884
+#define NETPIE_NET_PRES_SOCKET_TYPE NET_PRES_SKT_ENCRYPTED_STREAM_CLIENT
+#else
+#define NETPIE_TCP_PORT 1883
+#define NETPIE_NET_PRES_SOCKET_TYPE NET_PRES_SKT_UNENCRYPTED_STREAM_CLIENT
+#endif
 
 const char mqtt_client_id[] = NETPIE_CLIENT_ID;
 const char mqtt_user[]      = NETPIE_TOKEN;
@@ -270,7 +277,7 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
         return APP_CODE_ERROR_DNS_FAILED;
     }
 
-    appNetpieData.socket = NET_PRES_SocketOpen(0, NET_PRES_SKT_UNENCRYPTED_STREAM_CLIENT, IP_ADDRESS_TYPE_IPV4,
+    appNetpieData.socket = NET_PRES_SocketOpen(0, NETPIE_NET_PRES_SOCKET_TYPE, IP_ADDRESS_TYPE_IPV4,
                                          (NET_PRES_SKT_PORT_T)port,
                                          (NET_PRES_ADDRESS *)&appNetpieData.host_ipv4,
                                          (NET_PRES_SKT_ERROR_T*)&appNetpieData.error);
@@ -302,12 +309,14 @@ int APP_tcpipConnect_cb(void *context, const char* host, word16 port, int timeou
         }
     }
 
-    // if (!NET_PRES_SKT_IsSecure(appData.socket))
-    // {
-    //     TRACE_LOG("[NETPIE:%d] NET_PRES_SKT_IsSecure() fail\n\r", __LINE__);  // DEBUG: iPAS
-    //     NET_PRES_SocketClose(appData.socket);
-    //     return APP_CODE_ERROR_FAILED_SSL_NEGOTIATION;
-    // }
+    #if defined(USE_MQTTS) && (USE_MQTTS != 0)    
+    if (!NET_PRES_SKT_IsSecure(appNetpieData.socket))
+    {
+        TRACE_LOG("[NETPIE:%d] NET_PRES_SKT_IsSecure() fail\n\r", __LINE__);  // DEBUG: iPAS
+        NET_PRES_SocketClose(appNetpieData.socket);
+        return APP_CODE_ERROR_FAILED_SSL_NEGOTIATION;
+    }
+    #endif
 
     appNetpieData.socket_connected = true;
     return 0;  //Success
@@ -522,7 +531,7 @@ void APP_NETPIE_Initialize ( void )
     /* Initialize MQTT */
     sprintf(appNetpieData.macAddress, "Null");
     strncpy(appNetpieData.host, mqtt_broker, sizeof(appNetpieData.host));
-    appNetpieData.port = mqtt_port;
+    appNetpieData.port = NETPIE_TCP_PORT;
 
     appNetpieData.mqttNet.connect    = APP_tcpipConnect_cb;
     appNetpieData.mqttNet.disconnect = APP_tcpipDisconnect_cb;
