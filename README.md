@@ -13,11 +13,21 @@ Additionally, the device under test is named Universal Remote Terminal Unit, als
     [Intelligent SCADA Technology laboratory](https://www.nectec.or.th/research/research-unit/insrg-ist.html).
 
 
+## Requirements
+
+The work on this project requires a lot of modification on the Harmony v1.11.
+It includes the code that was transfered from Harmony v2.06 and the latest version of WolfMQTT.
+Please use the attached files,
+  crypto.tar.gz and tcpip.tar.gz, for comformation.
+They must be installed inside the Harmony v1.11 installed directory,
+  in ./framework/crypto and ./third\_party/tcpip repectively.
+
+
 ## Quick Setup
 
 1) Use the Harmony v1 configurator to generate, or import at least,
     a new project from the following Harmony configuration file:
-    - firmware/netpie_pic32mz.hconfig
+    - firmware/netpie\_pic32mz.hconfig
 
 2) Re-configure and re-generate the project with the configurator:
     - Name the first generated application code as __app_uart_term__.
