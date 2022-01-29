@@ -51,15 +51,36 @@ extern "C" {
 #endif
 
 #define MICROCHIP_MPLAB_HARMONY
-#define MICROCHIP_PIC32
 #define MICROCHIP_TCPIP
+#define MICROCHIP_PIC32
 #define WOLFSSL_HAVE_MIN
 #define WOLFSSL_HAVE_MAX
+
+
+#define MICROCHIP_PIC32_RNG
+#define NEED_AES_TABLES
+#define SIZEOF_LONG_LONG 8
+#define WOLFSSL_USER_IO
+#define NO_WRITEV
+#define NO_DEV_RANDOM
+#define NO_FILESYSTEM
+#define WOLFSSL_STATIC_RSA
+
+
+#define SINGLE_THREADED
+
+#define TFM_TIMING_RESISTANT
+#define NO_WOLFSSL_SERVER
+#define NO_SESSION_CACHE
+
+
+
 
 
 
 #define WOLFMQTT_NONBLOCK
 
+#define ENABLE_MQTT_TLS
 
 
 #ifdef	__cplusplus
