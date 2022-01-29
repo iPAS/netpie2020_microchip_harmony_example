@@ -140,6 +140,9 @@ typedef struct
     NET_PRES_SKT_ERROR_T  error;
 
     MqttClient mqttClient;
+    char tmp[16];   // FIXME:  <<-- quick fix. 
+                    // Don't know why these two superimpose each other 
+                    //  in some memory array.
     MqttNet    mqttNet;
 
     /* Debug Variables */

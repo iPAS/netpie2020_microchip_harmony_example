@@ -658,7 +658,7 @@ void APP_NETPIE_Tasks ( void )
                         }
                         else
                         {
-                            /* -- useful code --
+                            /* XXX: @iPAS > useful code
                             if (TCPIP_DNS_IsEnabled(netH))
                             {
                                 TCPIP_STACK_NetDown(netH);  // XXX: quick fix DNS-request-timeout on multiple interfaces

@@ -1014,12 +1014,12 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value=";../src;../src/system_config/default;../src/default;../../../../framework;../src/system_config/default/framework;../../../../third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../../../../third_party/rtos/FreeRTOS/Source/include;../../../../third_party/tcpip.v1_11/support;../../../../third_party/tcpip.v1_11/wolfssl.v2_06;../../../../third_party/tcpip.v1_11/wolfmqtt"/>
+                  value="../src;../src/system_config/default;../src/default;../../../../framework;../src/system_config/default/framework;../../../../third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../../../../third_party/rtos/FreeRTOS/Source/include;../../../../third_party/tcpip.v1_11/support;../../../../third_party/tcpip.v1_11/wolfssl.v2_06;../../../../third_party/tcpip.v1_11/wolfmqtt"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
         <property key="make-warnings-into-errors" value="false"/>
-        <property key="optimization-level" value="-O1"/>
+        <property key="optimization-level" value=""/>
         <property key="place-data-into-section" value="false"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
@@ -1041,7 +1041,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="exclude-floating-point-library" value="false"/>
         <property key="expand-macros" value="false"/>
-        <property key="extra-include-directories-for-assembler" value=";"/>
+        <property key="extra-include-directories-for-assembler" value=""/>
         <property key="extra-include-directories-for-preprocessor"
                   value="../../../../third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../../../../third_party/rtos/FreeRTOS/Source/include;../src/system_config/default"/>
         <property key="false-conditionals" value="false"/>
@@ -1117,7 +1117,7 @@
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
         <property key="make-warnings-into-errors" value="false"/>
-        <property key="optimization-level" value="-O1"/>
+        <property key="optimization-level" value=""/>
         <property key="place-data-into-section" value="false"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>

@@ -2521,8 +2521,7 @@
       <Template>
         <Name>config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>59E6C2D76783AE9F7DFA65142EFFBA78</Checksum>
-        <ProjectFileChecksum>E535DC01FBE2B42478A61D86648162EC</ProjectFileChecksum>
+        <Checksum>FFCFAB1F6251654BFE466F56D91AD076</Checksum>
       </Template>
       <Template>
         <Name>system_definitions.h</Name>
@@ -2559,7 +2558,7 @@
       <Template>
         <Name>system_tasks.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>9289D37F8D45E014C0EB150662C11BB6</Checksum>
+        <Checksum>309828F6B65FF1B3346DCDDCCB216B86</Checksum>
         <ProjectFileChecksum>C79FF03BCDCFFAEE89F42B0CDAF4E950</ProjectFileChecksum>
       </Template>
       <Template>

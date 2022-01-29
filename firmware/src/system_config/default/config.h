@@ -79,6 +79,7 @@ extern "C" {
 
 #define WOLFMQTT_NONBLOCK
 
+#define ENABLE_MQTT_TLS
 
 
 #ifdef	__cplusplus
