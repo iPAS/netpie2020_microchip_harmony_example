@@ -38,77 +38,77 @@
         </logicalFolder>
         <itemPath>../src/netpie2020_config.h</itemPath>
         <itemPath>../src/register_mapping.h</itemPath>
+        <itemPath>../src/ca-certs.h</itemPath>
         <itemPath>../src/app_uart_term.h</itemPath>
         <itemPath>../src/app_netpie.h</itemPath>
         <itemPath>../src/app_pubsub.h</itemPath>
         <itemPath>../src/app_logger.h</itemPath>
         <itemPath>../src/app_tester.h</itemPath>
-        <itemPath>../src/ca-certs.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
           <logicalFolder name="f1" displayName="src" projectFiles="true">
-            <itemPath>../../../../framework/crypto.v2_06/src/ecc.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/arc4.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/pwdbased.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/tfm.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/asn.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/des3.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/rsa.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/aes.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/md5.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/sha.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/sha256.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/sha512.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/hmac.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/hash.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/compress.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/random.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/coding.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/error-crypt.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/integer.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/certs_test.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/logging.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/memory.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/misc.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/misc.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/wc_port.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/wolfmath.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/settings.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/types.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/version.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/visibility.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/asn_public.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/chacha.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/chacha20_poly1305.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/cmac.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/curve25519.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/ed25519.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/fe_operations.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/fips_test.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/ge_operations.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/idea.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/mem_track.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/pkcs12.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/pkcs7.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/poly1305.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/signature.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/srp.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/wc_encrypt.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/wolfevent.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/dh.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/dsa.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/hc128.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/md2.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/md4.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/mpi_class.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/mpi_superclass.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/rabbit.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/ripemd.h</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/ssl.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/ecc.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/arc4.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/pwdbased.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/tfm.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/asn.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/des3.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/rsa.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/aes.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/md5.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha256.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha512.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/hmac.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/hash.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/compress.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/random.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/coding.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/error-crypt.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/integer.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/certs_test.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/logging.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/memory.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/misc.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/misc.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/wc_port.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/wolfmath.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/settings.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/types.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/version.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/visibility.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/asn_public.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/chacha.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/chacha20_poly1305.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/cmac.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/curve25519.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/ed25519.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/fe_operations.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/fips_test.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/ge_operations.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/idea.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/mem_track.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/pkcs12.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/pkcs7.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/poly1305.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/signature.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/srp.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/wc_encrypt.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/wolfevent.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/dh.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/dsa.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/hc128.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/md2.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/md4.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/mpi_class.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/mpi_superclass.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/rabbit.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/ripemd.h</itemPath>
+            <itemPath>../../../../framework/crypto/src/ssl.h</itemPath>
             <itemPath>../../../../third_party/tcpip.v1_11/wolfssl.v2_06/wolfcrypt/src/asm.c</itemPath>
           </logicalFolder>
-          <itemPath>../../../../framework/crypto.v2_06/crypto.h</itemPath>
+          <itemPath>../../../../framework/crypto/crypto.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f2" displayName="driver" projectFiles="true">
           <logicalFolder name="f1" displayName="ethmac" projectFiles="true">
@@ -740,31 +740,31 @@
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
           <logicalFolder name="f1" displayName="src" projectFiles="true">
-            <itemPath>../../../../framework/crypto.v2_06/src/ecc.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/arc4.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/pwdbased.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/tfm.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/asm.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/asn.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/des3.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/rsa.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/aes.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/md5.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/sha.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/sha256.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/sha512.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/hmac.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/hash.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/compress.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/random.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/crypto.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/coding.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/error.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/integer.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/logging.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/memory.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/wc_port.c</itemPath>
-            <itemPath>../../../../framework/crypto.v2_06/src/wolfmath.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/ecc.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/arc4.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/pwdbased.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/tfm.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/asm.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/asn.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/des3.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/rsa.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/aes.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/md5.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha256.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/sha512.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/hmac.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/hash.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/compress.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/random.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/crypto.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/coding.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/error.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/integer.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/logging.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/memory.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/wc_port.c</itemPath>
+            <itemPath>../../../../framework/crypto/src/wolfmath.c</itemPath>
           </logicalFolder>
         </logicalFolder>
         <logicalFolder name="f2" displayName="driver" projectFiles="true">
@@ -1043,7 +1043,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="exclude-floating-point-library" value="false"/>
         <property key="expand-macros" value="false"/>
-        <property key="extra-include-directories-for-assembler" value=""/>
+        <property key="extra-include-directories-for-assembler" value=";"/>
         <property key="extra-include-directories-for-preprocessor"
                   value="../../../../third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../../../../third_party/rtos/FreeRTOS/Source/include;../src/system_config/default"/>
         <property key="false-conditionals" value="false"/>
