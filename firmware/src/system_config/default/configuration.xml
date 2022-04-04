@@ -2604,10 +2604,10 @@
         <Include value="../../../../third_party/rtos/FreeRTOS/Source/include"/>
         <Include value="../src/system_config/default"/>
         <Define value="HAVE_CONFIG_H"/>
-        <Include value="../../../../third_party/tcpip.v1_11/support"/>
-        <Include value="../../../../third_party/tcpip.v1_11/wolfssl.v2_06"/>
+        <Include value="../../../../third_party/tcpip/support"/>
+        <Include value="../../../../third_party/tcpip/wolfssl"/>
         <Define value="HAVE_CONFIG_H"/>
-        <Include value="../../../../third_party/tcpip.v1_11/wolfmqtt"/>
+        <Include value="../../../../third_party/tcpip/wolfmqtt"/>
       </C32>
     </CompilerItems>
     <Libraries>
