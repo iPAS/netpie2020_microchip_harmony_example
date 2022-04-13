@@ -18,9 +18,22 @@ Additionally, the device under test is named Universal Remote Terminal Unit, als
 The work on this project requires a lot of modification on the Harmony v1.11.
 It includes the code that was transfered from Harmony v2.06 and the latest version of WolfMQTT.
 Please use the attached files,
-  crypto.tar.gz and tcpip.tar.gz, for comformation.
+    crypto.tar.gz and tcpip.tar.gz, for comformation.
 They must be installed inside the Harmony v1.11 installed directory,
-  in ./framework/crypto and ./third\_party/tcpip repectively.
+    in ./framework/crypto and ./third\_party/tcpip repectively.
+
+### From MQTT to MQTTS
+
+In the earlier revision, the project has already worked with MQTT version.
+The need to upgrade to MQTTS is required some additional steps:
+
+1) I suggest revising the Harmony 1.11 configuration as following:    
+    - [Presentation Layer](fig/MQTTS_2022-04-13_15-12-54.png)
+    - [Cryptographic Library](fig/MQTTS_2022-04-13_15-13-47.png)
+    - [WolfSSL](fig/MQTTS_2022-04-13_15-14-12.png)
+
+2) Following files are required to be updated with the files in recent version:
+    - In firmware/src/system_config/default/framework/net/pres: ![](fig/MQTTS_2022-04-13_15-29-15.png)
 
 
 ## Quick Setup
