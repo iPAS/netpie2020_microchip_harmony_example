@@ -129,9 +129,17 @@ uint8_t rxBuffer[MAX_BUFFER_SIZE];
 #define MQTT_KEEP_ALIVE_TIMEOUT 900
 #define MQTT_UPDATE_STATUS_TIMEOUT 15
 
-// -- NEXPIE2020 --
+#if defined(NEXPIE) && (NEXPIE != 0)
+// -- NEXPIE --
+// server: mqtt.nexpie.io 1883 (mqtt)
+//         mqtt.nexpie.io 1884 (mqtts)
+const char mqtt_broker[] = "mqtt.nexpie.io";
+#else
+// -- NETPIE2020 --
 // server: broker.netpie.io 1883 (mqtt)
+//         broker.netpie.io 1884 (mqtts)
 const char mqtt_broker[] = "broker.netpie.io";
+#endif
 
 #if defined(USE_MQTTS) && (USE_MQTTS != 0)
 #define NETPIE_TCP_PORT 1884
