@@ -142,16 +142,14 @@ void APP_TESTER_Tasks ( void )
         case APP_TESTER_STATE_INIT:
         {
             bool appInitialized = true;
-       
-        
+
             if (appInitialized)
             {
-            
                 app_testerData.state = APP_TESTER_STATE_SERVICE_TASKS;
 
-
                 #if defined(DO_TEST) && (DO_TEST == 0)
-                app_testerData.state = APP_TESTER_STATE_FINISH;
+                // app_testerData.state = APP_TESTER_STATE_FINISH;
+                vTaskSuspend(NULL);  // Suspend itself
                 #endif
             }
             break;
@@ -175,7 +173,8 @@ void APP_TESTER_Tasks ( void )
         {   
             int i;
 
-            logger_send_tx_queue(">>> Disable the Netpie module\n\r");
+            logger_send_tx_queue(">>> Disable the Netpie module in 3 seconds\n\r");
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
             netpie_set_running(false);
             for (i = 2; i > 0; i--)
             {
@@ -183,8 +182,8 @@ void APP_TESTER_Tasks ( void )
                 vTaskDelay(60000 / portTICK_PERIOD_MS);
             }
 
-            logger_send_tx_queue(">>> Enable the Netpie module\n\r");
             netpie_set_running(true);
+            logger_send_tx_queue(">>> Enable the Netpie module\n\r");
             for (i = 2; i > 0; i--)
             {
                 logger_send_tx_queue(">>> %d min. before next test\n\r", i);
@@ -245,7 +244,6 @@ void APP_TESTER_Tasks ( void )
     }
 }
 
- 
 
 /*******************************************************************************
  End of File
