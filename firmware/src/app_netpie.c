@@ -821,37 +821,43 @@ void APP_NETPIE_Tasks ( void )
             /* Keep alive */
             if (APP_timerExpired(&appNetpieData.mqttKeepAlive, MQTT_KEEP_ALIVE_TIMEOUT))
             {
+                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer
+
                 rc = MqttClient_Ping(&appNetpieData.mqttClient);
                 if (rc != MQTT_CODE_SUCCESS)
                 {
                     appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
+                    break;
                 }
-
-                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer
-                break;
             }
-            
+
             /* Update status */
             if (APP_timerExpired(&appNetpieData.mqttUpdateStatus, MQTT_UPDATE_STATUS_TIMEOUT))
             {
-                TRACE_LOG("[NETPIE:%d] Update status every %d s\n\r", __LINE__, MQTT_UPDATE_STATUS_TIMEOUT);  // DEBUG: iPAS
+                TRACE_LOG("[NETPIE:%d] Update MQTT status every %d s\n\r", __LINE__, MQTT_UPDATE_STATUS_TIMEOUT);  // DEBUG: iPAS
+
+                APP_timerSet(&appNetpieData.mqttUpdateStatus);  // Reset status update timer
+                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
 
                 rc = netpie_publish_status();
                 if (rc != MQTT_CODE_SUCCESS)
                 {
                     appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
+                    break;
                 }
-                
-                APP_timerSet(&appNetpieData.mqttUpdateStatus);  // Reset status update timer
-                
-                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
-                break;
             }
 
             /* Check for incoming messages */
             rc = MqttClient_WaitMessage(&appNetpieData.mqttClient, MQTT_DEFAULT_CMD_TIMEOUT_MS);
+            if (rc == MQTT_CODE_SUCCESS)
+            {
+                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
+            }
+            else
             if (rc == MQTT_CODE_ERROR_TIMEOUT)
             {
+                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
+
                 /* Keep Alive */
                 rc = MqttClient_Ping(&appNetpieData.mqttClient);
                 if (rc != MQTT_CODE_SUCCESS)
@@ -859,34 +865,18 @@ void APP_NETPIE_Tasks ( void )
                     appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
                     break;
                 }
-                
-                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
-            }
-            else
-            if (rc == MQTT_CODE_ERROR_NETWORK)
-            {
-                appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
-                break;
-            }
-            else
-            if (rc == APP_CODE_ERROR_CMD_TIMEOUT)  // No any message within DEFAULT_CMD_TIMEOUT_MS, then speak!
-            {                                      // XXX: maybe returned from WolfMQTT callback functions
-                TRACE_LOG("[NETPIE:%d] No any message within %d ms (APP_CODE_ERROR_CMD_TIMEOUT)\n\r", __LINE__, MQTT_DEFAULT_CMD_TIMEOUT_MS);  // DEBUG: iPAS
 
+                TRACE_LOG("[NETPIE:%d] No any message within %d ms\n\r", __LINE__, MQTT_DEFAULT_CMD_TIMEOUT_MS);  // DEBUG: iPAS
                 rc = netpie_publish_log("Waiting too long without message in");
                 if (rc != MQTT_CODE_SUCCESS)
                 {
                     appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
                     break;
                 }
-
-                APP_timerSet(&appNetpieData.mqttKeepAlive);  // Reset keep alive timer since we sent a publish
             }
             else
-            if (rc != MQTT_CODE_SUCCESS)
             {
                 appNetpieData.state = APP_NETPIE_STATE_TCPIP_ERROR;
-                break;
             }
 
             break;

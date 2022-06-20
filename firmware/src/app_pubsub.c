@@ -94,7 +94,7 @@ APP_PUBSUB_DATA app_pubsubData;
 
 #define PUBSUB_WAIT_TIME 3000
 #define PUBSUB_WAIT_MAX 20
-#define REGISTER_PUBLISH_INTERVAL_MS 1000 
+#define REGISTER_PUBLISH_INTERVAL_MS 1500
 
 st_register_t *st_prev_registers;  // Allocated for keeping previous values of registers
 float *register_prev_values;
