@@ -90,7 +90,7 @@ typedef enum
 	/* Application's state machine's initial state. */
 	APP_PUBSUB_STATE_INIT=0,
 	APP_PUBSUB_STATE_REGISTER_UPDATE,
-
+    APP_PUBSUB_STATE_SERVICE,
 } APP_PUBSUB_STATES;
 
 
@@ -112,7 +112,19 @@ typedef struct
     /* The application's current state */
     APP_PUBSUB_STATES state;
 
+    /* RTOS Queues */
+    #if defined(SERVICE_ONLY) && (SERVICE_ONLY != 0)
+    QueueHandle_t q_tx;
+    QueueHandle_t q_rx;
+    #endif
 } APP_PUBSUB_DATA;
+
+
+// *****************************************************************************
+/* Queue Management
+ */
+#define MQTT_MESSAGE_QUEUE_SIZE 5
+#define MQTT_MESSAGE_QUEUE_ITEM_SIZE 200
 
 
 // *****************************************************************************
