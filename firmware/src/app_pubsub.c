@@ -96,14 +96,6 @@ APP_PUBSUB_DATA app_pubsubData;
 #define PUBSUB_WAIT_MAX 20
 #define REGISTER_PUBLISH_INTERVAL_MS 1000
 
-#if defined(SERVICE_ONLY) && (SERVICE_ONLY != 0)
-typedef struct
-{
-    uint8_t buffer[LOGGER_QUEUE_ITEM_SIZE];
-    uint8_t length;
-} mqtt_message_queue_item_t;
-#endif
-
 st_register_t *st_prev_registers;  // Allocated for keeping previous values of registers
 float *register_prev_values;
 uint16_t register_count = 0;
@@ -266,16 +258,6 @@ void APP_PUBSUB_Initialize ( void )
             
     // Callback function for coping with incoming MQTT message
     netpie_set_callback(mqttclient_callback);
-    
-    // Message queue
-    #if defined(SERVICE_ONLY) && (SERVICE_ONLY != 0)
-    app_pubsubData.q_tx = xQueueCreate(MQTT_MESSAGE_QUEUE_SIZE, sizeof(mqtt_message_queue_item_t));
-    app_pubsubData.q_rx = xQueueCreate(MQTT_MESSAGE_QUEUE_SIZE, sizeof(mqtt_message_queue_item_t));
-    if (app_pubsubData.q_tx == NULL || app_pubsubData.q_rx == NULL)
-    {
-        // Some error
-    }
-    #endif
 }
 
 
@@ -300,11 +282,7 @@ void APP_PUBSUB_Tasks ( void )
 
             if (netpie_ready())
             {
-                #if defined(SERVICE_ONLY) && (SERVICE_ONLY != 0)
-                app_pubsubData.state = APP_PUBSUB_STATE_SERVICE;
-                #else
                 app_pubsubData.state = APP_PUBSUB_STATE_REGISTER_UPDATE;
-                #endif
                 retry_count = 0;
             }
             else
@@ -418,12 +396,6 @@ void APP_PUBSUB_Tasks ( void )
                 p_reg = st_registers;
                 app_pubsubData.state = APP_PUBSUB_STATE_INIT;
             }
-            break;
-        }
-        
-        case APP_PUBSUB_STATE_SERVICE:
-        {
-            
             break;
         }
         
