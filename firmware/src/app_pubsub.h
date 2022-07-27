@@ -90,7 +90,7 @@ typedef enum
 	/* Application's state machine's initial state. */
 	APP_PUBSUB_STATE_INIT=0,
 	APP_PUBSUB_STATE_REGISTER_UPDATE,
-
+    APP_PUBSUB_STATE_MAINTAIN_CONNECTION,
 } APP_PUBSUB_STATES;
 
 

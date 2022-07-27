@@ -282,7 +282,12 @@ void APP_PUBSUB_Tasks ( void )
 
             if (netpie_ready())
             {
+                #if defined(MAINTAIN_CONN_ONLY) && (MAINTAIN_CONN_ONLY != 0)
+                app_pubsubData.state = APP_PUBSUB_STATE_MAINTAIN_CONNECTION;
+                #else
                 app_pubsubData.state = APP_PUBSUB_STATE_REGISTER_UPDATE;
+                #endif
+
                 retry_count = 0;
             }
             else
@@ -395,6 +400,29 @@ void APP_PUBSUB_Tasks ( void )
                 first_time = true;
                 p_reg = st_registers;
                 app_pubsubData.state = APP_PUBSUB_STATE_INIT;
+                TRACE_LOG("[PubSub] Connection lost\n\r");  // DEBUG: iPAS
+            }
+            break;
+        }
+        
+        /* Maintain the connection between broker only. */
+        APP_PUBSUB_STATE_MAINTAIN_CONNECTION:
+        {
+            if (netpie_ready())
+            {
+//                char message[20];
+//                snprintf(message, sizeof(message), "%f", *p_reg->p_value);
+//                netpie_publish_register(sub_topic, message);
+
+                TRACE_LOG("[PubSub] Maintain connection..\n\r");  // DEBUG: iPAS
+
+                vTaskDelay(3 * REGISTER_PUBLISH_INTERVAL_MS / portTICK_PERIOD_MS);
+
+            }
+            else
+            {
+                app_pubsubData.state = APP_PUBSUB_STATE_INIT;
+                TRACE_LOG("[PubSub] Connection lost\n\r");  // DEBUG: iPAS
             }
             break;
         }
