@@ -11,6 +11,7 @@ ip link show ${WAN} >/dev/null
 ret=$?
 [[ "$ret" -ne 0 ]] && exit $ret
 
+sudo sysctl -w net.ipv4.ip_forward=1
 
 # Without -t <> --> -t filter
 # -m --match
@@ -38,13 +39,6 @@ for r in "${rules[@]}"; do
 done
 
 
-# sudo iptables -L --line-number -v
+ip_forward=/proc/sys/net/ipv4/ip_forward
+[[ `cat $ip_forward` -eq 0 ]] && Echo "Please set $ip_forward to 1"
 
-# https://realtechtalk.com/iptables_how_to_log_ALL_dropped_incoming_packets-2133-articles
-# sudo iptables -N LOGGING
-# sudo iptables -A INPUT -i eth5 -j LOGGING
-
-# sudo iptables -A LOGGING -j LOG --log-prefix  "ipt denied: " --log-level 4
-# sudo iptables -A LOGGING -j DROP
-
-# https://svennd.be/rsyslog-separate-file-for-logging/
