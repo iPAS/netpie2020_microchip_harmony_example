@@ -166,8 +166,89 @@ static void mqttclient_callback(const char *sub_topic, const char *message)
         
         netpie_publish_register(sub_topic, msg);
                         
-        Modbus_NetpieOnDo();  // Command DO board to update
+        Modbus_NetpieOnDo();  // XXX: update digital outputs
     }
+}
+
+
+static void pubsub_setup_updating_registers()
+{
+    // Allocate and initial 'st_prev_registers' for memorizing the latest
+    st_register_t *p_reg = st_registers;
+    for (; p_reg->sub_topic != NULL; p_reg++)
+    {
+        register_count++;  // Using counting method because of unknown-size extern array st_registers
+    }
+    st_prev_registers = (void *)malloc(register_count * sizeof(st_register_t));
+    memcpy(st_prev_registers, st_registers, register_count * sizeof(st_register_t));
+
+    // Allocate Buffer for the previous values
+    register_prev_values = (void *)malloc(register_count * sizeof(float));
+    uint16_t i;
+    for (i = 0; i < register_count; i++)
+    {
+        st_prev_registers[i].p_value = &register_prev_values[i];
+        *st_prev_registers[i].p_value = *st_registers[i].p_value;
+    }
+
+    // Callback function for coping with incoming MQTT message
+    netpie_set_callback(mqttclient_callback);
+}
+
+
+static void pubsub_update_registers()
+{
+    static bool first_time = true;
+    static st_register_t *p_reg = st_registers;
+
+    if (netpie_ready())
+    {
+        st_register_t *p_prev = st_prev_registers;
+        uint32_t i = ((uint32_t)p_reg - (uint32_t)st_registers) / sizeof(st_register_t);
+        p_prev += i;
+
+        if ((*p_prev->p_value != *p_reg->p_value) || first_time)  // The value has been changed.
+        {   
+            *p_prev->p_value = *p_reg->p_value;  // Update
+
+            const char *sub_topic = p_reg->sub_topic;
+            char message[20];
+
+            snprintf(message, sizeof(message), "%f", *p_reg->p_value);
+            netpie_publish_register(sub_topic, message);
+
+            TRACE_LOG("[PubSub] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
+
+            vTaskDelay(REGISTER_PUBLISH_INTERVAL_MS / portTICK_PERIOD_MS);
+        }
+        else
+        {
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+        }
+
+        p_reg++;  // Next register
+        if (p_reg->sub_topic == NULL)  // The last item
+        {
+            first_time = false;
+            p_reg = st_registers;  // Goto the first one, again
+
+            #if defined(RANDOM_TEST) && (RANDOM_TEST != 0)
+                // -------------------------------
+                // --- For testing only ----------
+                // --- Randomly changing value ---
+                uint16_t i = rand() % (register_count-1);  // Minus one for skipping the null terminator
+                float val = rand() % 100;
+                *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
+                TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
+            #endif
+        }
+    }
+    else
+    {
+        first_time = true;
+        p_reg = st_registers;
+        app_pubsubData.state = APP_PUBSUB_STATE_INIT;
+    }    
 }
 
 
@@ -189,26 +270,7 @@ void APP_PUBSUB_Initialize ( void )
     /* Place the App state machine in its initial state. */
     app_pubsubData.state = APP_PUBSUB_STATE_INIT;
 
-    // Allocate and initial 'st_prev_registers' for memorizing the latest
-    st_register_t *p_reg = st_registers;
-    for (; p_reg->sub_topic != NULL; p_reg++)
-    {
-        register_count++;  // Using counting method because of unknown-size extern array st_registers
-    }
-    st_prev_registers = (void *)malloc(register_count * sizeof(st_register_t));
-    memcpy(st_prev_registers, st_registers, register_count * sizeof(st_register_t));
-
-    // Allocate Buffer for the previous values
-    register_prev_values = (void *)malloc(register_count * sizeof(float));
-    uint16_t i;
-    for (i = 0; i < register_count; i++)
-    {
-        st_prev_registers[i].p_value = &register_prev_values[i];
-        *st_prev_registers[i].p_value = *st_registers[i].p_value;
-    }
-            
-    // Callback function for coping with incoming MQTT message
-    netpie_set_callback(mqttclient_callback);
+    pubsub_setup_updating_registers();
 }
 
 
@@ -221,8 +283,6 @@ void APP_PUBSUB_Initialize ( void )
  */
 void APP_PUBSUB_Tasks ( void )
 {
-    static bool first_time = true;
-
     /* Check the application's current state. */
     switch ( app_pubsubData.state )
     {
@@ -261,56 +321,7 @@ void APP_PUBSUB_Tasks ( void )
         /* Loop periodically updating all changed registers */
         case APP_PUBSUB_STATE_REGISTER_UPDATE:
         {
-            static st_register_t *p_reg = st_registers;
-            
-            if (netpie_ready())
-            {
-                st_register_t *p_prev = st_prev_registers;
-                uint32_t i = ((uint32_t)p_reg - (uint32_t)st_registers) / sizeof(st_register_t);
-                p_prev += i;
-                                
-                if ((*p_prev->p_value != *p_reg->p_value) || first_time)  // The value has been changed.
-                {   
-                    *p_prev->p_value = *p_reg->p_value;  // Update
-                    
-                    const char *sub_topic = p_reg->sub_topic;
-                    char message[20];
-
-                    snprintf(message, sizeof(message), "%f", *p_reg->p_value);
-                    netpie_publish_register(sub_topic, message);
-
-                    TRACE_LOG("[PubSub] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
-                
-                    vTaskDelay(REGISTER_PUBLISH_INTERVAL_MS / portTICK_PERIOD_MS);
-                }
-                else
-                {
-                    vTaskDelay(50 / portTICK_PERIOD_MS);
-                }
-                
-                p_reg++;  // Next register
-                if (p_reg->sub_topic == NULL)  // The last item
-                {
-                    first_time = false;
-                    p_reg = st_registers;  // Goto the first one, again
-
-                    #if defined(RANDOM_TEST) && (RANDOM_TEST != 0)
-                        // -------------------------------
-                        // --- For testing only ----------
-                        // --- Randomly changing value ---
-                        uint16_t i = rand() % (register_count-1);  // Minus one for skipping the null terminator
-                        float val = rand() % 100;
-                        *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
-                        TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
-                    #endif
-                }
-            }
-            else
-            {
-                first_time = true;
-                p_reg = st_registers;
-                app_pubsubData.state = APP_PUBSUB_STATE_INIT;
-            }
+            pubsub_update_registers();
             break;
         }
         
