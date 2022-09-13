@@ -146,12 +146,12 @@ typedef struct
     MqttNet    mqttNet;
 
     /* Debug Variables */
-    bool socket_connected;
-    bool mqtt_connected;
+    volatile bool socket_connected;
+    volatile bool mqtt_connected;
     IP_MULTI_ADDRESS board_ipAddr;
     
     /* ETC */
-    bool do_suspend;
+    volatile bool do_suspend;
 
 } APP_NETPIE_DATA;
 

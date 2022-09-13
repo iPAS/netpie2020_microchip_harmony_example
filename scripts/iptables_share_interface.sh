@@ -11,6 +11,7 @@ ip link show ${WAN} >/dev/null
 ret=$?
 [[ "$ret" -ne 0 ]] && exit $ret
 
+sudo sysctl -w net.ipv4.ip_forward=1
 
 # Without -t <> --> -t filter
 # -m --match

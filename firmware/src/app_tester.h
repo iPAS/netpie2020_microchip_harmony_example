@@ -94,7 +94,8 @@ typedef enum
     APP_TESTER_STATE_FINISH,
     
     APP_TESTER_STATE_WAIT_BEFORE_NEXT,
-	/* TODO: Define states used by the application state machine. */
+	
+    APP_TESTER_STATE_MAINTAIN_CONNECTION_SEND,
 
 } APP_TESTER_STATES;
 

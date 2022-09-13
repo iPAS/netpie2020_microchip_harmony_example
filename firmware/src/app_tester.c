@@ -145,7 +145,11 @@ void APP_TESTER_Tasks ( void )
 
             if (appInitialized)
             {
+                #if defined(MAINTAIN_CONN_ONLY) && (MAINTAIN_CONN_ONLY != 0)
+                app_testerData.state = APP_TESTER_STATE_MAINTAIN_CONNECTION_SEND;
+                #else
                 app_testerData.state = APP_TESTER_STATE_SERVICE_TASKS;
+                #endif
 
                 #if defined(DO_TEST) && (DO_TEST == 0)
                 // app_testerData.state = APP_TESTER_STATE_FINISH;
@@ -232,6 +236,13 @@ void APP_TESTER_Tasks ( void )
             }
 
             app_testerData.state = APP_TESTER_STATE_INIT;
+            break;
+        }
+        
+        case APP_TESTER_STATE_MAINTAIN_CONNECTION_SEND:
+        {
+            
+            vTaskDelay(60000 / portTICK_PERIOD_MS);
             break;
         }
 
