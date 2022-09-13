@@ -171,55 +171,6 @@ static void mqttclient_callback(const char *sub_topic, const char *message)
 }
 
 
-#if defined(NECTEC_ACE_TEST) && (NECTEC_ACE_TEST != 0)
-// ------------------------------------------------
-// --- Testing for NECTEC ACE 2021  ---------------
-// --- Randomly changing value on 30033 & 30065 ---
-#define MAX_BUFFER_SIZE 1024
-extern uint16_t packet_id;
-extern const char mqtt_topic_status[];
-extern int netpie_publish(const char *topic, const char *buf, uint16_t pkg_id);
-
-int publish_sensors(void)
-{
-    char buf[100];
-
-    /* Make JSON object */
-    JSON_Status sts;
-    JSON_Value  *root_value  = json_value_init_object();
-    JSON_Object *root_object = json_value_get_object(root_value);
-    
-    JSON_Value  *data_value  = json_value_init_object();
-    JSON_Object *data_object = json_value_get_object(data_value);
-    json_object_set_value(root_object, "data", data_value);
-
-    uint16_t i;
-    for (i = 0; i < (register_count-1); i++)
-    {
-        if (strcmp(st_registers[i].sub_topic, "30033") == 0)  // PT100
-        {
-            json_object_set_number(data_object, "pt100", *st_registers[i].p_value);
-        }
-        else 
-        if (strcmp(st_registers[i].sub_topic, "30065") == 0)  // 4-20mA
-        {
-            json_object_set_number(data_object, "c420ma", *st_registers[i].p_value);
-        }
-    }    
-    
-    /* Transform the object to string */
-    char *serialized_string = NULL;
-    serialized_string = json_serialize_to_string(root_value);
-    strncpy(buf, serialized_string, sizeof(buf));
-
-    json_free_serialized_string(serialized_string);
-    json_value_free(root_value);
-
-    return netpie_publish(mqtt_topic_status, buf, packet_id++);
-}
-#endif
-
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Initialization and State Machine Functions
@@ -331,16 +282,6 @@ void APP_PUBSUB_Tasks ( void )
                     TRACE_LOG("[PubSub] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
                 
                     vTaskDelay(REGISTER_PUBLISH_INTERVAL_MS / portTICK_PERIOD_MS);
-
-                    
-                    #if defined(NECTEC_ACE_TEST) && (NECTEC_ACE_TEST != 0)
-                    if (strcmp(p_reg->sub_topic, "30033") == 0  ||
-                        strcmp(p_reg->sub_topic, "30065") == 0)
-                    {
-                        publish_sensors();  // Send the shadow if needed
-                    }
-                    #endif
-
                 }
                 else
                 {
@@ -352,31 +293,8 @@ void APP_PUBSUB_Tasks ( void )
                 {
                     first_time = false;
                     p_reg = st_registers;  // Goto the first one, again
-                    
-                    
+
                     #if defined(RANDOM_TEST) && (RANDOM_TEST != 0)
-
-                        #if defined(NECTEC_ACE_TEST) && (NECTEC_ACE_TEST != 0)
-                        // ------------------------------------------------
-                        // --- Testing for NECTEC ACE 2021  ---------------
-                        // --- Randomly changing value on 30033 & 30065 ---
-                        uint16_t i;  // Minus one for skipping the null terminator
-                        for (i = 0; i < (register_count-1); i++)
-                        {
-                            if (strcmp(st_registers[i].sub_topic, "30033") == 0)  // PT100
-                            {
-                                float val = (rand() % 12000) / 100.0;
-                                *st_registers[i].p_value = val;
-                            }
-                            else 
-                            if (strcmp(st_registers[i].sub_topic, "30065") == 0)  // 4-20mA
-                            {
-                                float val = (rand() % 1600) / 100000.0 + 4e-3;
-                                *st_registers[i].p_value = val;
-                            }
-                        }
-
-                        #else                    
                         // -------------------------------
                         // --- For testing only ----------
                         // --- Randomly changing value ---
@@ -384,10 +302,7 @@ void APP_PUBSUB_Tasks ( void )
                         float val = rand() % 100;
                         *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
                         TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
-                        #endif
-
                     #endif
-
                 }
             }
             else
