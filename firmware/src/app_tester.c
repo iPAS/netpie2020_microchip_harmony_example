@@ -147,7 +147,7 @@ void APP_TESTER_Tasks ( void )
             {
                 app_testerData.state = APP_TESTER_STATE_SERVICE_TASKS;
 
-                #if defined(DO_TEST) && (DO_TEST == 0)
+                #if defined(RUN_TESTER) && (RUN_TESTER == 0)
                 // app_testerData.state = APP_TESTER_STATE_FINISH;
                 vTaskSuspend(NULL);  // Suspend itself
                 #endif
