@@ -90,6 +90,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Application strings and buffers are be defined outside this structure.
 */
 
+#define LEN_OF_ARRAY(arr) (sizeof(arr)/sizeof(arr[0]))
+
 APP_PUBSUB_DATA app_pubsubData;
 
 #define PUBSUB_WAIT_TIME 3000
@@ -101,25 +103,15 @@ float *register_prev_values;
 uint16_t register_count = 0;
 
 extern void Modbus_NetpieOnDo(void);
-// *****************************************************************************
-// *****************************************************************************
-// Section: Application Callback Functions
-// *****************************************************************************
-// *****************************************************************************
-
-/* TODO:  Add any necessary callback functions.
-*/
 
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Application Local Functions
+// Section: Update MQTT with Data from Modbus Registers
 // *****************************************************************************
 // *****************************************************************************
 
-#define LEN_OF_ARRAY(arr) (sizeof(arr)/sizeof(arr[0]))
-
-static void mqttclient_callback(const char *sub_topic, const char *message)
+static void pubsub_registers_changed_callback(const char *sub_topic, const char *message)
 {
     TRACE_LOG("[PubSub] --- calling back for updating reg:'%s' with '%s'\n\r", sub_topic, message);  // DEBUG: iPAS
 
@@ -192,7 +184,7 @@ static void pubsub_setup_updating_registers()
     }
 
     // Callback function for coping with incoming MQTT message
-    netpie_set_callback(mqttclient_callback);
+    netpie_set_callback(pubsub_registers_changed_callback);
 }
 
 
@@ -250,6 +242,14 @@ static void pubsub_update_registers()
         app_pubsubData.state = APP_PUBSUB_STATE_INIT;
     }    
 }
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: MQTT Services
+// *****************************************************************************
+// *****************************************************************************
+
 
 
 // *****************************************************************************
