@@ -105,6 +105,32 @@ uint16_t register_count = 0;
 extern void Modbus_NetpieOnDo(void);
 
 
+#if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
+            
+// *****************************************************************************
+// *****************************************************************************
+// Section: MQTT Services
+// *****************************************************************************
+// *****************************************************************************
+
+static void pubsub_service_callback(const char *sub_topic, const char *message)
+{
+}
+
+
+static void pubsub_service_setup()
+{
+}
+
+
+static void pubsub_service_loop()
+{
+}
+
+
+#else
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Update MQTT with Data from Modbus Registers
@@ -225,13 +251,13 @@ static void pubsub_update_registers()
             p_reg = st_registers;  // Goto the first one, again
 
             #if defined(RANDOM_TEST) && (RANDOM_TEST != 0)
-                // -------------------------------
-                // --- For testing only ----------
-                // --- Randomly changing value ---
-                uint16_t i = rand() % (register_count-1);  // Minus one for skipping the null terminator
-                float val = rand() % 100;
-                *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
-                TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
+            // -------------------------------
+            // --- For testing only ----------
+            // --- Randomly changing value ---
+            uint16_t i = rand() % (register_count-1);  // Minus one for skipping the null terminator
+            float val = rand() % 100;
+            *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
+            TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
             #endif
         }
     }
@@ -244,12 +270,7 @@ static void pubsub_update_registers()
 }
 
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: MQTT Services
-// *****************************************************************************
-// *****************************************************************************
-
+#endif  //
 
 
 // *****************************************************************************
@@ -270,7 +291,11 @@ void APP_PUBSUB_Initialize ( void )
     /* Place the App state machine in its initial state. */
     app_pubsubData.state = APP_PUBSUB_STATE_INIT;
 
+    #if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
+    pubsub_service_setup();
+    #else
     pubsub_setup_updating_registers();
+    #endif
 }
 
 
@@ -293,7 +318,7 @@ void APP_PUBSUB_Tasks ( void )
 
             if (netpie_ready())
             {
-                app_pubsubData.state = APP_PUBSUB_STATE_REGISTER_UPDATE;
+                app_pubsubData.state = APP_PUBSUB_STATE_OPERATION;
                 retry_count = 0;
             }
             else
@@ -318,10 +343,14 @@ void APP_PUBSUB_Tasks ( void )
             break;
         }
         
-        /* Loop periodically updating all changed registers */
-        case APP_PUBSUB_STATE_REGISTER_UPDATE:
+        /* Loop periodically service */
+        case APP_PUBSUB_STATE_OPERATION:
         {
-            pubsub_update_registers();
+            #if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
+            pubsub_service_loop();  // service in & out messages
+            #else
+            pubsub_update_registers();  //  updating all changed registers
+            #endif
             break;
         }
         
