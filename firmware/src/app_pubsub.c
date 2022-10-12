@@ -1,9 +1,9 @@
 /*******************************************************************************
   MPLAB Harmony Application Source File
-  
+
   Company:
     Microchip Technology Inc.
-  
+
   File Name:
     app_pubsub.c
 
@@ -11,8 +11,8 @@
     This file contains the source code for the MPLAB Harmony application.
 
   Description:
-    This file contains the source code for the MPLAB Harmony application.  It 
-    implements the logic of the application's state machine and it may call 
+    This file contains the source code for the MPLAB Harmony application.  It
+    implements the logic of the application's state machine and it may call
     API routines of other MPLAB Harmony modules in the system, such as drivers,
     system services, and middleware.  However, it does not call any of the
     system interfaces (such as the "Initialize" and "Tasks" functions) of any of
@@ -49,7 +49,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Included Files 
+// Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
 
@@ -86,7 +86,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     This structure should be initialized by the APP_Initialize function.
-    
+
     Application strings and buffers are be defined outside this structure.
 */
 
@@ -106,7 +106,7 @@ extern void Modbus_NetpieOnDo(void);
 
 
 #if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
-            
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: MQTT Services
@@ -115,16 +115,39 @@ extern void Modbus_NetpieOnDo(void);
 
 static void pubsub_service_callback(const char *sub_topic, const char *message)
 {
+    TRACE_LOG(
+        "[PubSub:%d] subscription calling back sub_topic:'%s' msg:'%s'\n\r",
+        sub_topic, message);  // DEBUG: iPAS
 }
 
 
 static void pubsub_service_setup()
 {
+    // Callback function for coping with incoming MQTT message
+    netpie_set_callback(pubsub_service_callback);
 }
 
 
 static void pubsub_service_loop()
 {
+    static uint8_t unavailable_count = 0;
+
+    if (netpie_ready())
+    {
+        unavailable_count = 0;
+    }
+    else
+    {
+        unavailable_count++;
+        if (unavailable_count >= 3) {
+            unavailable_count = 0;
+            app_pubsubData.state = APP_PUBSUB_STATE_INIT;
+        }
+        else
+        {
+            vTaskDelay(PUBSUB_WAIT_TIME / portTICK_PERIOD_MS);
+        }
+    }
 }
 
 
@@ -139,12 +162,12 @@ static void pubsub_service_loop()
 
 static void pubsub_registers_changed_callback(const char *sub_topic, const char *message)
 {
-    TRACE_LOG("[PubSub] --- calling back for updating reg:'%s' with '%s'\n\r", sub_topic, message);  // DEBUG: iPAS
+    TRACE_LOG("[PubSub:%d] --- calling back for updating reg:'%s' with '%s'\n\r", __LINE__, sub_topic, message);  // DEBUG: iPAS
 
     st_register_t *p_reg = st_registers;
     char *endptr = NULL;
     float value;
-    
+
     while (p_reg->sub_topic != NULL)  // Find the matched reference
     {
         if (strcmp(sub_topic, p_reg->sub_topic) == 0)
@@ -162,10 +185,10 @@ static void pubsub_registers_changed_callback(const char *sub_topic, const char 
         }
         p_reg++;
     }
-    
-    
+
+
     char msg[50];
-    
+
     if (p_reg->sub_topic == NULL)  // Reference error, no mentioned register
     {
         snprintf(msg, sizeof(msg), "Unknown sub_topic:'%s'", sub_topic);
@@ -175,15 +198,15 @@ static void pubsub_registers_changed_callback(const char *sub_topic, const char 
     {
         snprintf(msg, sizeof(msg), "Conversion error on message:'%s'", message);
         netpie_publish_log(msg);
-    } 
+    }
     else
     {
         if (endptr != NULL)  // Valid --> Update with the new value
-            *p_reg->p_value = value;            
+            *p_reg->p_value = value;
         snprintf(msg, sizeof(msg), "%f", *p_reg->p_value);
-        
+
         netpie_publish_register(sub_topic, msg);
-                        
+
         Modbus_NetpieOnDo();  // XXX: update digital outputs
     }
 }
@@ -226,7 +249,7 @@ static void pubsub_update_registers()
         p_prev += i;
 
         if ((*p_prev->p_value != *p_reg->p_value) || first_time)  // The value has been changed.
-        {   
+        {
             *p_prev->p_value = *p_reg->p_value;  // Update
 
             const char *sub_topic = p_reg->sub_topic;
@@ -235,7 +258,7 @@ static void pubsub_update_registers()
             snprintf(message, sizeof(message), "%f", *p_reg->p_value);
             netpie_publish_register(sub_topic, message);
 
-            TRACE_LOG("[PubSub] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
+            TRACE_LOG("[PubSub:%d] update reg#%d %s > '%s'\n\r", __LINE__, i, sub_topic, message);  // DEBUG: iPAS
 
             vTaskDelay(REGISTER_PUBLISH_INTERVAL_MS / portTICK_PERIOD_MS);
         }
@@ -257,7 +280,7 @@ static void pubsub_update_registers()
             uint16_t i = rand() % (register_count-1);  // Minus one for skipping the null terminator
             float val = rand() % 100;
             *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
-            TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
+            TRACE_LOG("[PubSub:%d] randomly change on '%s' with '%.2f'\n\r", __LINE__, st_registers[i].sub_topic, val);  // DEBUG: iPAS
             #endif
         }
     }
@@ -266,7 +289,7 @@ static void pubsub_update_registers()
         first_time = true;
         p_reg = st_registers;
         app_pubsubData.state = APP_PUBSUB_STATE_INIT;
-    }    
+    }
 }
 
 
@@ -329,20 +352,20 @@ void APP_PUBSUB_Tasks ( void )
                     SYS_RESET_SoftwareReset();  // Reset after tried for a while
                     #else
                     retry_count = 0;
-                    TRACE_LOG("[PubSub] Timeout MQTT waiting ... sleep for %d ms\n\r", PUBSUB_WAIT_TIME*10);  // DEBUG: iPAS
+                    TRACE_LOG("[PubSub:%d] Timeout MQTT waiting ... sleep for %d ms\n\r", __LINE__, PUBSUB_WAIT_TIME*10);  // DEBUG: iPAS
                     vTaskDelay(PUBSUB_WAIT_TIME * 10 / portTICK_PERIOD_MS);
                     #endif
                 }
                 else
                 {
                     retry_count++;
-                    TRACE_LOG("[PubSub] Wait MQTT ready ... %d/%d\n\r", retry_count, PUBSUB_WAIT_MAX);  // DEBUG: iPAS
+                    TRACE_LOG("[PubSub:%d] Wait MQTT ready ... %d/%d\n\r", __LINE__, retry_count, PUBSUB_WAIT_MAX);  // DEBUG: iPAS
                     vTaskDelay(PUBSUB_WAIT_TIME / portTICK_PERIOD_MS);
                 }
             }
             break;
         }
-        
+
         /* Loop periodically service */
         case APP_PUBSUB_STATE_OPERATION:
         {
@@ -353,7 +376,7 @@ void APP_PUBSUB_Tasks ( void )
             #endif
             break;
         }
-        
+
         /* The default state should never be executed. */
         default:
         {
@@ -362,7 +385,7 @@ void APP_PUBSUB_Tasks ( void )
         }
     }
 }
- 
+
 
 /*******************************************************************************
  End of File

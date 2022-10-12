@@ -126,7 +126,10 @@ BaseType_t logger_send_tx_queue(const char *fmt, ... )
     uint16_t len;
 
     va_start(args, fmt);
-    len = vsnprintf((char *)q_item.buffer, LOGGER_QUEUE_ITEM_SIZE, fmt, args);
+    const uint32_t t = SYS_TMR_TickCountGet();
+    len  = 0;
+    len +=  snprintf((char *)&q_item.buffer[len], LOGGER_QUEUE_ITEM_SIZE, "[%d:%03d] ", t/1000, t%1000);
+    len += vsnprintf((char *)&q_item.buffer[len], LOGGER_QUEUE_ITEM_SIZE, fmt, args);
     va_end(args);
 
     q_item.length = len;
