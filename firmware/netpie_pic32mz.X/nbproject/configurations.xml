@@ -1144,7 +1144,7 @@
         <property key="save-temps" value="false"/>
         <property key="stack-smashing" value=""/>
         <property key="wpo-lto" value="false"/>
-        <appendMe value="-DNEXPIE=1 -DUSE_MQTTS=1 -DDO_TEST=0 -DNECTEC_ACE_TEST=1 -DRANDOM_TEST=1 -DDO_LOG=1 -DDO_RESET=0 -DMAIN_IFACE=eth0"/>
+        <appendMe value="-DONLY_SERVICE=0 -DNEXPIE=1 -DUSE_MQTTS=1 -DRUN_TESTER=0 -DRANDOM_TEST=1 -DDO_LOG=1 -DDO_RESET=0 -DMAIN_IFACE=eth0"/>
         <userComments value="DO_TEST NECTEC_ACE_TEST  RANDOM_TEST DO_LOG DO_RESET MAIN_IFACE=eth0 || wlan0"/>
       </C32Global>
       <PICkit3PlatformTool>

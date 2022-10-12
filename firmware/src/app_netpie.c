@@ -154,9 +154,9 @@ const char mqtt_user[]      = NETPIE_TOKEN;
 const char mqtt_password[]  = NETPIE_SECRET;
 
 // -- MQTT topics for updating register --
-#define MQTT_TOPIC_FILTER "@msg/" NETPIE_DEVICE_NAME "/#"
-//const char mqtt_topic_status[]   = "@msg/" NETPIE_DEVICE_NAME "/status";  // Publish the device status
 const char mqtt_topic_status[]   = "@shadow/data/update";                   // Publish the device status on the 'shadow'
+                                                                            // https://docs-v2.nexpie.io/mqtt-api.html#shadow-api-topic
+const char mqtt_topic_filter[]   = "@msg/" NETPIE_DEVICE_NAME "/#";         // Subscripted topics
 const char mqtt_topic_update[]   = "@msg/" NETPIE_DEVICE_NAME "/update";    // Get request for updating the register/%d
 const char mqtt_topic_register[] = "@msg/" NETPIE_DEVICE_NAME "/register";  // Publish an update for register/%d
 const char mqtt_topic_log[]      = "@msg/" NETPIE_DEVICE_NAME "/log";       // log
@@ -787,7 +787,7 @@ void APP_NETPIE_Tasks ( void )
             int rc;
 
             /* Build list of topics */
-            topics[0].topic_filter = MQTT_TOPIC_FILTER;
+            topics[0].topic_filter = mqtt_topic_filter;
             topics[0].qos = 0;
 
             /* Subscribe Topic */
