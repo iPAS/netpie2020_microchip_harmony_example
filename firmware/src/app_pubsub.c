@@ -96,13 +96,16 @@ APP_PUBSUB_DATA app_pubsubData;
 
 #define PUBSUB_WAIT_TIME 3000
 #define PUBSUB_WAIT_MAX 20
+
+
+#define SERV_UNAVAIL_MAX 3
+
+
 #define REGISTER_PUBLISH_INTERVAL_MS 1500
 
 st_register_t *st_prev_registers;  // Allocated for keeping previous values of registers
 float *register_prev_values;
 uint16_t register_count = 0;
-
-extern void Modbus_NetpieOnDo(void);
 
 
 #if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
@@ -113,16 +116,66 @@ extern void Modbus_NetpieOnDo(void);
 // *****************************************************************************
 // *****************************************************************************
 
+typedef struct
+{
+    char *sub_topic;
+    char *message;
+} q_item_t;
+
+
+uint8_t pubsub_send(const char *sub_topic, const char *message)
+{
+    q_item_t q_item;
+    q_item.sub_topic = malloc(strlen(sub_topic) + 1);
+    q_item.message = malloc(strlen(message) + 1);
+    strcpy(q_item.sub_topic, sub_topic);
+    strcpy(q_item.message, message);
+    if (xQueueSendToBack(app_pubsubData.q_tx, &q_item, 0) == errQUEUE_FULL)
+    {
+        TRACE_LOG("[PubSub:%d] xQueueSendToBack q_tx fail, full\n\r", __LINE__);  // DEBUG: iPAS
+        free(q_item.sub_topic);
+        free(q_item.message);
+    }
+    return uxQueueSpacesAvailable(app_pubsubData.q_tx);
+}
+
+
+uint8_t pubsub_receive(char *sub_topic, char *message)
+{
+    q_item_t q_item;
+    if (xQueueReceive(app_pubsubData.q_rx, &q_item, 0) == pdTRUE)
+    {
+        strcpy(sub_topic, q_item.sub_topic);
+        strcpy(message, q_item.message);
+        free(q_item.sub_topic);
+        free(q_item.message);
+    }
+    return uxQueueSpacesAvailable(app_pubsubData.q_rx);
+}
+
+
 static void pubsub_service_callback(const char *sub_topic, const char *message)
 {
-    TRACE_LOG(
-        "[PubSub:%d] subscription calling back sub_topic:'%s' msg:'%s'\n\r",
-        sub_topic, message);  // DEBUG: iPAS
+    TRACE_LOG("[PubSub:%d] subscription calling-back on sub_topic:'%s' msg:'%s'\n\r", sub_topic, message);
+    q_item_t q_item;
+    q_item.sub_topic = malloc(strlen(sub_topic) + 1);
+    q_item.message = malloc(strlen(message) + 1);
+    strcpy(q_item.sub_topic, sub_topic);
+    strcpy(q_item.message, message);
+    if (xQueueSendToBack(app_pubsubData.q_rx, &q_item, 0) == errQUEUE_FULL)
+    {
+        TRACE_LOG("[PubSub:%d] xQueueSendToBack q_rx fail, full\n\r", __LINE__);  // DEBUG: iPAS
+        free(q_item.sub_topic);
+        free(q_item.message);
+    }
 }
 
 
 static void pubsub_service_setup()
 {
+    app_pubsubData.q_tx = xQueueCreate(PUBSUB_QUEUE_SIZE, sizeof(q_item_t));
+    app_pubsubData.q_rx = xQueueCreate(PUBSUB_QUEUE_SIZE, sizeof(q_item_t));
+
     // Callback function for coping with incoming MQTT message
     netpie_set_callback(pubsub_service_callback);
 }
@@ -135,23 +188,41 @@ static void pubsub_service_loop()
     if (netpie_ready())
     {
         unavailable_count = 0;
+
+        /* Serve the tasks */
+        if (uxQueueMessagesWaiting(app_pubsubData.q_tx) > 0)
+        {
+            q_item_t q_item;
+            if (xQueueReceive(app_pubsubData.q_tx, &q_item, 0) == pdTRUE)
+            {
+                netpie_publish_register(q_item.sub_topic, q_item.message);
+                free(q_item.sub_topic);
+                free(q_item.message);
+            }
+            else
+            {
+                TRACE_LOG("[PubSub:%d] xQueueReceive q_tx fail, %d left\n\r", __LINE__, uxQueueSpacesAvailable(app_pubsubData.q_tx));  // DEBUG: iPAS
+            }
+        }
     }
     else
     {
         unavailable_count++;
-        if (unavailable_count >= 3) {
+        if (unavailable_count >= SERV_UNAVAIL_MAX)
+        {
             unavailable_count = 0;
             app_pubsubData.state = APP_PUBSUB_STATE_INIT;
         }
         else
         {
+            TRACE_LOG("[PubSub:%d] unavailable_count %d/%d\n\r", __LINE__, unavailable_count, SERV_UNAVAIL_MAX);  // DEBUG: iPAS
             vTaskDelay(PUBSUB_WAIT_TIME / portTICK_PERIOD_MS);
         }
     }
 }
 
 
-#else
+#else  // #if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
 
 
 // *****************************************************************************
@@ -159,6 +230,9 @@ static void pubsub_service_loop()
 // Section: Update MQTT with Data from Modbus Registers
 // *****************************************************************************
 // *****************************************************************************
+
+extern void Modbus_NetpieOnDo(void);
+
 
 static void pubsub_registers_changed_callback(const char *sub_topic, const char *message)
 {
@@ -293,7 +367,7 @@ static void pubsub_update_registers()
 }
 
 
-#endif  //
+#endif  // #if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
 
 
 // *****************************************************************************
