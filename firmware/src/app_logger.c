@@ -1,9 +1,9 @@
 /*******************************************************************************
   MPLAB Harmony Application Source File
-  
+
   Company:
     Microchip Technology Inc.
-  
+
   File Name:
     app_logger.c
 
@@ -11,8 +11,8 @@
     This file contains the source code for the MPLAB Harmony application.
 
   Description:
-    This file contains the source code for the MPLAB Harmony application.  It 
-    implements the logic of the application's state machine and it may call 
+    This file contains the source code for the MPLAB Harmony application.  It
+    implements the logic of the application's state machine and it may call
     API routines of other MPLAB Harmony modules in the system, such as drivers,
     system services, and middleware.  However, it does not call any of the
     system interfaces (such as the "Initialize" and "Tasks" functions) of any of
@@ -49,7 +49,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Included Files 
+// Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
 
@@ -73,7 +73,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     This structure should be initialized by the APP_Initialize function.
-    
+
     Application strings and buffers are be defined outside this structure.
 */
 
@@ -83,7 +83,7 @@ typedef struct
 {
     uint8_t buffer[LOGGER_QUEUE_ITEM_SIZE];
     uint8_t length;
-} logger_queue_item_t;
+} q_item_t;
 
 #define DIR485_RX() SYS_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
 #define DIR485_TX() SYS_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
@@ -122,7 +122,7 @@ BaseType_t logger_send_tx_queue(const char *fmt, ... )
     if (app_Data.q_tx == NULL || app_Data.do_suspend) return pdFAIL;
 
     va_list args;
-    logger_queue_item_t q_item;
+    q_item_t q_item;
     uint16_t len;
 
     va_start(args, fmt);
@@ -173,15 +173,15 @@ bool logger_set_running(bool sts)
 void APP_LOGGER_Initialize ( void )
 {
     app_Data.do_suspend = false;
-    
+
     /* Place the App state machine in its initial state. */
     app_Data.state = APP_LOGGER_STATE_INIT;
 
     app_Data.handleUSART = DRV_HANDLE_INVALID;
-    
+
     /* Message queue */
-    app_Data.q_tx = xQueueCreate(LOGGER_QUEUE_SIZE, sizeof(logger_queue_item_t));
-    app_Data.q_rx = xQueueCreate(LOGGER_QUEUE_SIZE, sizeof(logger_queue_item_t));
+    app_Data.q_tx = xQueueCreate(LOGGER_QUEUE_SIZE, sizeof(q_item_t));
+    app_Data.q_rx = xQueueCreate(LOGGER_QUEUE_SIZE, sizeof(q_item_t));
     if (app_Data.q_tx == NULL || app_Data.q_rx == NULL)
     {
         // Some error
@@ -205,19 +205,19 @@ void APP_LOGGER_Tasks ( void )
     if (app_Data.do_suspend) {
         xQueueReset(app_Data.q_tx);
         xQueueReset(app_Data.q_rx);
-        
+
         DRV_USART_Close(app_Data.handleUSART);
         vTaskSuspend(NULL);
         // ... Long deep sleep ...
-        
+
         app_Data.do_suspend = false;
         app_Data.state = APP_LOGGER_STATE_INIT;
         app_Data.handleUSART = DRV_HANDLE_INVALID;
-        
+
         DIR485_RX();
         logger_send_tx_queue(".\n\r");  // DEBUG: iPAS
     }
-    
+
 
     /* Check the application's current state. */
     switch ( app_Data.state )
@@ -226,26 +226,26 @@ void APP_LOGGER_Tasks ( void )
         case APP_LOGGER_STATE_INIT:
         {
             bool appInitialized = true;
-       
+
             if (app_Data.handleUSART == DRV_HANDLE_INVALID)
             {
                 app_Data.handleUSART = DRV_USART_Open(
-                        APP_LOGGER_DRV_USART, 
+                        APP_LOGGER_DRV_USART,
                         DRV_IO_INTENT_READWRITE|DRV_IO_INTENT_NONBLOCKING);
                 appInitialized &= ( DRV_HANDLE_INVALID != app_Data.handleUSART );
             }
-        
+
             if (appInitialized)
-            {            
+            {
                 app_Data.state = APP_LOGGER_STATE_USART_BM_INIT;
-            
+
                 DRV_USART_WriteByte(app_Data.handleUSART, '>');  // DEBUG: iPAS
             }
             break;
         }
 
         case APP_LOGGER_STATE_USART_BM_INIT:
-        {            
+        {
             app_Data.state = APP_LOGGER_STATE_USART_BM_TX;
             break;
         }
@@ -254,14 +254,14 @@ void APP_LOGGER_Tasks ( void )
         {
             // ******
             // * TX *
-            
-            logger_queue_item_t q_item;
+
+            q_item_t q_item;
             bool do_send = xQueueReceive(app_Data.q_tx, &q_item, 0);
 
             if (do_send)
-            {      
+            {
                 DIR485_TX();
-    
+
                 uint8_t index = 0;
                 while (index < q_item.length)
                 {
@@ -271,21 +271,21 @@ void APP_LOGGER_Tasks ( void )
                     }
                     vTaskDelay(1 / portTICK_PERIOD_MS);
                 }
-                
-                DIR485_RX();            
+
+                DIR485_RX();
             }
 
             app_Data.state = APP_LOGGER_STATE_USART_BM_RX;
             break;
         }
-        
+
         case APP_LOGGER_STATE_USART_BM_RX:
-        {    
+        {
             // ******
             // * RX *
 //            while (!DRV_USART_ReceiverBufferIsEmpty(app_Data.handleUSART))
 //            {
-//                
+//
 //            }
 //
 //            if (uxQueueSpacesAvailable(app_Data.q_rx) > 0)
@@ -302,7 +302,7 @@ void APP_LOGGER_Tasks ( void )
             app_Data.state = APP_LOGGER_STATE_USART_BM_TX;
             break;
         }
-        
+
         /* The default state should never be executed. */
         default:
         {
@@ -311,7 +311,7 @@ void APP_LOGGER_Tasks ( void )
         }
     }
 }
- 
+
 
 /*******************************************************************************
  End of File

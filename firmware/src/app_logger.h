@@ -65,7 +65,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 extern "C" {
 
 #endif
-// DOM-IGNORE-END 
+// DOM-IGNORE-END
 
 // *****************************************************************************
 // *****************************************************************************
@@ -88,7 +88,7 @@ typedef enum
 {
 	/* Application's state machine's initial state. */
 	APP_LOGGER_STATE_INIT=0,
-            
+
     APP_LOGGER_STATE_USART_BM_INIT,
     APP_LOGGER_STATE_USART_BM_TX,
     APP_LOGGER_STATE_USART_BM_RX,
@@ -119,10 +119,10 @@ typedef struct
     /* RTOS Queues */
     QueueHandle_t q_tx;
     QueueHandle_t q_rx;
-    
+
     /* ETC */
     bool do_suspend;
-    
+
 } APP_LOGGER_DATA;
 
 
@@ -142,7 +142,7 @@ typedef struct
 /* These routines are called by drivers when certain events occur.
 */
 
-	
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Initialization and State Machine Functions
@@ -157,8 +157,8 @@ typedef struct
      MPLAB Harmony application initialization routine.
 
   Description:
-    This function initializes the Harmony application.  It places the 
-    application in its initial state and prepares it to run so that its 
+    This function initializes the Harmony application.  It places the
+    application in its initial state and prepares it to run so that its
     APP_Tasks function can be called.
 
   Precondition:

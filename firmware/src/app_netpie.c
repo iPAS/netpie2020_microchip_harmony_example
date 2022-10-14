@@ -830,7 +830,7 @@ void APP_NETPIE_Tasks ( void )
         case APP_NETPIE_STATE_MQTT_LOOP:
         {
             int rc = 0;
-            
+
             /* Keep alive */
             if (APP_timerExpired(&appNetpieData.mqttKeepAlive, MQTT_KEEP_ALIVE_TIMEOUT))
             {
