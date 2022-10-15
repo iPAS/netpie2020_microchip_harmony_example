@@ -65,7 +65,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 extern "C" {
 
 #endif
-// DOM-IGNORE-END 
+// DOM-IGNORE-END
 
 
 // *****************************************************************************
@@ -112,6 +112,10 @@ typedef struct
     /* The application's current state */
     APP_PUBSUB_STATES state;
 
+    /* RTOS Queues */
+    QueueHandle_t q_tx;
+    QueueHandle_t q_rx;
+
 } APP_PUBSUB_DATA;
 
 
@@ -122,7 +126,7 @@ typedef struct
 // *****************************************************************************
 /* These routines are called by drivers when certain events occur.
 */
-	
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Initialization and State Machine Functions
@@ -137,8 +141,8 @@ typedef struct
      MPLAB Harmony application initialization routine.
 
   Description:
-    This function initializes the Harmony application.  It places the 
-    application in its initial state and prepares it to run so that its 
+    This function initializes the Harmony application.  It places the
+    application in its initial state and prepares it to run so that its
     APP_Tasks function can be called.
 
   Precondition:
@@ -194,6 +198,22 @@ void APP_PUBSUB_Initialize ( void );
  */
 
 void APP_PUBSUB_Tasks( void );
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Global Functions for other module
+// *****************************************************************************
+// *****************************************************************************
+
+/**
+ * Queue Management
+ */
+#define PUBSUB_QUEUE_SIZE 10
+
+
+uint8_t pubsub_send(const char *sub_topic, const char *message);
+uint8_t pubsub_receive(char *sub_topic, char *message);
 
 
 #endif /* _APP_PUBSUB_H */

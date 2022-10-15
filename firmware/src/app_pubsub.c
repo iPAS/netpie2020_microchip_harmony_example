@@ -1,9 +1,9 @@
 /*******************************************************************************
   MPLAB Harmony Application Source File
-  
+
   Company:
     Microchip Technology Inc.
-  
+
   File Name:
     app_pubsub.c
 
@@ -11,8 +11,8 @@
     This file contains the source code for the MPLAB Harmony application.
 
   Description:
-    This file contains the source code for the MPLAB Harmony application.  It 
-    implements the logic of the application's state machine and it may call 
+    This file contains the source code for the MPLAB Harmony application.  It
+    implements the logic of the application's state machine and it may call
     API routines of other MPLAB Harmony modules in the system, such as drivers,
     system services, and middleware.  However, it does not call any of the
     system interfaces (such as the "Initialize" and "Tasks" functions) of any of
@@ -49,7 +49,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Included Files 
+// Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
 
@@ -86,7 +86,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     This structure should be initialized by the APP_Initialize function.
-    
+
     Application strings and buffers are be defined outside this structure.
 */
 
@@ -96,39 +96,133 @@ APP_PUBSUB_DATA app_pubsubData;
 
 #define PUBSUB_WAIT_TIME 3000
 #define PUBSUB_WAIT_MAX 20
+
+
+#define SERV_UNAVAIL_MAX 3
+
+
 #define REGISTER_PUBLISH_INTERVAL_MS 1500
 
 st_register_t *st_prev_registers;  // Allocated for keeping previous values of registers
 float *register_prev_values;
 uint16_t register_count = 0;
 
-extern void Modbus_NetpieOnDo(void);
-
 
 #if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
-            
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: MQTT Services
 // *****************************************************************************
 // *****************************************************************************
 
+typedef struct
+{
+    char *sub_topic;
+    char *message;
+} q_item_t;
+
+
+uint8_t pubsub_send(const char *sub_topic, const char *message)
+{
+    q_item_t q_item;
+    q_item.sub_topic = malloc(strlen(sub_topic) + 1);
+    q_item.message = malloc(strlen(message) + 1);
+    strcpy(q_item.sub_topic, sub_topic);
+    strcpy(q_item.message, message);
+    if (xQueueSendToBack(app_pubsubData.q_tx, &q_item, 0) == errQUEUE_FULL)
+    {
+        TRACE_LOG("[PubSub:%d] xQueueSendToBack q_tx fail, full\n\r", __LINE__);  // DEBUG: iPAS
+        free(q_item.sub_topic);
+        free(q_item.message);
+    }
+    return uxQueueSpacesAvailable(app_pubsubData.q_tx);
+}
+
+
+uint8_t pubsub_receive(char *sub_topic, char *message)
+{
+    q_item_t q_item;
+    if (xQueueReceive(app_pubsubData.q_rx, &q_item, 0) == pdTRUE)
+    {
+        strcpy(sub_topic, q_item.sub_topic);
+        strcpy(message, q_item.message);
+        free(q_item.sub_topic);
+        free(q_item.message);
+    }
+    return uxQueueSpacesAvailable(app_pubsubData.q_rx);
+}
+
+
 static void pubsub_service_callback(const char *sub_topic, const char *message)
 {
+    TRACE_LOG("[PubSub:%d] subscription calling-back on sub_topic:'%s' msg:'%s'\n\r", sub_topic, message);
+    q_item_t q_item;
+    q_item.sub_topic = malloc(strlen(sub_topic) + 1);
+    q_item.message = malloc(strlen(message) + 1);
+    strcpy(q_item.sub_topic, sub_topic);
+    strcpy(q_item.message, message);
+    if (xQueueSendToBack(app_pubsubData.q_rx, &q_item, 0) == errQUEUE_FULL)
+    {
+        TRACE_LOG("[PubSub:%d] xQueueSendToBack q_rx fail, full\n\r", __LINE__);  // DEBUG: iPAS
+        free(q_item.sub_topic);
+        free(q_item.message);
+    }
 }
 
 
 static void pubsub_service_setup()
 {
+    app_pubsubData.q_tx = xQueueCreate(PUBSUB_QUEUE_SIZE, sizeof(q_item_t));
+    app_pubsubData.q_rx = xQueueCreate(PUBSUB_QUEUE_SIZE, sizeof(q_item_t));
+
+    // Callback function for coping with incoming MQTT message
+    netpie_set_callback(pubsub_service_callback);
 }
 
 
 static void pubsub_service_loop()
 {
+    static uint8_t unavailable_count = 0;
+
+    if (netpie_ready())
+    {
+        unavailable_count = 0;
+
+        /* Serve the tasks */
+        if (uxQueueMessagesWaiting(app_pubsubData.q_tx) > 0)
+        {
+            q_item_t q_item;
+            if (xQueueReceive(app_pubsubData.q_tx, &q_item, 0) == pdTRUE)
+            {
+                netpie_publish_register(q_item.sub_topic, q_item.message);
+                free(q_item.sub_topic);
+                free(q_item.message);
+            }
+            else
+            {
+                TRACE_LOG("[PubSub:%d] xQueueReceive q_tx fail, %d left\n\r", __LINE__, uxQueueSpacesAvailable(app_pubsubData.q_tx));  // DEBUG: iPAS
+            }
+        }
+    }
+    else
+    {
+        unavailable_count++;
+        if (unavailable_count >= SERV_UNAVAIL_MAX)
+        {
+            unavailable_count = 0;
+            app_pubsubData.state = APP_PUBSUB_STATE_INIT;
+        }
+        else
+        {
+            TRACE_LOG("[PubSub:%d] unavailable_count %d/%d\n\r", __LINE__, unavailable_count, SERV_UNAVAIL_MAX);  // DEBUG: iPAS
+            vTaskDelay(PUBSUB_WAIT_TIME / portTICK_PERIOD_MS);
+        }
+    }
 }
 
 
-#else
+#else  // #if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
 
 
 // *****************************************************************************
@@ -137,14 +231,17 @@ static void pubsub_service_loop()
 // *****************************************************************************
 // *****************************************************************************
 
+extern void Modbus_NetpieOnDo(void);
+
+
 static void pubsub_registers_changed_callback(const char *sub_topic, const char *message)
 {
-    TRACE_LOG("[PubSub] --- calling back for updating reg:'%s' with '%s'\n\r", sub_topic, message);  // DEBUG: iPAS
+    TRACE_LOG("[PubSub:%d] --- calling back for updating reg:'%s' with '%s'\n\r", __LINE__, sub_topic, message);  // DEBUG: iPAS
 
     st_register_t *p_reg = st_registers;
     char *endptr = NULL;
     float value;
-    
+
     while (p_reg->sub_topic != NULL)  // Find the matched reference
     {
         if (strcmp(sub_topic, p_reg->sub_topic) == 0)
@@ -162,10 +259,10 @@ static void pubsub_registers_changed_callback(const char *sub_topic, const char 
         }
         p_reg++;
     }
-    
-    
+
+
     char msg[50];
-    
+
     if (p_reg->sub_topic == NULL)  // Reference error, no mentioned register
     {
         snprintf(msg, sizeof(msg), "Unknown sub_topic:'%s'", sub_topic);
@@ -175,15 +272,15 @@ static void pubsub_registers_changed_callback(const char *sub_topic, const char 
     {
         snprintf(msg, sizeof(msg), "Conversion error on message:'%s'", message);
         netpie_publish_log(msg);
-    } 
+    }
     else
     {
         if (endptr != NULL)  // Valid --> Update with the new value
-            *p_reg->p_value = value;            
+            *p_reg->p_value = value;
         snprintf(msg, sizeof(msg), "%f", *p_reg->p_value);
-        
+
         netpie_publish_register(sub_topic, msg);
-                        
+
         Modbus_NetpieOnDo();  // XXX: update digital outputs
     }
 }
@@ -226,7 +323,7 @@ static void pubsub_update_registers()
         p_prev += i;
 
         if ((*p_prev->p_value != *p_reg->p_value) || first_time)  // The value has been changed.
-        {   
+        {
             *p_prev->p_value = *p_reg->p_value;  // Update
 
             const char *sub_topic = p_reg->sub_topic;
@@ -235,7 +332,7 @@ static void pubsub_update_registers()
             snprintf(message, sizeof(message), "%f", *p_reg->p_value);
             netpie_publish_register(sub_topic, message);
 
-            TRACE_LOG("[PubSub] update reg#%d %s > '%s'\n\r", i, sub_topic, message);  // DEBUG: iPAS
+            TRACE_LOG("[PubSub:%d] update reg#%d %s > '%s'\n\r", __LINE__, i, sub_topic, message);  // DEBUG: iPAS
 
             vTaskDelay(REGISTER_PUBLISH_INTERVAL_MS / portTICK_PERIOD_MS);
         }
@@ -257,7 +354,7 @@ static void pubsub_update_registers()
             uint16_t i = rand() % (register_count-1);  // Minus one for skipping the null terminator
             float val = rand() % 100;
             *st_registers[i].p_value = val;  // Minus one for skipping the null terminator
-            TRACE_LOG("[PubSub] randomly change on '%s' with '%.2f'\n\r", st_registers[i].sub_topic, val);  // DEBUG: iPAS
+            TRACE_LOG("[PubSub:%d] randomly change on '%s' with '%.2f'\n\r", __LINE__, st_registers[i].sub_topic, val);  // DEBUG: iPAS
             #endif
         }
     }
@@ -266,11 +363,11 @@ static void pubsub_update_registers()
         first_time = true;
         p_reg = st_registers;
         app_pubsubData.state = APP_PUBSUB_STATE_INIT;
-    }    
+    }
 }
 
 
-#endif  //
+#endif  // #if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
 
 
 // *****************************************************************************
@@ -329,20 +426,20 @@ void APP_PUBSUB_Tasks ( void )
                     SYS_RESET_SoftwareReset();  // Reset after tried for a while
                     #else
                     retry_count = 0;
-                    TRACE_LOG("[PubSub] Timeout MQTT waiting ... sleep for %d ms\n\r", PUBSUB_WAIT_TIME*10);  // DEBUG: iPAS
+                    TRACE_LOG("[PubSub:%d] Timeout MQTT waiting ... sleep for %d ms\n\r", __LINE__, PUBSUB_WAIT_TIME*10);  // DEBUG: iPAS
                     vTaskDelay(PUBSUB_WAIT_TIME * 10 / portTICK_PERIOD_MS);
                     #endif
                 }
                 else
                 {
                     retry_count++;
-                    TRACE_LOG("[PubSub] Wait MQTT ready ... %d/%d\n\r", retry_count, PUBSUB_WAIT_MAX);  // DEBUG: iPAS
+                    TRACE_LOG("[PubSub:%d] Wait MQTT ready ... %d/%d\n\r", __LINE__, retry_count, PUBSUB_WAIT_MAX);  // DEBUG: iPAS
                     vTaskDelay(PUBSUB_WAIT_TIME / portTICK_PERIOD_MS);
                 }
             }
             break;
         }
-        
+
         /* Loop periodically service */
         case APP_PUBSUB_STATE_OPERATION:
         {
@@ -353,7 +450,7 @@ void APP_PUBSUB_Tasks ( void )
             #endif
             break;
         }
-        
+
         /* The default state should never be executed. */
         default:
         {
@@ -362,7 +459,7 @@ void APP_PUBSUB_Tasks ( void )
         }
     }
 }
- 
+
 
 /*******************************************************************************
  End of File
