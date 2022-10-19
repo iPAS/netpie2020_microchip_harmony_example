@@ -123,8 +123,11 @@ typedef struct
 } q_item_t;
 
 
-uint8_t pubsub_send(const char *sub_topic, const char *message)
+int pubsub_send(const char *sub_topic, const char *message)
 {
+    if (uxQueueSpacesAvailable(app_pubsubData.q_tx) == 0)
+        return -1;
+
     q_item_t q_item;
     q_item.sub_topic = malloc(strlen(sub_topic) + 1);
     q_item.message = malloc(strlen(message) + 1);
@@ -140,8 +143,11 @@ uint8_t pubsub_send(const char *sub_topic, const char *message)
 }
 
 
-uint8_t pubsub_receive(char *sub_topic, char *message)
+int pubsub_receive(char *sub_topic, char *message)
 {
+    if (uxQueueSpacesAvailable(app_pubsubData.q_rx) == 0)
+        return -1;
+
     q_item_t q_item;
     if (xQueueReceive(app_pubsubData.q_rx, &q_item, 0) == pdTRUE)
     {

@@ -236,7 +236,7 @@ void APP_TESTER_Tasks ( void )
         {
             #if defined(ONLY_SERVICE) && (ONLY_SERVICE != 0)
 
-            const char mqtt_topic[] = "only_service";
+            const char mqtt_sub_topic[] = "only_service";
             const char mqtt_msg_fmt[] = "count me %d";
             char mqtt_msg[20];
             uint8_t cnt = 0;
@@ -244,15 +244,22 @@ void APP_TESTER_Tasks ( void )
             logger_send_tx_queue(">>> Test pubsub_send() cnt=%d\n\r", cnt);
 
             snprintf(mqtt_msg, sizeof(mqtt_msg), mqtt_msg_fmt, cnt++);
-            pubsub_send(mqtt_topic, mqtt_msg);
+            pubsub_send(mqtt_sub_topic, mqtt_msg);
             snprintf(mqtt_msg, sizeof(mqtt_msg), mqtt_msg_fmt, cnt++);
-            pubsub_send(mqtt_topic, mqtt_msg);
+            pubsub_send(mqtt_sub_topic, mqtt_msg);
             snprintf(mqtt_msg, sizeof(mqtt_msg), mqtt_msg_fmt, cnt++);
-            pubsub_send(mqtt_topic, mqtt_msg);
+            pubsub_send(mqtt_sub_topic, mqtt_msg);
             snprintf(mqtt_msg, sizeof(mqtt_msg), mqtt_msg_fmt, cnt++);
-            pubsub_send(mqtt_topic, mqtt_msg);
+            pubsub_send(mqtt_sub_topic, mqtt_msg);
             snprintf(mqtt_msg, sizeof(mqtt_msg), mqtt_msg_fmt, cnt++);
-            pubsub_send(mqtt_topic, mqtt_msg);
+            pubsub_send(mqtt_sub_topic, mqtt_msg);
+
+            vTaskDelay(10000 / portTICK_PERIOD_MS);
+
+            char recv_sub_topic[40];
+            char recv_msg[20];
+            int rc = pubsub_receive(recv_sub_topic, recv_msg);
+            logger_send_tx_queue(">>> Test pubsub_receive() rc=%d\n\r", rc);
 
             vTaskDelay(10000 / portTICK_PERIOD_MS);
 

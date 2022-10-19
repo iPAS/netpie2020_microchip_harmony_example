@@ -212,8 +212,8 @@ void APP_PUBSUB_Tasks( void );
 #define PUBSUB_QUEUE_SIZE 10
 
 
-uint8_t pubsub_send(const char *sub_topic, const char *message);
-uint8_t pubsub_receive(char *sub_topic, char *message);
+int pubsub_send(const char *sub_topic, const char *message);
+int pubsub_receive(char *sub_topic, char *message);
 
 
 #endif /* _APP_PUBSUB_H */
